@@ -1,10 +1,13 @@
 package com.zd.config;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
+
+import io.netty.channel.ChannelHandlerContext;
 
 @Component
 @EnableAutoConfiguration
@@ -30,4 +33,14 @@ public class NettyGlobal {
 	
 	//接收中控服务器数据队列
 	public static ConcurrentLinkedQueue<String> resvCentralDataQueue=new ConcurrentLinkedQueue<>();
+	
+	//返回数据至中控服务器的队列
+	public static ConcurrentLinkedQueue<String> returnData2CentralQueue=new ConcurrentLinkedQueue<>();
+	
+	//存放与中控服务器的连接，一个策略服务器只连接一个中控服务器，因此该Map中理论上至多有一个值
+	public static ConcurrentHashMap<String,ChannelHandlerContext> centralServerChannalMap=new ConcurrentHashMap<>();
+	
+	//与中控服务器连接的channel在centralServerChannalMap中的key
+	public static final String CENTRALSERVERCHANNELKEY="CENTRALSERVERCHANNEL";
+	
 }

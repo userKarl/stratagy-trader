@@ -24,7 +24,7 @@ public class Global {
 	public static ConcurrentHashMap<String, BatchEventProcessor<MarketEvent>> handlerProcessorMap = new ConcurrentHashMap<>();
 	
 	
-	//所有消费者
+	//策略ID----消费者
 	public static ConcurrentHashMap<String,MarketEventHandler> allEventConcurrentHashMap=new ConcurrentHashMap<>();
 	
 	//可用消费者

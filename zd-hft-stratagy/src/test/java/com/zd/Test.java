@@ -1,11 +1,23 @@
 package com.zd;
 
-import com.zd.business.constant.CommandEnum;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.zd.business.entity.Stratagy;
 
 public class Test {
 
 	public static void main(String[] args) {
-		String s="totalConsumer,totalStratagyPerConsumer";
-		System.out.println(s.toUpperCase());
+		for(int i=0;i<10;i++) {
+			try {
+				
+				if(i==5) {
+					throw new RuntimeException();
+				}else {
+					System.out.println(i);
+				}
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			} 
+		}
 	}
 }
