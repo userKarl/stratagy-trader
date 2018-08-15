@@ -7,8 +7,8 @@ import java.util.concurrent.Executors;
 import com.lmax.disruptor.BatchEventProcessor;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
-import com.zd.business.event.MarketEvent;
-import com.zd.business.event.MarketEventHandler;
+import com.zd.business.event.market.MarketEvent;
+import com.zd.business.event.market.MarketEventHandler;
 
 public class Global {
 

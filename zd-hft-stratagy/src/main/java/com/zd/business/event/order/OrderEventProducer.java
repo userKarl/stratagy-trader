@@ -1,12 +1,12 @@
-package com.zd.business.event;
+package com.zd.business.event.order;
 
 import com.lmax.disruptor.RingBuffer;
 import com.shanghaizhida.beans.NetInfo;
 
-public class MarketEventProducer {
-	private final RingBuffer<MarketEvent> ringBuffer;
+public class OrderEventProducer {
+	private final RingBuffer<OrderEvent> ringBuffer;
     
-    public MarketEventProducer(RingBuffer<MarketEvent> ringBuffer){
+    public OrderEventProducer(RingBuffer<OrderEvent> ringBuffer){
         this.ringBuffer = ringBuffer;
     }
     
@@ -19,7 +19,7 @@ public class MarketEventProducer {
         long sequence = ringBuffer.next();
         try {
             //2.用上面的索引取出一个空的事件用于填充（获取该序号对应的事件对象）
-            MarketEvent event = ringBuffer.get(sequence);
+            OrderEvent event = ringBuffer.get(sequence);
             //3.获取要通过事件传递的业务数据
             event.setNetInfo(ni);
         } finally {

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
-import com.zd.business.event.MarketEventProducer;
+import com.zd.business.event.market.MarketEventProducer;
 import com.zd.common.utils.StringUtils;
 
 import io.netty.bootstrap.Bootstrap;

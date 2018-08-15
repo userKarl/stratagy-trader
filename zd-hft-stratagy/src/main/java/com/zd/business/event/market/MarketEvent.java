@@ -1,4 +1,4 @@
-package com.zd.business.event;
+package com.zd.business.event.market;
 
 import com.shanghaizhida.beans.MarketInfo;
 import com.shanghaizhida.beans.NetInfo;
