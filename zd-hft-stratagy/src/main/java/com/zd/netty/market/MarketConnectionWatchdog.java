@@ -5,7 +5,13 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.shanghaizhida.beans.CommandCode;
+import com.shanghaizhida.beans.NetInfo;
+import com.zd.business.event.MarketEventProducer;
+import com.zd.common.utils.StringUtils;
+
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -33,11 +39,14 @@ public abstract class MarketConnectionWatchdog extends ChannelInboundHandlerAdap
 	private volatile boolean disConnect = false;
 	private volatile Channel channel;
 
-	public MarketConnectionWatchdog(Bootstrap boot, Timer timert, String host, int port) {
+	private volatile MarketEventProducer mep;
+
+	public MarketConnectionWatchdog(Bootstrap boot, Timer timert, String host, int port, MarketEventProducer mep) {
 		this.bootstrap = boot;
 		this.timer = timert;
 		this.host = host;
 		this.port = port;
+		this.mep = mep;
 	}
 
 	public boolean isReconnect() {
@@ -68,8 +77,7 @@ public abstract class MarketConnectionWatchdog extends ChannelInboundHandlerAdap
 						logger.debug("心跳检查Successs");
 					}
 				}
-			}, 5L, 5L, TimeUnit.SECONDS
-					);
+			}, 5L, 5L, TimeUnit.SECONDS);
 		}
 		logger.info("Connects with {}.", channel);
 		ctx.fireChannelActive();
@@ -123,10 +131,26 @@ public abstract class MarketConnectionWatchdog extends ChannelInboundHandlerAdap
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		try {
-			
+			String s = null;
+			if (msg instanceof ByteBuf) {
+				ByteBuf bb = (ByteBuf) msg;
+				byte[] b = new byte[bb.readableBytes()];
+				bb.readBytes(b);
+				s = new String(b, "UTF-8");
+			} else if (msg != null) {
+				s = msg.toString();
+			}
+
+			NetInfo ni = new NetInfo();
+			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length() - 1));
+
+			if (StringUtils.isNotBlank(ni.infoT) && StringUtils.isNotBlank(ni.code)
+					&& !CommandCode.HEARTBIT.equals(ni.code)) {
+				mep.onData(ni);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("接收socket请求异常：{}", e.getMessage());
+			logger.error("接收行情数据异常：{}", e.getMessage());
 		}
 	}
 
