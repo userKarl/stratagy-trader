@@ -14,6 +14,7 @@ import io.netty.channel.ChannelHandlerContext;
  * @author user
  *
  */
+@Deprecated
 public class SendData2CentralThread implements Runnable{
 
 	private static final Logger logger=LoggerFactory.getLogger(SendData2CentralThread.class);

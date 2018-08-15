@@ -5,7 +5,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
@@ -14,6 +13,10 @@ import com.lmax.disruptor.util.DaemonThreadFactory;
 import com.zd.business.event.market.MarketEvent;
 import com.zd.business.event.market.MarketEventFactory;
 import com.zd.business.event.market.MarketEventProducer;
+import com.zd.business.event.order.OrderEvent;
+import com.zd.business.event.order.OrderEventFactory;
+import com.zd.business.event.order.OrderEventHandler;
+import com.zd.business.event.order.OrderEventProducer;
 import com.zd.config.Global;
 import com.zd.config.NettyGlobal;
 import com.zd.netty.central.CentralNettyClient;
@@ -43,12 +46,20 @@ public class ZdHftStratagyApplication implements CommandLineRunner {
 	@Override
 	public void run(String... arg0) throws Exception {
 
-		// 开启Disruptor队列
+		// 开启行情的Disruptor队列
 		Disruptor<MarketEvent> disruptor = new Disruptor<MarketEvent>(new MarketEventFactory(), 65536,
 				DaemonThreadFactory.INSTANCE, ProducerType.MULTI, new YieldingWaitStrategy());
 		RingBuffer<MarketEvent> ringBuffer = disruptor.start();
 		Global.ringBuffer = ringBuffer;
 		Global.disruptor = disruptor;
+		
+		//开启下单的Disruptor队列
+		Disruptor<OrderEvent> orderDisruptor = new Disruptor<OrderEvent>(new OrderEventFactory(), 65536,
+				DaemonThreadFactory.INSTANCE, ProducerType.MULTI, new YieldingWaitStrategy());
+		orderDisruptor.handleEventsWith(new OrderEventHandler());
+		RingBuffer<OrderEvent> orderRingBuffer = orderDisruptor.start();
+    	OrderEventProducer oep=new OrderEventProducer(orderRingBuffer);
+    	Global.orderEventProducer=oep;
 
 		// 连接行情服务器
 		marketNettyClient.start(nettyGlobal.nettyMarketServerHost, nettyGlobal.nettyMarketServerPort,

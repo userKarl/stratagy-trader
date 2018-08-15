@@ -43,4 +43,10 @@ public class NettyGlobal {
 	//与中控服务器连接的channel在centralServerChannalMap中的key
 	public static final String CENTRALSERVERCHANNELKEY="CENTRALSERVERCHANNEL";
 	
+	//存放与下单服务器的连接，一个策略服务器只连接一个中控服务器，因此该Map中理论上至多有一个值
+	public static ConcurrentHashMap<String,ChannelHandlerContext> orderServerChannalMap=new ConcurrentHashMap<>();
+	
+	//与下单服务器连接的channel在centralServerChannalMap中的key
+	public static final String ORDERSERVERCHANNELKEY="ORDERSERVERCHANNEL";
+	
 }

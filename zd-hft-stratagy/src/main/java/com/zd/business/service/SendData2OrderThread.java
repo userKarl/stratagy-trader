@@ -1,5 +1,6 @@
 package com.zd.business.service;
 
+@Deprecated
 public class SendData2OrderThread implements Runnable{
 
 	private volatile Thread thread;

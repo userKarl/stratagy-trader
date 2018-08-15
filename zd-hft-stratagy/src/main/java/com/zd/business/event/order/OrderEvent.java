@@ -1,16 +1,14 @@
 package com.zd.business.event.order;
 
-import com.shanghaizhida.beans.NetInfo;
-
 public class OrderEvent {
 
-	private NetInfo netInfo;
+	private String netInfo;
 	
-	public NetInfo getNetInfo() {
+	public String getNetInfo() {
 		return netInfo;
 	}
 
-	public void setNetInfo(NetInfo netInfo) {
+	public void setNetInfo(String netInfo) {
 		this.netInfo = netInfo;
 	}
 

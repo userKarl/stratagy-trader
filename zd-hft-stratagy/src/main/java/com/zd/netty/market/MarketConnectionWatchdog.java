@@ -141,12 +141,13 @@ public abstract class MarketConnectionWatchdog extends ChannelInboundHandlerAdap
 				s = msg.toString();
 			}
 
+			String data=s.substring(s.indexOf(")") + 1, s.length() - 1);
 			NetInfo ni = new NetInfo();
-			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length() - 1));
+			ni.MyReadString(data);
 
 			if (StringUtils.isNotBlank(ni.infoT) && StringUtils.isNotBlank(ni.code)
 					&& !CommandCode.HEARTBIT.equals(ni.code)) {
-				mep.onData(ni);
+				mep.onData(data);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

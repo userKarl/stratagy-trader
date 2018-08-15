@@ -1,19 +1,18 @@
 package com.zd.business.event.market;
 
 import com.shanghaizhida.beans.MarketInfo;
-import com.shanghaizhida.beans.NetInfo;
 
 public class MarketEvent {
 
 	private MarketInfo marketInfo;
 	
-	private NetInfo netInfo;
+	private String netInfo;
 	
-	public NetInfo getNetInfo() {
+	public String getNetInfo() {
 		return netInfo;
 	}
 
-	public void setNetInfo(NetInfo netInfo) {
+	public void setNetInfo(String netInfo) {
 		this.netInfo = netInfo;
 	}
 

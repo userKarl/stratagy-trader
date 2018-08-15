@@ -9,11 +9,12 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.zd.business.event.market.MarketEvent;
 import com.zd.business.event.market.MarketEventHandler;
+import com.zd.business.event.order.OrderEventProducer;
 
 public class Global {
 
 	/**
-	 * Disruptor相关
+	 * 行情Disruptor
 	 */
 	public static RingBuffer<MarketEvent> ringBuffer=null;
 	
@@ -23,6 +24,10 @@ public class Global {
 	
 	public static ConcurrentHashMap<String, BatchEventProcessor<MarketEvent>> handlerProcessorMap = new ConcurrentHashMap<>();
 	
+	/**
+	 * 下单Disruptor
+	 */
+	public static OrderEventProducer orderEventProducer=null;
 	
 	//策略ID----消费者
 	public static ConcurrentHashMap<String,MarketEventHandler> allEventConcurrentHashMap=new ConcurrentHashMap<>();

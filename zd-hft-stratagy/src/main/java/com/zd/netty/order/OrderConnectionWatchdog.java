@@ -5,6 +5,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zd.config.NettyGlobal;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -53,6 +55,7 @@ public abstract class OrderConnectionWatchdog extends ChannelInboundHandlerAdapt
 	 */
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+		NettyGlobal.orderServerChannalMap.put(NettyGlobal.ORDERSERVERCHANNELKEY, ctx);
 		channel = ctx.channel();
 		attempts = 0;
 		reconnect = true;
@@ -81,6 +84,7 @@ public abstract class OrderConnectionWatchdog extends ChannelInboundHandlerAdapt
 	 */
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		NettyGlobal.orderServerChannalMap.remove(NettyGlobal.ORDERSERVERCHANNELKEY, ctx);
 		disConnect = true;
 		logger.info("Disconnects with {}, doReconnect = {},attemps == {}", ctx.channel(), reconnect, attempts);
 		if (reconnect) {
