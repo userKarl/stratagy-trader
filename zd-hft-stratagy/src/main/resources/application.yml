@@ -3,6 +3,10 @@ server:
   
 
 netty: 
+  central:  
+    server: 
+      host: 192.168.1.186
+      port: 7002
   order:  
     server: 
       host: 192.168.1.186
