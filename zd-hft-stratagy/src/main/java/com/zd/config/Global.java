@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import com.lmax.disruptor.BatchEventProcessor;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+import com.zd.business.event.central.CentralEventProducer;
 import com.zd.business.event.market.MarketEvent;
 import com.zd.business.event.market.MarketEventHandler;
 import com.zd.business.event.order.OrderEventProducer;
@@ -28,6 +29,11 @@ public class Global {
 	 * 下单Disruptor
 	 */
 	public static OrderEventProducer orderEventProducer=null;
+	
+	/**
+	 * 中控Disruptor
+	 */
+	public static CentralEventProducer centralEventProducer=null;
 	
 	//策略ID----消费者
 	public static ConcurrentHashMap<String,MarketEventHandler> allEventConcurrentHashMap=new ConcurrentHashMap<>();

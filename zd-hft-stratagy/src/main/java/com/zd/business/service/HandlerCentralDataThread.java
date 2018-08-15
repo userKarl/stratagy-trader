@@ -29,6 +29,7 @@ import com.zd.config.NettyGlobal;
  * @author user
  *
  */
+@Deprecated
 public class HandlerCentralDataThread implements Runnable{
 
 	private static final Logger logger=LoggerFactory.getLogger(HandlerCentralDataThread.class);

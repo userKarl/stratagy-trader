@@ -5,11 +5,16 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.util.DaemonThreadFactory;
+import com.zd.business.event.central.CentralEvent;
+import com.zd.business.event.central.CentralEventFactory;
+import com.zd.business.event.central.CentralEventHandler;
+import com.zd.business.event.central.CentralEventProducer;
 import com.zd.business.event.market.MarketEvent;
 import com.zd.business.event.market.MarketEventFactory;
 import com.zd.business.event.market.MarketEventProducer;
@@ -60,6 +65,14 @@ public class ZdHftStratagyApplication implements CommandLineRunner {
 		RingBuffer<OrderEvent> orderRingBuffer = orderDisruptor.start();
     	OrderEventProducer oep=new OrderEventProducer(orderRingBuffer);
     	Global.orderEventProducer=oep;
+    	
+    	//开启中控的Disruptor队列
+		Disruptor<CentralEvent> centralDisruptor = new Disruptor<CentralEvent>(new CentralEventFactory(), 65536,
+				DaemonThreadFactory.INSTANCE, ProducerType.MULTI, new YieldingWaitStrategy());
+		centralDisruptor.handleEventsWith(new CentralEventHandler());
+		RingBuffer<CentralEvent> centralRingBuffer = centralDisruptor.start();
+    	CentralEventProducer cep=new CentralEventProducer(centralRingBuffer);
+    	Global.centralEventProducer=cep;
 
 		// 连接行情服务器
 		marketNettyClient.start(nettyGlobal.nettyMarketServerHost, nettyGlobal.nettyMarketServerPort,

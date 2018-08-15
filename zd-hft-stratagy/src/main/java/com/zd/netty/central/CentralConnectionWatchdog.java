@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
 import com.zd.common.utils.StringUtils;
+import com.zd.config.Global;
 import com.zd.config.NettyGlobal;
 
 import io.netty.bootstrap.Bootstrap;
@@ -139,12 +140,13 @@ public abstract class CentralConnectionWatchdog extends ChannelInboundHandlerAda
 				s = msg.toString();
 			}
 
+			String data=s.substring(s.indexOf(")") + 1, s.length() - 1);
 			NetInfo ni = new NetInfo();
-			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length() - 1));
+			ni.MyReadString(data);
 
 			if (StringUtils.isNotBlank(ni.infoT) && StringUtils.isNotBlank(ni.code)
 					&& !CommandCode.HEARTBIT.equals(ni.code)) {
-				NettyGlobal.resvCentralDataQueue.add(ni.MyToString());
+				Global.centralEventProducer.onData(data);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

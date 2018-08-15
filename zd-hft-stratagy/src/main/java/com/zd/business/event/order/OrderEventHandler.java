@@ -10,6 +10,11 @@ import com.zd.config.NettyGlobal;
 
 import io.netty.channel.ChannelHandlerContext;
 
+/**
+ * 将触发的策略数据发送至下单服务器
+ * @author user
+ *
+ */
 public class OrderEventHandler implements EventHandler<OrderEvent> {
 
 	private static final Logger logger = LoggerFactory.getLogger(OrderEventHandler.class);

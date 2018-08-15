@@ -14,6 +14,11 @@ import com.zd.business.constant.StratagyStatusEnum;
 import com.zd.business.entity.Stratagy;
 import com.zd.config.Global;
 
+/**
+ * 接收行情，计算策略
+ * @author user
+ *
+ */
 public class MarketEventHandler implements EventHandler<MarketEvent> {
 
 	private static final Logger logger = LoggerFactory.getLogger(MarketEventHandler.class);
