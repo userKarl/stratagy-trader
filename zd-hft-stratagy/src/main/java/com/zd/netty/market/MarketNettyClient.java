@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.zd.business.event.market.MarketEventProducer;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
@@ -36,7 +34,7 @@ public class MarketNettyClient {
 		super();
 	}
 
-	public void start(String host, int port, MarketEventProducer mep) {
+	public void start(String host, int port) {
 		logger.info("开启socket客户端，连接行情服务器...");
 		// EventLoopGroup可以理解为是一个线程池，这个线程池用来处理连接、接受数据、发送数据
 		Bootstrap bootstrap = new Bootstrap(); // 客户端引导类
@@ -44,7 +42,7 @@ public class MarketNettyClient {
 		bootstrap.channel(NioSocketChannel.class);// 指定通道类型为NioServerSocketChannel，一种异步模式，OIO阻塞模式为OioServerSocketChannel
 		bootstrap.remoteAddress(new InetSocketAddress(host, port));// 指定请求地址
 		final MarketConnectionWatchdog watchDog = new MarketConnectionWatchdog(bootstrap, new HashedWheelTimer(), host,
-				port, mep) {
+				port) {
 
 			@Override
 			public ChannelHandler[] handlers() {
@@ -79,7 +77,7 @@ public class MarketNettyClient {
 				future.channel().eventLoop().schedule(new Runnable() {
 					@Override
 					public void run() {
-						start(host, port, mep);
+						start(host, port);
 					}
 
 				}, 2L, TimeUnit.SECONDS);

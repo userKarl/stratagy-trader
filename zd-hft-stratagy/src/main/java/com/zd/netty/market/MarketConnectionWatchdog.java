@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
-import com.zd.business.event.market.MarketEventProducer;
 import com.zd.common.utils.StringUtils;
+import com.zd.config.Global;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -39,14 +39,11 @@ public abstract class MarketConnectionWatchdog extends ChannelInboundHandlerAdap
 	private volatile boolean disConnect = false;
 	private volatile Channel channel;
 
-	private volatile MarketEventProducer mep;
-
-	public MarketConnectionWatchdog(Bootstrap boot, Timer timert, String host, int port, MarketEventProducer mep) {
+	public MarketConnectionWatchdog(Bootstrap boot, Timer timert, String host, int port) {
 		this.bootstrap = boot;
 		this.timer = timert;
 		this.host = host;
 		this.port = port;
-		this.mep = mep;
 	}
 
 	public boolean isReconnect() {
@@ -147,7 +144,7 @@ public abstract class MarketConnectionWatchdog extends ChannelInboundHandlerAdap
 
 			if (StringUtils.isNotBlank(ni.infoT) && StringUtils.isNotBlank(ni.code)
 					&& !CommandCode.HEARTBIT.equals(ni.code)) {
-				mep.onData(data);
+				Global.marketEventProducer.onData(data);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

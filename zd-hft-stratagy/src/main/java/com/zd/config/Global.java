@@ -1,37 +1,26 @@
 package com.zd.config;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import com.lmax.disruptor.BatchEventProcessor;
-import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.dsl.Disruptor;
-import com.zd.business.event.central.CentralEventProducer;
-import com.zd.business.event.market.MarketEvent;
-import com.zd.business.event.market.MarketEventHandler;
-import com.zd.business.event.order.OrderEventProducer;
+import com.zd.business.engine.main.central.CentralEventProducer;
+import com.zd.business.engine.main.market.MarketEventHandler;
+import com.zd.business.engine.main.market.MarketEventProducer;
+import com.zd.business.engine.main.order.OrderEventProducer;
 
 public class Global {
 
 	/**
-	 * 行情Disruptor
+	 * 行情Disruptor生产者
 	 */
-	public static RingBuffer<MarketEvent> ringBuffer=null;
-	
-	public static Disruptor<MarketEvent> disruptor=null;
-	
-	public static ExecutorService executor = Executors.newCachedThreadPool();
-	
-	public static ConcurrentHashMap<String, BatchEventProcessor<MarketEvent>> handlerProcessorMap = new ConcurrentHashMap<>();
+	public static MarketEventProducer marketEventProducer=null;
 	
 	/**
-	 * 下单Disruptor
+	 * 下单Disruptor生产者
 	 */
 	public static OrderEventProducer orderEventProducer=null;
 	
 	/**
-	 * 中控Disruptor
+	 * 中控Disruptor生产者
 	 */
 	public static CentralEventProducer centralEventProducer=null;
 	

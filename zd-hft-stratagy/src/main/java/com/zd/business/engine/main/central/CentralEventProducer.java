@@ -1,20 +1,17 @@
-package com.zd.business.event.central;
+package com.zd.business.engine.main.central;
 
 import com.lmax.disruptor.RingBuffer;
+import com.zd.business.engine.event.ZdEventProducer;
 
-public class CentralEventProducer {
-	private final RingBuffer<CentralEvent> ringBuffer;
-    
-    public CentralEventProducer(RingBuffer<CentralEvent> ringBuffer){
-        this.ringBuffer = ringBuffer;
-    }
-    
-    /**
-     * onData用来发布事件，每调用一次就发布一次事件
-     * 它的参数会用过事件传递给消费者
-     */
-    public void onData(String netInfo){
-        //1.可以把ringBuffer看做一个事件队列，那么next就是得到下面一个事件槽
+public class CentralEventProducer extends ZdEventProducer<CentralEvent>{
+
+	public CentralEventProducer(RingBuffer<CentralEvent> ringBuffer) {
+		super(ringBuffer);
+	}
+
+	@Override
+	public void onData(String netInfo) {
+		 //1.可以把ringBuffer看做一个事件队列，那么next就是得到下面一个事件槽
         long sequence = ringBuffer.next();
         try {
             //2.用上面的索引取出一个空的事件用于填充（获取该序号对应的事件对象）
@@ -27,5 +24,6 @@ public class CentralEventProducer {
             // 如果某个请求的 sequence 未被提交，将会堵塞后续的发布操作或者其它的 producer。
             ringBuffer.publish(sequence);
         }
-    }
+	}
+
 }
