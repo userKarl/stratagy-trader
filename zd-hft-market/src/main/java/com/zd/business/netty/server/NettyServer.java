@@ -28,7 +28,7 @@ public class NettyServer {
 	private Channel channel;
 	
 	public ChannelFuture start(String host,int port) {
-		logger.info("下单服务器启动...");
+		logger.info("行情服务器启动...");
 		ServerBootstrap bootstrap = new ServerBootstrap();
 		bootstrap.group(bossGroup, workGroup)
 				.channel(NioServerSocketChannel.class)

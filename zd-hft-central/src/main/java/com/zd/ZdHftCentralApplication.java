@@ -29,7 +29,7 @@ public class ZdHftCentralApplication implements CommandLineRunner{
 	public void run(String... arg0) throws Exception {
 		// TODO Auto-generated method stub
 		
-		new Thread(new Runnable() {
+		Thread nettyServerThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -37,12 +37,15 @@ public class ZdHftCentralApplication implements CommandLineRunner{
 				ChannelFuture future = nettyServer.start(nettyGlobal.nettyCentralServerHost, nettyGlobal.nettyCentralServerPort);
 				future.channel().closeFuture().syncUninterruptibly();
 			}
-		}).start();
+		});
+		
+		nettyServerThread.start();
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
 				nettyServer.destroy();
+				nettyServerThread.interrupt();
 			}
 		});
 	}

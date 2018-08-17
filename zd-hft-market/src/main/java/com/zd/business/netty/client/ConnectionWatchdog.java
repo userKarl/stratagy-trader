@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
-import com.zd.common.utils.StringUtils;
+import com.zd.config.Global;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -58,6 +58,7 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 	 */
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+		Global.market01ChannelMap.put(Global.MARKET01SERVERCHANNELKEY, ctx);
 		channel = ctx.channel();
 		attempts = 0;
 		reconnect = true;
@@ -89,6 +90,7 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 	 */
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		Global.market01ChannelMap.remove(Global.MARKET01SERVERCHANNELKEY, ctx);
 		disConnect = true;
 		logger.info("Disconnects with {}, doReconnect = {},attemps == {}", ctx.channel(), reconnect, attempts);
 		if (reconnect) {
@@ -131,7 +133,6 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		try {
-			long l=System.nanoTime();
 			String s = null;
 			if (msg instanceof ByteBuf) {
 				ByteBuf bb = (ByteBuf) msg;
@@ -141,43 +142,17 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 			} else if (msg != null) {
 				s = msg.toString();
 			}
-//			logger.info("recv msg from server:{}",s);
-//			if(s.contains("start")) {
-//				Global.start=System.nanoTime();
-//			}
-//			if(s.contains("end")) {
-//				Global.end=System.nanoTime();
-//				Global.map.put(""+Global.end, "开始时间："+Global.start+", 结束时间："+Global.end+", 耗时："+(Global.end-Global.start)/1e9+"s");
-//			}
 			
-//			Global.queue.add(s);
-			
+			String data=s.substring(s.indexOf(")") + 1, s.length()-1);
 			NetInfo ni = new NetInfo();
-			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length()-1));
-
-			if (StringUtils.isNotBlank(ni.infoT) && StringUtils.isNotBlank(ni.code)
-					&& !CommandCode.HEARTBIT.equals(ni.code)) {
-//				Global.queue.add(ni.MyToString());
-				
-//				logger.info("recv msg from server:{}",s);
-				
-//				if(ni.infoT.startsWith("HKEX")) {
-//					MarketInfo mi=new MarketInfo();
-//					mi.MyReadString(ni.infoT);
-					
-					ni.systemCode=""+l;
-//					long l=System.nanoTime();
-//					ni.localSystemCode=""+l;
-//					ni.errorMsg=""+(Math.sqrt(Double.parseDouble(mi.buyPrice))*Double.valueOf(mi.buyNumber)/
-//							(Double.valueOf(mi.salePrice)+Double.valueOf(mi.saleNumber)))
-//							*Double.valueOf(mi.salePrice);
-//					
-//					logger.info("数据传输耗时：{} ms,NetInfo[{}]",(Long.valueOf(ni.localSystemCode)-Long.valueOf(ni.systemCode))/1e6,ni.MyToString());
-//				}
+			ni.MyReadString(data);
+			if(CommandCode.MARKET01.equals(ni.code)) {
+				Global.marketEventProducer.onData(data);
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("接收socket请求异常：{}", e.getMessage());
+			logger.error("接收行情数据socket请求异常：{}", e.getMessage());
 		}
 		ctx.fireChannelRead(msg);
 	}

@@ -36,7 +36,7 @@ public class ZdHftOrderApplication implements CommandLineRunner{
 		nettyClient.start(nettyGlobal.nettyCentralServerHost, nettyGlobal.nettyCentralServerPort);
 		
 		//启动下单服务器
-		new Thread(new Runnable() {
+		Thread nettyServerThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -44,8 +44,8 @@ public class ZdHftOrderApplication implements CommandLineRunner{
 				ChannelFuture future = nettyServer.start(nettyGlobal.nettyOrderServerHost, nettyGlobal.nettyOrderServerPort);
 				future.channel().closeFuture().syncUninterruptibly();
 			}
-		}).start();
-		
+		});
+		nettyServerThread.start();
 		
 		Thread.sleep(3000);
 		//启动发送交易数据线程
@@ -56,6 +56,7 @@ public class ZdHftOrderApplication implements CommandLineRunner{
 			public void run() {
 				nettyClient.stop();
 				nettyServer.destroy();
+				nettyServerThread.interrupt();
 			}
 		});
 	}
