@@ -1,0 +1,23 @@
+server:
+  port: 8001
+ 
+spring:
+  redis:
+    host: 192.168.1.218
+    port: 6379
+    database: 2 
+
+netty: 
+  central:  
+    server: 
+      host: 192.168.1.186
+      port: 7002
+  order:  
+    server: 
+      host: 192.168.1.186
+      port: 6002
+  market: 
+    server: 
+      host: 222.73.119.230
+      port: 9011  
+  

@@ -4,13 +4,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
 import com.zd.common.utils.StringUtils;
 import com.zd.config.Global;
-import com.zd.config.NettyGlobal;
-
+import com.zd.netty.ConnectionWatchdog;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -18,14 +16,11 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;
-import io.netty.util.TimerTask;
 
 @ChannelHandler.Sharable
-public abstract class CentralConnectionWatchdog extends ChannelInboundHandlerAdapter
-		implements TimerTask, CentralChannelHandlerHolder {
+public class CentralConnectionWatchdog extends ConnectionWatchdog{
 
 	private static final Logger logger = LoggerFactory.getLogger(CentralConnectionWatchdog.class);
 

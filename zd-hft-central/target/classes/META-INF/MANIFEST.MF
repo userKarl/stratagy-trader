@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: zd-hft-central
+Implementation-Version: 1.0
+Built-By: user
+Implementation-Vendor-Id: com.zd
+Build-Jdk: 1.8.0_102
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/zd-hft-central
+Created-By: Maven Integration for Eclipse
+

@@ -1,0 +1,25 @@
+server:
+  port: 9001
+
+spring:
+  redis:
+    host: 192.168.1.218
+    port: 6379
+    database: 2
+    
+#netty: 
+#  server: 
+#    host: 192.168.1.186
+#    port: 9009
+      
+netty: 
+  server: 
+    host: 222.73.119.230
+    port: 9011
+    
+#netty: 
+#  server: 
+#    host: 175.45.34.90
+#    port: 9001
+    
+
