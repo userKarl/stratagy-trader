@@ -2,6 +2,7 @@ package com.zd.config;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.shanghaizhida.beans.MarketInfo;
 import com.zd.business.engine.main.central.CentralEventProducer;
 import com.zd.business.engine.main.market.MarketEventHandler;
 import com.zd.business.engine.main.market.MarketEventProducer;
@@ -35,4 +36,10 @@ public class Global {
 	
 	//每个消费者所计算的策略数
 	public static final int TOTALSTRATAGYPERCONSUMER=20;
+	
+	/**
+	 * 存放行情数据
+	 */
+	public static ConcurrentHashMap<String, MarketInfo> contractMap = new ConcurrentHashMap<String, MarketInfo>();
+
 }

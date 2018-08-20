@@ -8,8 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 
 import com.zd.business.engine.main.market.MarketEventEngine;
 import com.zd.business.engine.main.market.MarketEventProducer;
-import com.zd.business.netty.client.NettyClient;
 import com.zd.business.netty.server.NettyServer;
+import com.zd.business.service.market.MarketDataFeed;
 import com.zd.config.Global;
 
 import io.netty.channel.ChannelFuture;
@@ -20,9 +20,6 @@ public class ZdHftMarketApplication implements CommandLineRunner{
 
 	@Autowired
 	private Global global;
-	
-	@Autowired
-	private NettyClient nettyClient;
 	
 	@Autowired
 	private NettyServer nettyServer;
@@ -38,8 +35,9 @@ public class ZdHftMarketApplication implements CommandLineRunner{
     	Global.marketEventProducer=mep;
     	
     	//连接一级行情服务器
-    	nettyClient.start(global.market01ServerHost, global.market01ServerPort);
-    	
+    	MarketDataFeed mdf = new MarketDataFeed(global.market01ServerHost, String.valueOf(global.market01ServerPort));
+		mdf.start();
+		 
     	//开启二级行情订阅服务器
     	Thread nettyServerThread=new Thread(new Runnable() {
 			
@@ -54,7 +52,7 @@ public class ZdHftMarketApplication implements CommandLineRunner{
     	Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				nettyClient.stop();
+				mdf.stop();
 				nettyServer.destroy();
 				nettyServerThread.interrupt();
 			}

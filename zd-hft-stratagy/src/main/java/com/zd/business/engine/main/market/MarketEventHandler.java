@@ -1,6 +1,7 @@
 package com.zd.business.engine.main.market;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +23,12 @@ public class MarketEventHandler extends ZdEventDynamicHandlerAbstract<MarketEven
 	// 策略容器
 	private ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap = new ConcurrentHashMap<>();
 
+	private volatile ConcurrentLinkedQueue<String> queue=new ConcurrentLinkedQueue<>();
 
 	@Override
 	public void onEvent(MarketEvent event, long sequence, boolean endOfBatch) throws Exception {
-		Global.orderEventProducer.onData(event.getNetInfo());
+		Thread.sleep(2000);
+//		Global.orderEventProducer.onData(event.getNetInfo());
 		logger.info("策略计算接收到的数据：{}",event.getNetInfo());
 //		NetInfo ni=new NetInfo();
 //		ni.code=CommandEnum.STRATAGY_STRIKE.toString();

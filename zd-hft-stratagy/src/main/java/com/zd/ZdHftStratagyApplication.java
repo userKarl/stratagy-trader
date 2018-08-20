@@ -12,12 +12,9 @@ import com.zd.business.engine.main.market.MarketEventEngine;
 import com.zd.business.engine.main.market.MarketEventProducer;
 import com.zd.business.engine.main.order.OrderEventEngine;
 import com.zd.business.engine.main.order.OrderEventProducer;
+import com.zd.business.service.market.MarketDataFeed;
 import com.zd.config.Global;
 import com.zd.config.NettyGlobal;
-import com.zd.netty.NettyClient;
-import com.zd.netty.central.CentralConnectionWatchdog;
-
-import io.netty.util.HashedWheelTimer;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.zd" })
@@ -48,34 +45,34 @@ public class ZdHftStratagyApplication implements CommandLineRunner {
 		CentralEventProducer cep = new CentralEventProducer(CentralEventEngine.getRingBuffer());
 		Global.centralEventProducer = cep;
 
-		// // 连接行情服务器
-		// marketNettyClient.start(nettyGlobal.nettyMarketServerHost,
-		// nettyGlobal.nettyMarketServerPort,
-		// new MarketEventProducer(Global.ringBuffer));
-		//
-		// 连接下单服务器
-		NettyClient orderNettyClient = new NettyClient(nettyGlobal.nettyOrderServerHost,
-				nettyGlobal.nettyOrderServerPort);
-		orderNettyClient.start();
-		CentralConnectionWatchdog orderWatchDog=new CentralConnectionWatchdog(orderNettyClient.getBootstrap(),
-				new HashedWheelTimer(), orderNettyClient.getHost(), orderNettyClient.getPort());
-		orderNettyClient.addHandler(orderWatchDog);
-		
-		
-		// 连接中控服务器
-		NettyClient centralNettyClient = new NettyClient(nettyGlobal.nettyCentralServerHost,
-				nettyGlobal.nettyCentralServerPort);
-		centralNettyClient.start();
-		CentralConnectionWatchdog centralWatchDog=new CentralConnectionWatchdog(centralNettyClient.getBootstrap(),
-				new HashedWheelTimer(), centralNettyClient.getHost(), centralNettyClient.getPort());
-		centralNettyClient.addHandler(centralWatchDog);
+		 // 连接行情服务器
+		 MarketDataFeed mdf = new MarketDataFeed(nettyGlobal.nettyMarketServerHost, String.valueOf(nettyGlobal.nettyMarketServerPort));
+		 mdf.start();
+			
+			
+//		// 连接下单服务器
+//		NettyClient orderNettyClient = new NettyClient(nettyGlobal.nettyOrderServerHost,
+//				nettyGlobal.nettyOrderServerPort);
+//		orderNettyClient.start();
+//		CentralConnectionWatchdog orderWatchDog=new CentralConnectionWatchdog(orderNettyClient.getBootstrap(),
+//				new HashedWheelTimer(), orderNettyClient.getHost(), orderNettyClient.getPort());
+//		orderNettyClient.addHandler(orderWatchDog);
+//		
+//		
+//		// 连接中控服务器
+//		NettyClient centralNettyClient = new NettyClient(nettyGlobal.nettyCentralServerHost,
+//				nettyGlobal.nettyCentralServerPort);
+//		centralNettyClient.start();
+//		CentralConnectionWatchdog centralWatchDog=new CentralConnectionWatchdog(centralNettyClient.getBootstrap(),
+//				new HashedWheelTimer(), centralNettyClient.getHost(), centralNettyClient.getPort());
+//		centralNettyClient.addHandler(centralWatchDog);
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-//				marketNettyClient.stop();
-				orderNettyClient.stop();
-				centralNettyClient.stop();
+				mdf.stop();
+//				orderNettyClient.stop();
+//				centralNettyClient.stop();
 			}
 		});
 	}
