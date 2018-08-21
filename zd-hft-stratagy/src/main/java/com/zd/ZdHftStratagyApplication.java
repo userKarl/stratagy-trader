@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import com.zd.business.engine.main.central.CentralEventEngine;
 import com.zd.business.engine.main.central.CentralEventProducer;
 import com.zd.business.engine.main.market.MarketEventEngine;
+import com.zd.business.engine.main.market.MarketEventHandler;
 import com.zd.business.engine.main.market.MarketEventProducer;
 import com.zd.business.engine.main.order.OrderEventEngine;
 import com.zd.business.engine.main.order.OrderEventProducer;
@@ -31,7 +32,8 @@ public class ZdHftStratagyApplication implements CommandLineRunner {
 	public void run(String... arg0) throws Exception {
 
 		// 开启行情的Disruptor队列
-		MarketEventEngine.addHandler();
+		MarketEventHandler marketEventHandler = MarketEventEngine.addHandler();
+		Global.eventConcurrentHashMap.put(marketEventHandler.getId(), marketEventHandler);
 		MarketEventProducer mep = new MarketEventProducer(MarketEventEngine.getRingBuffer());
 		Global.marketEventProducer = mep;
 

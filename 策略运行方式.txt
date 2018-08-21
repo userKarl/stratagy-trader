@@ -1,0 +1,134 @@
+第一种方式：
+（1）当用户新开始一个策略时，先判断是否有可用消费者，如果有，则将该策略添加至任意的一个消费者中；
+（2）如果没有可用消费者，则判断是否可以创建新的消费者；
+（3）如果可以创建，则创建一个新的消费者，并将该策略添加至该新建的消费者中
+
+//--------开始新策略begin---------
+if(CommandEnum.STRATAGY_START.toString().equals(ni.code)) {
+	/**
+	 * 开始新策略
+	 */
+	//判断当前是否有可用的消费者
+	if(Global.availableEventConcurrentHashMap.size()>0) {
+		for(Entry<String,MarketEventHandler> entry:Global.availableEventConcurrentHashMap.entrySet()) {
+			String consumerKey=entry.getKey();
+			MarketEventHandler consumer=entry.getValue();
+			ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap=consumer.getStratagyConcurrentHashMap();
+			stratagyConcurrentHashMap.put(stratagy.getId(), stratagy);
+			if(stratagyConcurrentHashMap.size()>=Global.TOTALSTRATAGYPERCONSUMER) {
+				//当策略数大于等于预设值时，将该消费者从可用消费者集合中移除
+				Global.availableEventConcurrentHashMap.remove(consumerKey,consumer);
+			}
+			resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.STRATAGY_START,MessageConst.STRATAGYSTART);
+//						NettyGlobal.returnData2CentralQueue.add();
+			break;
+		}
+	}else {
+		//如果没有可用消费者，判断总的消费者个数是否超过预设值
+		if(Global.eventConcurrentHashMap.size()<Global.TOTALCONSUMER) {
+			MarketEventHandler marketEventHandler = MarketEventEngine.addHandler();
+			Global.eventConcurrentHashMap.put(marketEventHandler.getId(), marketEventHandler);
+		//将策略添加至消费者中的策略集合
+		marketEventHandler.getStratagyConcurrentHashMap().put(stratagy.getId(), stratagy);
+		//将该消费者添加至可用消费者集合
+		Global.availableEventConcurrentHashMap.put(marketEventHandler.getId(), marketEventHandler);
+		//创建该策略与消费者的映射关系
+		Global.allEventConcurrentHashMap.put(stratagy.getId(), marketEventHandler);
+		resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.STRATAGY_START,MessageConst.STRATAGYSTART);
+//				    	NettyGlobal.returnData2CentralQueue.add();
+		}else {
+			//如果消费者个数大于等于预设值，则提示“运行策略过载”
+			resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.SYSTEMEXCEPTION,MessageConst.CONSUMERFULL);
+//						NettyGlobal.returnData2CentralQueue.add();
+		}
+	}
+}
+//--------开始新策略end---------
+
+
+//--------暂停策略begin---------
+else if(CommandEnum.STRATAGY_PAUSE.toString().equals(ni.code)) {
+	String stratagyId=ni.infoT;
+	MarketEventHandler marketEventHandler = Global.allEventConcurrentHashMap.get(stratagyId);
+	if(marketEventHandler!=null) {
+		ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap = marketEventHandler.getStratagyConcurrentHashMap();
+		Stratagy stratagy2 = stratagyConcurrentHashMap.get(stratagyId);
+		if(stratagy2!=null) {
+			stratagy2.setStatus(StratagyStatusEnum.PAUSE.toString());
+			resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.STRATAGY_PAUSE,MessageConst.STRATAGYPAUSE);
+//						NettyGlobal.returnData2CentralQueue.add();
+		}else {
+			//提示策略不存在
+			resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.SYSTEMEXCEPTION,MessageConst.STRATAGYNOTEXIST);
+//						NettyGlobal.returnData2CentralQueue.add();
+		}
+	}
+}
+//--------暂停策略end---------
+
+
+//--------停止策略begin---------
+else if(CommandEnum.STRATAGY_STOP.toString().equals(ni.code)) {
+	String stratagyId=ni.infoT;
+	MarketEventHandler marketEventHandler = Global.allEventConcurrentHashMap.get(stratagyId);
+	if(marketEventHandler!=null) {
+		ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap = marketEventHandler.getStratagyConcurrentHashMap();
+		Stratagy stratagy2 = stratagyConcurrentHashMap.get(stratagyId);
+		if(stratagy2!=null) {
+			stratagy2.setStatus(StratagyStatusEnum.STOP.toString());
+			//将该策略从策略集合中移除
+			stratagyConcurrentHashMap.remove(stratagyId,stratagy2);
+			//如果该消费者不在可用消费者集合中，添加至可用消费者集合
+			if(Global.availableEventConcurrentHashMap.get(marketEventHandler.getId())==null) {
+				Global.availableEventConcurrentHashMap.put(marketEventHandler.getId(),marketEventHandler);
+			}
+			resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.STRATAGY_STOP,MessageConst.STRATAGYSTOP);
+//						NettyGlobal.returnData2CentralQueue.add();
+		}else {
+			//提示策略不存在
+			resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.SYSTEMEXCEPTION,MessageConst.STRATAGYNOTEXIST);
+//						NettyGlobal.returnData2CentralQueue.add();
+		}
+	}
+	//--------停止策略end---------
+
+
+第二种方式：
+（1）当用户新开始一个策略时，先判断是否可以创建新的消费者，如果可以，则新建一个消费者并添加该策略
+（2）如果不可以创建新的消费者，则判断是否有可用的消费者
+
+//--------开始新策略begin---------
+if(CommandEnum.STRATAGY_START.toString().equals(ni.code)) {
+	//判断是否可以创建新的消费者
+	if(Global.eventConcurrentHashMap.size()<Global.TOTALCONSUMER) {
+		MarketEventHandler marketEventHandler = MarketEventEngine.addHandler();
+		Global.eventConcurrentHashMap.put(marketEventHandler.getId(), marketEventHandler);
+	//将策略添加至消费者中的策略集合
+	marketEventHandler.getStratagyConcurrentHashMap().put(stratagy.getId(), stratagy);
+	//将该消费者添加至可用消费者集合
+	Global.availableEventConcurrentHashMap.put(marketEventHandler.getId(), marketEventHandler);
+	//创建该策略与消费者的映射关系
+	Global.allEventConcurrentHashMap.put(stratagy.getId(), marketEventHandler);
+	resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.STRATAGY_START,MessageConst.STRATAGYSTART);
+	}else {
+		//如果不可以创建新的消费者，则判断是否有可用消费者
+		if(Global.availableEventConcurrentHashMap.size()>0) {
+			for(Entry<String,MarketEventHandler> entry:Global.availableEventConcurrentHashMap.entrySet()) {
+				String consumerKey=entry.getKey();
+				MarketEventHandler consumer=entry.getValue();
+				ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap=consumer.getStratagyConcurrentHashMap();
+				stratagyConcurrentHashMap.put(stratagy.getId(), stratagy);
+				if(stratagyConcurrentHashMap.size()>=Global.TOTALSTRATAGYPERCONSUMER) {
+					//当策略数大于等于预设值时，将该消费者从可用消费者集合中移除
+					Global.availableEventConcurrentHashMap.remove(consumerKey,consumer);
+				}
+				resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.STRATAGY_START,MessageConst.STRATAGYSTART);
+				break;
+			}
+		}else {
+			//如果没有可用消费者，则提示“策略过载”
+			resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.SYSTEMEXCEPTION,MessageConst.CONSUMERFULL);
+		}
+	}
+}
+//--------开始新策略end---------

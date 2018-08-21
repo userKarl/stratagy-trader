@@ -28,6 +28,9 @@ public class Global {
 	//策略ID----消费者
 	public static ConcurrentHashMap<String,MarketEventHandler> allEventConcurrentHashMap=new ConcurrentHashMap<>();
 	
+	//总的消费者
+	public static ConcurrentHashMap<String,MarketEventHandler> eventConcurrentHashMap=new ConcurrentHashMap<>();
+	
 	//可用消费者
 	public static ConcurrentHashMap<String,MarketEventHandler> availableEventConcurrentHashMap=new ConcurrentHashMap<>();
 	

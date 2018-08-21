@@ -27,8 +27,10 @@ public class MarketEventEngine {
 		engine.init();
 	}
 	
-	public static void addHandler() {
-		engine.addHandler(new MarketEventHandler(UUID.randomUUID().toString()));
+	public static MarketEventHandler addHandler() {
+		MarketEventHandler handler=new MarketEventHandler(UUID.randomUUID().toString());
+		engine.addHandler(handler);
+		return handler;
 	}
 	
 	public static void removeHandler(MarketEventHandler handler) {
