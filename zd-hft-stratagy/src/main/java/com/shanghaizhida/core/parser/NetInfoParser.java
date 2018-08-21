@@ -21,7 +21,7 @@ public class NetInfoParser implements Parser {
 	public static final int LEN_PAKCKET_SIZE = 4;
 
 	public NetInfoParser() {
-		initSize = 1024 * 8;
+		initSize = 1024 * 32;
 		buffer_ = new byte[initSize];
 	}
 

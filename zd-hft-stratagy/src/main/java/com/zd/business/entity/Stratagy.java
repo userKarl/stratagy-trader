@@ -8,9 +8,11 @@ import lombok.Data;
 @Data
 public class Stratagy {
 
-	private String id;
-	private String name;
-	private String status;
+	private String id;			//策略ID
+	private String name;		//策略名称
+	private String status;		//策略状态
+	private String type;		//策略类型（M市商，A套利）
+	private String expression;	//套利公式
 	
 	public void MyReadString(String temp) {
 		if(StringUtils.isNotBlank(temp)) {
