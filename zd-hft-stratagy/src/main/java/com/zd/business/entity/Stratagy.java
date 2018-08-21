@@ -21,6 +21,7 @@ public class Stratagy {
 	private String expression;			//套利公式
 	private Contract marketContract;	//被动腿合约
 	private Contract activeContract;	//主动腿合约
+	private MarketProvider mp;			//做市商
 	
 	public void MyReadString(String temp) {
 		if(StringUtils.isNotBlank(temp)) {

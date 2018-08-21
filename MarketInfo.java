@@ -50,7 +50,7 @@ public class MarketInfo implements NetParent, Serializable {
 	public String oldClose = "";
 
 	// 当天结算价
-	// public String close = "";
+	//public String close = "";
 
 	// 行情时间
 	public String time = "";
@@ -134,7 +134,7 @@ public class MarketInfo implements NetParent, Serializable {
 	public String hideSaleNumber = "";
 
 	// 行情区分
-	// public String type = "";
+	//public String type = "";
 
 	// 跌停价
 	public String limitDownPrice = "";
@@ -143,10 +143,10 @@ public class MarketInfo implements NetParent, Serializable {
 	public String limitUpPrice = "";
 
 	// 交易日
-	// public String tradeDay = "";
+	//public String tradeDay = "";
 
 	// ----------港股差异字段
-	// 港股按盘价 对应期货的hideBuyPrice
+	// 港股按盘价     对应期货的hideBuyPrice
 	public String nominalPrice = "";
 
 	// 港股成交数据的flag
@@ -178,28 +178,23 @@ public class MarketInfo implements NetParent, Serializable {
 
 	// Add by chen on 20161208-----begin
 	// 港交所股票行情 成交类型
-	// public String tradeFlag = "";
+	//public String tradeFlag = "";
 
 	// 交易所数据时间戳
-	// public String dataTimestamp = "";
+	//public String dataTimestamp = "";
 
 	// 数据来源 考虑到不同交易所可能有不同数据时间戳格式，可以用该字段确定数据来源
-	// public String dataSourceId = "";
+	//public String dataSourceId = "";
 
 	// 可卖空股数（美股行情用 mantis6868）
-	// public String canSellVol = "";
+	//public String canSellVol = "";
 	// Add by chen on 20161208-----end
 
 	@Override
 	public String MyToString() {
-		return this.exchangeCode + "@" + this.code + "@" + this.buyPrice + "@" + this.buyNumber + "@" + this.salePrice
-				+ "@" + this.saleNumber + "@" + this.currPrice + "@" + this.currNumber + "@" + this.high + "@"
-				+ this.low + "@" + this.open + "@" + this.oldClose + "@@" + this.time + "@" + this.filledNum + "@"
-				+ this.holdNum + "@" + this.buyPrice2 + "@" + this.buyPrice3 + "@" + this.buyPrice4 + "@"
-				+ this.buyPrice5 + "@" + this.buyNumber2 + "@" + this.buyNumber3 + "@" + this.buyNumber4 + "@"
-				+ this.buyNumber5 + "@" + this.salePrice2 + "@" + this.salePrice3 + "@" + this.salePrice4 + "@"
-				+ this.salePrice5 + "@" + this.saleNumber2 + "@" + this.saleNumber3 + "@" + this.saleNumber4 + "@"
-				+ this.saleNumber5 + "@@@@@@@@@@@";
+		return this.exchangeCode+"@"+this.code+"@"+this.buyPrice+"@"+this.buyNumber+"@"+this.salePrice+"@"+this.saleNumber
+				+"@"+this.currPrice+"@"+this.currNumber+"@"+this.high+"@"+this.low+"@"+this.open+"@"+this.oldClose
+				+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
 	}
 
 	private int hideBidPrxLvl;
@@ -274,177 +269,193 @@ public class MarketInfo implements NetParent, Serializable {
 	@Override
 	public void MyReadString(String temp) {
 
-		char lastChar = temp.charAt(temp.length() - 1);
-		temp = temp.substring(temp.indexOf("&") + 1, temp.length());
-		String[] strArr = temp.split("@",-1);
-		if (lastChar == 'Y') {
-			this.exchangeCode = strArr[0].trim();
-			this.code = strArr[1].trim();
-			this.currPrice = strArr[2].trim();
-			this.currNumber = strArr[3].trim();
-			this.filledNum = strArr[4].trim();
-			this.time = strArr[5].trim();
-			this.type = "Y";
-			/*
-			 * // Add by chen on 20161208 if(strArr.length >= 10){ this.tradeFlag =
-			 * strArr[6]; this.dataTimestamp = strArr[7]; this.dataSourceId = strArr[8]; //
-			 * add by 龙任刚 on 20170621 mantis6868 if (strArr.length > 10) { this.canSellVol =
-			 * strArr[9]; } }
-			 */
+		try {
+			char lastChar = temp.charAt(temp.length() - 1);
+			temp = temp.substring(temp.indexOf("&") + 1, temp.length());
+			String[] strArr = temp.split("@",-1);
+			if (lastChar == 'Y') {
+				this.exchangeCode = strArr[0].trim();
+				this.code = strArr[1].trim();
+				this.currPrice = strArr[2].trim();
+				this.currNumber = strArr[3].trim();
+				this.filledNum = strArr[4].trim();
+				this.time = strArr[5].trim();
+				this.type = "Y";
+	/*
+				// Add by chen on 20161208
+				if(strArr.length >= 10){
+					this.tradeFlag = strArr[6];
+					this.dataTimestamp = strArr[7];
+					this.dataSourceId = strArr[8];
+					// add by 龙任刚 on 20170621 mantis6868
+					if (strArr.length > 10) {
+						this.canSellVol = strArr[9];
+					}
+				}
+	*/
+			}
+			// Bid book
+			else if (lastChar == 'B') {
+				this.exchangeCode = strArr[0].trim();
+				this.code = strArr[1].trim();
+				this.buyPrice = strArr[2].trim();
+				this.buyNumber = strArr[3].trim();
+				this.buyPrice2 = strArr[4].trim();
+				this.buyNumber2 = strArr[5].trim();
+				this.buyPrice3 = strArr[6].trim();
+				this.buyNumber3 = strArr[7].trim();
+				this.buyPrice4 = strArr[8].trim();
+				this.buyNumber4 = strArr[9].trim();
+				this.buyPrice5 = strArr[10].trim();
+				this.buyNumber5 = strArr[11].trim();
+				this.hideBuyPrice = strArr[12].trim();
+				this.hideBuyNumber = strArr[13].trim();
+				this.type = strArr[14].trim();
+			}
+			// Offer book
+			else if (lastChar == 'O') {
+				this.exchangeCode = strArr[0].trim();
+				this.code = strArr[1].trim();
+				this.salePrice = strArr[2].trim();
+				this.saleNumber = strArr[3].trim();
+				this.salePrice2 = strArr[4].trim();
+				this.saleNumber2 = strArr[5].trim();
+				this.salePrice3 = strArr[6].trim();
+				this.saleNumber3 = strArr[7].trim();
+				this.salePrice4 = strArr[8].trim();
+				this.saleNumber4 = strArr[9].trim();
+				this.salePrice5 = strArr[10].trim();
+				this.saleNumber5 = strArr[11].trim();
+				this.hideSalePrice = strArr[12].trim();
+				this.hideSaleNumber = strArr[13].trim();
+				this.type = strArr[14].trim();
+			} else if (lastChar == 'M') { // Add by chen on 20161208
+				this.exchangeCode = strArr[0].trim();
+				this.code = strArr[1].trim();
+				this.limitUpPrice = strArr[2].trim();
+				this.limitDownPrice = strArr[3].trim();
+				this.type = strArr[4].trim();
+			} else {
+				String[] arrClass = temp.split("@",-1);
+				this.exchangeCode = arrClass[0];
+				this.code = arrClass[1].trim();
+				this.buyPrice = arrClass[2].trim();
+				this.buyNumber = arrClass[3].trim();
+				this.salePrice = arrClass[4].trim();
+				this.saleNumber = arrClass[5].trim();
+				this.currPrice = arrClass[6].trim();
+				this.currNumber = arrClass[7].trim();
+				this.high = arrClass[8].trim();
+				this.low = arrClass[9].trim();
+				this.open = arrClass[10].trim();
+				this.oldClose = arrClass[11].trim();
+				//this.close = arrClass[12].trim();
+
+				String[] otherPrx = arrClass[12].split(",",-1);
+				int idx = 1;
+				if (otherPrx.length > 20) {
+					//this.close = otherPrx[0];
+					buyPrice6 = otherPrx[idx++];
+					buyNumber6 = otherPrx[idx++];
+					salePrice6 = otherPrx[idx++];
+					saleNumber6 = otherPrx[idx++];
+
+					buyPrice7 = otherPrx[idx++];
+					buyNumber7 = otherPrx[idx++];
+					salePrice7 = otherPrx[idx++];
+					saleNumber7 = otherPrx[idx++];
+
+					buyPrice8 = otherPrx[idx++];
+					buyNumber8 = otherPrx[idx++];
+					salePrice8 = otherPrx[idx++];
+					saleNumber8 = otherPrx[idx++];
+
+					buyPrice9 = otherPrx[idx++];
+					buyNumber9 = otherPrx[idx++];
+					salePrice9 = otherPrx[idx++];
+					saleNumber9 = otherPrx[idx++];
+
+					buyPrice10 = otherPrx[idx++];
+					buyNumber10 = otherPrx[idx++];
+					salePrice10 = otherPrx[idx++];
+					saleNumber10 = otherPrx[idx++];
+				}
+
+				this.time = arrClass[13].trim();
+				this.filledNum = arrClass[14].trim();
+				this.holdNum = arrClass[15].trim();
+				this.buyPrice2 = arrClass[16].trim();
+				this.buyPrice3 = arrClass[17].trim();
+				this.buyPrice4 = arrClass[18].trim();
+				this.buyPrice5 = arrClass[19].trim();
+				this.buyNumber2 = arrClass[20].trim();
+				this.buyNumber3 = arrClass[21].trim();
+				this.buyNumber4 = arrClass[22].trim();
+				this.buyNumber5 = arrClass[23].trim();
+				this.salePrice2 = arrClass[24].trim();
+				this.salePrice3 = arrClass[25].trim();
+				this.salePrice4 = arrClass[26].trim();
+				this.salePrice5 = arrClass[27].trim();
+				this.saleNumber2 = arrClass[28].trim();
+				this.saleNumber3 = arrClass[29].trim();
+				this.saleNumber4 = arrClass[30].trim();
+				this.saleNumber5 = arrClass[31].trim();
+
+				// 行情变化区分 20120830 add by dingting end
+				// 20120925 add by dragon start
+				if (arrClass.length > 32) {
+					this.hideBuyPrice = arrClass[32].trim();
+					// 港股按盘价
+					this.nominalPrice = arrClass[32].trim();
+				}
+				if (arrClass.length > 33) {
+					this.hideBuyNumber = arrClass[33].trim();
+				}
+				if (arrClass.length > 34) {
+					this.hideSalePrice = arrClass[34].trim();
+					// 股票停牌flag
+					this.stockSuspensionFlag = arrClass[34].trim();
+				}
+				if (arrClass.length > 35) {
+					this.hideSaleNumber = arrClass[35].trim();
+				}
+				// 20120925 add by dragon end
+
+				// 港股成交数据的flag
+				if (arrClass.length > 36) {
+					this.HKDealFlag = arrClass[36].trim();
+				}
+				// 数据源（55 美股，50 港股，60 韩股，1 10 15 20 期货）
+				if (arrClass.length > 38) {
+					this.dataSource = arrClass[38].trim();
+				}
+				// 昨收盘价
+				if (arrClass.length > 40) {
+					this.oldClose = arrClass[40].trim();
+				}
+
+				// 行情变化区分 20120830 add by dingting start
+				/*if (arrClass.length > 36) {
+					this.type = arrClass[36].trim();
+				}*/
+				// add by chen on 20161208
+				this.type = String.valueOf(lastChar);
+	/*
+				if (arrClass.length >= 40) {
+					this.tradeFlag = arrClass[36];
+					this.dataTimestamp = arrClass[37];
+					this.dataSourceId = arrClass[38];
+					// add by 龙任刚 on 20170621 mantis6868
+					if (arrClass.length > 40) {
+						this.canSellVol = arrClass[39];
+					}
+				}
+	*/
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
-		// Bid book
-		else if (lastChar == 'B') {
-			this.exchangeCode = strArr[0].trim();
-			this.code = strArr[1].trim();
-			this.buyPrice = strArr[2].trim();
-			this.buyNumber = strArr[3].trim();
-			this.buyPrice2 = strArr[4].trim();
-			this.buyNumber2 = strArr[5].trim();
-			this.buyPrice3 = strArr[6].trim();
-			this.buyNumber3 = strArr[7].trim();
-			this.buyPrice4 = strArr[8].trim();
-			this.buyNumber4 = strArr[9].trim();
-			this.buyPrice5 = strArr[10].trim();
-			this.buyNumber5 = strArr[11].trim();
-			this.hideBuyPrice = strArr[12].trim();
-			this.hideBuyNumber = strArr[13].trim();
-			this.type = strArr[14].trim();
-		}
-		// Offer book
-		else if (lastChar == 'O') {
-			this.exchangeCode = strArr[0].trim();
-			this.code = strArr[1].trim();
-			this.salePrice = strArr[2].trim();
-			this.saleNumber = strArr[3].trim();
-			this.salePrice2 = strArr[4].trim();
-			this.saleNumber2 = strArr[5].trim();
-			this.salePrice3 = strArr[6].trim();
-			this.saleNumber3 = strArr[7].trim();
-			this.salePrice4 = strArr[8].trim();
-			this.saleNumber4 = strArr[9].trim();
-			this.salePrice5 = strArr[10].trim();
-			this.saleNumber5 = strArr[11].trim();
-			this.hideSalePrice = strArr[12].trim();
-			this.hideSaleNumber = strArr[13].trim();
-			this.type = strArr[14].trim();
-		} else if (lastChar == 'M') { // Add by chen on 20161208
-			this.exchangeCode = strArr[0].trim();
-			this.code = strArr[1].trim();
-			this.limitUpPrice = strArr[2].trim();
-			this.limitDownPrice = strArr[3].trim();
-			this.type = strArr[4].trim();
-		} else {
-			String[] arrClass = temp.split("@");
-			this.exchangeCode = arrClass[0];
-			this.code = arrClass[1].trim();
-			this.buyPrice = arrClass[2].trim();
-			this.buyNumber = arrClass[3].trim();
-			this.salePrice = arrClass[4].trim();
-			this.saleNumber = arrClass[5].trim();
-			this.currPrice = arrClass[6].trim();
-			this.currNumber = arrClass[7].trim();
-			this.high = arrClass[8].trim();
-			this.low = arrClass[9].trim();
-			this.open = arrClass[10].trim();
-			this.oldClose = arrClass[11].trim();
-			// this.close = arrClass[12].trim();
-
-			String[] otherPrx = arrClass[12].split(",");
-			int idx = 1;
-			if (otherPrx.length > 20) {
-				// this.close = otherPrx[0];
-				buyPrice6 = otherPrx[idx++];
-				buyNumber6 = otherPrx[idx++];
-				salePrice6 = otherPrx[idx++];
-				saleNumber6 = otherPrx[idx++];
-
-				buyPrice7 = otherPrx[idx++];
-				buyNumber7 = otherPrx[idx++];
-				salePrice7 = otherPrx[idx++];
-				saleNumber7 = otherPrx[idx++];
-
-				buyPrice8 = otherPrx[idx++];
-				buyNumber8 = otherPrx[idx++];
-				salePrice8 = otherPrx[idx++];
-				saleNumber8 = otherPrx[idx++];
-
-				buyPrice9 = otherPrx[idx++];
-				buyNumber9 = otherPrx[idx++];
-				salePrice9 = otherPrx[idx++];
-				saleNumber9 = otherPrx[idx++];
-
-				buyPrice10 = otherPrx[idx++];
-				buyNumber10 = otherPrx[idx++];
-				salePrice10 = otherPrx[idx++];
-				saleNumber10 = otherPrx[idx++];
-			}
-
-			this.time = arrClass[13].trim();
-			this.filledNum = arrClass[14].trim();
-			this.holdNum = arrClass[15].trim();
-			this.buyPrice2 = arrClass[16].trim();
-			this.buyPrice3 = arrClass[17].trim();
-			this.buyPrice4 = arrClass[18].trim();
-			this.buyPrice5 = arrClass[19].trim();
-			this.buyNumber2 = arrClass[20].trim();
-			this.buyNumber3 = arrClass[21].trim();
-			this.buyNumber4 = arrClass[22].trim();
-			this.buyNumber5 = arrClass[23].trim();
-			this.salePrice2 = arrClass[24].trim();
-			this.salePrice3 = arrClass[25].trim();
-			this.salePrice4 = arrClass[26].trim();
-			this.salePrice5 = arrClass[27].trim();
-			this.saleNumber2 = arrClass[28].trim();
-			this.saleNumber3 = arrClass[29].trim();
-			this.saleNumber4 = arrClass[30].trim();
-			this.saleNumber5 = arrClass[31].trim();
-
-			// 行情变化区分 20120830 add by dingting end
-			// 20120925 add by dragon start
-			if (arrClass.length > 32) {
-				this.hideBuyPrice = arrClass[32].trim();
-				// 港股按盘价
-				this.nominalPrice = arrClass[32].trim();
-			}
-			if (arrClass.length > 33) {
-				this.hideBuyNumber = arrClass[33].trim();
-			}
-			if (arrClass.length > 34) {
-				this.hideSalePrice = arrClass[34].trim();
-				// 股票停牌flag
-				this.stockSuspensionFlag = arrClass[34].trim();
-			}
-			if (arrClass.length > 35) {
-				this.hideSaleNumber = arrClass[35].trim();
-			}
-			// 20120925 add by dragon end
-
-			// 港股成交数据的flag
-			if (arrClass.length > 36) {
-				this.HKDealFlag = arrClass[36].trim();
-			}
-			// 数据源（55 美股，50 港股，60 韩股，1 10 15 20 期货）
-			if (arrClass.length > 38) {
-				this.dataSource = arrClass[38].trim();
-			}
-			// 昨收盘价
-			if (arrClass.length > 40) {
-				this.oldClose = arrClass[40].trim();
-			}
-
-			// 行情变化区分 20120830 add by dingting start
-			/*
-			 * if (arrClass.length > 36) { this.type = arrClass[36].trim(); }
-			 */
-			// add by chen on 20161208
-			this.type = String.valueOf(lastChar);
-			/*
-			 * if (arrClass.length >= 40) { this.tradeFlag = arrClass[36];
-			 * this.dataTimestamp = arrClass[37]; this.dataSourceId = arrClass[38]; // add
-			 * by 龙任刚 on 20170621 mantis6868 if (arrClass.length > 40) { this.canSellVol =
-			 * arrClass[39]; } }
-			 */
-		}
+		
 
 	}
 
@@ -498,7 +509,7 @@ public class MarketInfo implements NetParent, Serializable {
 		}
 	}
 
-	/** 如果有隐藏买价的话，做处理 */
+	/**如果有隐藏买价的话，做处理*/
 	public void mergeHideBidPrice(MarketInfo obj, String prefix) {
 		obj.hideBidPrxLvl = -1;
 		obj.hideBidVolLvl = -1;
@@ -705,7 +716,7 @@ public class MarketInfo implements NetParent, Serializable {
 		}
 	}
 
-	/** 对隐藏卖价做处理 */
+	/**对隐藏卖价做处理*/
 	public void mergeHideOfferPrice(MarketInfo obj, String prefix) {
 		obj.hideOfferPrxLvl = -1;
 		obj.hideOfferVolLvl = -1;
@@ -762,7 +773,8 @@ public class MarketInfo implements NetParent, Serializable {
 					obj.salePrice = salePrice;
 					// ...
 				}
-			} else if ((offerHidePrx < offerPrx1 && offerHidePrx > offerPrx0) || IntTryParse(saleNumber2) == 0) {
+			} else if ((offerHidePrx < offerPrx1 && offerHidePrx > offerPrx0)
+					|| IntTryParse(saleNumber2) == 0) {
 				obj.hideOfferPrxLvl = 1;
 				obj.hideOfferVolLvl = 1;
 
@@ -783,7 +795,8 @@ public class MarketInfo implements NetParent, Serializable {
 
 			} else if (offerHidePrx == offerPrx1) {
 				obj.hideOfferVolLvl = 1;
-				obj.saleNumber2 = (IntTryParse(saleNumber2) + offerHideVol) + "";
+				obj.saleNumber2 = (IntTryParse(saleNumber2) + offerHideVol)
+						+ "";
 
 				obj.saleNumber2 = prefix + saleNumber2;
 
@@ -799,7 +812,8 @@ public class MarketInfo implements NetParent, Serializable {
 					obj.salePrice = salePrice;
 					obj.saleNumber = saleNumber;
 				}
-			} else if ((offerHidePrx < offerPrx2 && offerHidePrx > offerPrx1) || IntTryParse(saleNumber3) == 0) {
+			} else if ((offerHidePrx < offerPrx2 && offerHidePrx > offerPrx1)
+					|| IntTryParse(saleNumber3) == 0) {
 				obj.hideOfferPrxLvl = 2;
 				obj.hideOfferVolLvl = 2;
 
@@ -820,7 +834,8 @@ public class MarketInfo implements NetParent, Serializable {
 
 			} else if (offerHidePrx == offerPrx2) {
 				obj.hideOfferVolLvl = 2;
-				obj.saleNumber3 = (IntTryParse(saleNumber3) + offerHideVol) + "";
+				obj.saleNumber3 = (IntTryParse(saleNumber3) + offerHideVol)
+						+ "";
 				obj.saleNumber3 = prefix + saleNumber3;
 
 				if (obj != this) {
@@ -835,7 +850,8 @@ public class MarketInfo implements NetParent, Serializable {
 					obj.salePrice = salePrice;
 					obj.saleNumber = saleNumber;
 				}
-			} else if ((offerHidePrx < offerPrx3 && offerHidePrx > offerPrx2) || IntTryParse(saleNumber4) == 0) {
+			} else if ((offerHidePrx < offerPrx3 && offerHidePrx > offerPrx2)
+					|| IntTryParse(saleNumber4) == 0) {
 				obj.hideOfferPrxLvl = 3;
 				obj.hideOfferVolLvl = 3;
 
@@ -855,7 +871,8 @@ public class MarketInfo implements NetParent, Serializable {
 				}
 			} else if (offerHidePrx == offerPrx3) {
 				obj.hideOfferVolLvl = 3;
-				obj.saleNumber4 = (IntTryParse(saleNumber4) + offerHideVol) + "";
+				obj.saleNumber4 = (IntTryParse(saleNumber4) + offerHideVol)
+						+ "";
 				obj.saleNumber4 = prefix + saleNumber4;
 
 				if (obj != this) {
@@ -870,7 +887,8 @@ public class MarketInfo implements NetParent, Serializable {
 					obj.salePrice = salePrice;
 					obj.saleNumber = saleNumber;
 				}
-			} else if ((offerHidePrx < offerPrx4 && offerHidePrx > offerPrx3) || IntTryParse(saleNumber5) == 0) {
+			} else if ((offerHidePrx < offerPrx4 && offerHidePrx > offerPrx3)
+					|| IntTryParse(saleNumber5) == 0) {
 				obj.hideOfferPrxLvl = 4;
 				obj.hideOfferVolLvl = 4;
 
@@ -890,7 +908,8 @@ public class MarketInfo implements NetParent, Serializable {
 
 			} else if (offerHidePrx == offerPrx4) {
 				obj.hideOfferVolLvl = 4;
-				obj.saleNumber5 = (IntTryParse(saleNumber5) + offerHideVol) + "";
+				obj.saleNumber5 = (IntTryParse(saleNumber5) + offerHideVol)
+						+ "";
 				obj.saleNumber5 = prefix + saleNumber5;
 
 				if (obj != this) {
@@ -924,26 +943,53 @@ public class MarketInfo implements NetParent, Serializable {
 
 	@Override
 	public String toString() {
-		return "MarketInfo{" + "exchangeCode='" + exchangeCode + '\'' + ", code='" + code + '\'' + ", buyPrice='"
-				+ buyPrice + '\'' + ", buyNumber='" + buyNumber + '\'' + ", salePrice='" + salePrice + '\''
-				+ ", saleNumber='" + saleNumber + '\'' + ", currPrice='" + currPrice + '\'' + ", currNumber='"
-				+ currNumber + '\'' + ", high='" + high + '\'' + ", low='" + low + '\'' + ", open='" + open + '\''
-				+ ", oldClose='" + oldClose + '\'' +
-				// ", close='" + close + '\'' +
-				", time='" + time + '\'' + ", filledNum='" + filledNum + '\'' + ", holdNum='" + holdNum + '\''
-				+ ", buyPrice2='" + buyPrice2 + '\'' + ", buyPrice3='" + buyPrice3 + '\'' + ", buyPrice4='" + buyPrice4
-				+ '\'' + ", buyPrice5='" + buyPrice5 + '\'' + ", buyNumber2='" + buyNumber2 + '\'' + ", buyNumber3='"
-				+ buyNumber3 + '\'' + ", buyNumber4='" + buyNumber4 + '\'' + ", buyNumber5='" + buyNumber5 + '\''
-				+ ", salePrice2='" + salePrice2 + '\'' + ", salePrice3='" + salePrice3 + '\'' + ", salePrice4='"
-				+ salePrice4 + '\'' + ", salePrice5='" + salePrice5 + '\'' + ", saleNumber2='" + saleNumber2 + '\''
-				+ ", saleNumber3='" + saleNumber3 + '\'' + ", saleNumber4='" + saleNumber4 + '\'' + ", saleNumber5='"
-				+ saleNumber5 + '\'' + ", hideBuyPrice='" + hideBuyPrice + '\'' + ", hideBuyNumber='" + hideBuyNumber
-				+ '\'' + ", hideSalePrice='" + hideSalePrice + '\'' + ", hideSaleNumber='" + hideSaleNumber + '\''
-				+ ", type='" + type + '\'' +
-				// ", tradeFlag='" + tradeFlag + '\'' +
-				// ", dataTimestamp='" + dataTimestamp + '\'' +
-				", dataSource='" + dataSource + '\'' + ", limitUpPrice='" + limitUpPrice + '\'' + ", limitDownPrice='"
-				+ limitDownPrice + '\'' + ", hideBidPrxLvl=" + hideBidPrxLvl + ", hideBidVolLvl=" + hideBidVolLvl
-				+ ", hideOfferPrxLvl=" + hideOfferPrxLvl + ", hideOfferVolLvl=" + hideOfferVolLvl + '}';
+		return "MarketInfo{" +
+				"exchangeCode='" + exchangeCode + '\'' +
+				", code='" + code + '\'' +
+				", buyPrice='" + buyPrice + '\'' +
+				", buyNumber='" + buyNumber + '\'' +
+				", salePrice='" + salePrice + '\'' +
+				", saleNumber='" + saleNumber + '\'' +
+				", currPrice='" + currPrice + '\'' +
+				", currNumber='" + currNumber + '\'' +
+				", high='" + high + '\'' +
+				", low='" + low + '\'' +
+				", open='" + open + '\'' +
+				", oldClose='" + oldClose + '\'' +
+//				", close='" + close + '\'' +
+				", time='" + time + '\'' +
+				", filledNum='" + filledNum + '\'' +
+				", holdNum='" + holdNum + '\'' +
+				", buyPrice2='" + buyPrice2 + '\'' +
+				", buyPrice3='" + buyPrice3 + '\'' +
+				", buyPrice4='" + buyPrice4 + '\'' +
+				", buyPrice5='" + buyPrice5 + '\'' +
+				", buyNumber2='" + buyNumber2 + '\'' +
+				", buyNumber3='" + buyNumber3 + '\'' +
+				", buyNumber4='" + buyNumber4 + '\'' +
+				", buyNumber5='" + buyNumber5 + '\'' +
+				", salePrice2='" + salePrice2 + '\'' +
+				", salePrice3='" + salePrice3 + '\'' +
+				", salePrice4='" + salePrice4 + '\'' +
+				", salePrice5='" + salePrice5 + '\'' +
+				", saleNumber2='" + saleNumber2 + '\'' +
+				", saleNumber3='" + saleNumber3 + '\'' +
+				", saleNumber4='" + saleNumber4 + '\'' +
+				", saleNumber5='" + saleNumber5 + '\'' +
+				", hideBuyPrice='" + hideBuyPrice + '\'' +
+				", hideBuyNumber='" + hideBuyNumber + '\'' +
+				", hideSalePrice='" + hideSalePrice + '\'' +
+				", hideSaleNumber='" + hideSaleNumber + '\'' +
+				", type='" + type + '\'' +
+//				", tradeFlag='" + tradeFlag + '\'' +
+//				", dataTimestamp='" + dataTimestamp + '\'' +
+				", dataSource='" + dataSource + '\'' +
+				", limitUpPrice='" + limitUpPrice + '\'' +
+				", limitDownPrice='" + limitDownPrice + '\'' +
+				", hideBidPrxLvl=" + hideBidPrxLvl +
+				", hideBidVolLvl=" + hideBidVolLvl +
+				", hideOfferPrxLvl=" + hideOfferPrxLvl +
+				", hideOfferVolLvl=" + hideOfferVolLvl +
+				'}';
 	}
 }

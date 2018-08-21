@@ -13,7 +13,6 @@ import com.zd.business.engine.main.market.MarketEventHandler;
 import com.zd.business.engine.main.market.MarketEventProducer;
 import com.zd.business.engine.main.order.OrderEventEngine;
 import com.zd.business.engine.main.order.OrderEventProducer;
-import com.zd.business.service.market.MarketDataFeed;
 import com.zd.config.Global;
 import com.zd.config.NettyGlobal;
 
@@ -32,8 +31,8 @@ public class ZdHftStratagyApplication implements CommandLineRunner {
 	public void run(String... arg0) throws Exception {
 
 		// 开启行情的Disruptor队列
-		MarketEventHandler marketEventHandler = MarketEventEngine.addHandler();
-		Global.eventConcurrentHashMap.put(marketEventHandler.getId(), marketEventHandler);
+//		MarketEventHandler marketEventHandler = MarketEventEngine.addHandler();
+//		Global.eventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
 		MarketEventProducer mep = new MarketEventProducer(MarketEventEngine.getRingBuffer());
 		Global.marketEventProducer = mep;
 
@@ -47,9 +46,9 @@ public class ZdHftStratagyApplication implements CommandLineRunner {
 		CentralEventProducer cep = new CentralEventProducer(CentralEventEngine.getRingBuffer());
 		Global.centralEventProducer = cep;
 
-		 // 连接行情服务器
-		 MarketDataFeed mdf = new MarketDataFeed(nettyGlobal.nettyMarketServerHost, String.valueOf(nettyGlobal.nettyMarketServerPort));
-		 mdf.start();
+//		 // 连接行情服务器
+//		 MarketDataFeed mdf = new MarketDataFeed(nettyGlobal.nettyMarketServerHost, String.valueOf(nettyGlobal.nettyMarketServerPort));
+//		 mdf.start();
 			
 			
 //		// 连接下单服务器
@@ -72,7 +71,7 @@ public class ZdHftStratagyApplication implements CommandLineRunner {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				mdf.stop();
+//				mdf.stop();
 //				orderNettyClient.stop();
 //				centralNettyClient.stop();
 			}

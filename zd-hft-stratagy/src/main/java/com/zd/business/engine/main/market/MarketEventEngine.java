@@ -1,7 +1,5 @@
 package com.zd.business.engine.main.market;
 
-import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +26,8 @@ public class MarketEventEngine {
 	}
 	
 	public static MarketEventHandler addHandler() {
-		MarketEventHandler handler=new MarketEventHandler(UUID.randomUUID().toString());
+		MarketEventHandler handler=new MarketEventHandler();
+		handler.init();
 		engine.addHandler(handler);
 		return handler;
 	}

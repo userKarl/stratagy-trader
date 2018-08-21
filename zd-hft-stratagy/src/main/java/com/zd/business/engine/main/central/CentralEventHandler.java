@@ -43,11 +43,13 @@ public class CentralEventHandler extends ZdEventDynamicHandlerAbstract<CentralEv
 				//判断是否可以创建新的消费者
 				if(Global.eventConcurrentHashMap.size()<Global.TOTALCONSUMER) {
 					MarketEventHandler marketEventHandler = MarketEventEngine.addHandler();
-					Global.eventConcurrentHashMap.put(marketEventHandler.getId(), marketEventHandler);
+					//根据策略Stratagy中的marketContract订阅行情
+					marketEventHandler.subscribeEvent(stratagy.getMarketContract().MyToString());
+					Global.eventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
 			    	//将策略添加至消费者中的策略集合
-			    	marketEventHandler.getStratagyConcurrentHashMap().put(stratagy.getId(), stratagy);
+			    	marketEventHandler.getHandlerStratagyThread().getStratagyConcurrentHashMap().put(stratagy.getId(), stratagy);
 			    	//将该消费者添加至可用消费者集合
-			    	Global.availableEventConcurrentHashMap.put(marketEventHandler.getId(), marketEventHandler);
+			    	Global.availableEventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
 			    	//创建该策略与消费者的映射关系
 			    	Global.allEventConcurrentHashMap.put(stratagy.getId(), marketEventHandler);
 			    	resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.STRATAGY_START,MessageConst.STRATAGYSTART);
@@ -57,7 +59,7 @@ public class CentralEventHandler extends ZdEventDynamicHandlerAbstract<CentralEv
 						for(Entry<String,MarketEventHandler> entry:Global.availableEventConcurrentHashMap.entrySet()) {
 							String consumerKey=entry.getKey();
 							MarketEventHandler consumer=entry.getValue();
-							ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap=consumer.getStratagyConcurrentHashMap();
+							ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap=consumer.getHandlerStratagyThread().getStratagyConcurrentHashMap();
 							stratagyConcurrentHashMap.put(stratagy.getId(), stratagy);
 							if(stratagyConcurrentHashMap.size()>=Global.TOTALSTRATAGYPERCONSUMER) {
 								//当策略数大于等于预设值时，将该消费者从可用消费者集合中移除
@@ -80,7 +82,7 @@ public class CentralEventHandler extends ZdEventDynamicHandlerAbstract<CentralEv
 				String stratagyId=ni.infoT;
 				MarketEventHandler marketEventHandler = Global.allEventConcurrentHashMap.get(stratagyId);
 				if(marketEventHandler!=null) {
-					ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap = marketEventHandler.getStratagyConcurrentHashMap();
+					ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap = marketEventHandler.getHandlerStratagyThread().getStratagyConcurrentHashMap();
 					Stratagy stratagy2 = stratagyConcurrentHashMap.get(stratagyId);
 					if(stratagy2!=null) {
 						stratagy2.setStatus(StratagyStatusEnum.PAUSE.toString());
@@ -101,15 +103,15 @@ public class CentralEventHandler extends ZdEventDynamicHandlerAbstract<CentralEv
 				String stratagyId=ni.infoT;
 				MarketEventHandler marketEventHandler = Global.allEventConcurrentHashMap.get(stratagyId);
 				if(marketEventHandler!=null) {
-					ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap = marketEventHandler.getStratagyConcurrentHashMap();
+					ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap = marketEventHandler.getHandlerStratagyThread().getStratagyConcurrentHashMap();
 					Stratagy stratagy2 = stratagyConcurrentHashMap.get(stratagyId);
 					if(stratagy2!=null) {
 						stratagy2.setStatus(StratagyStatusEnum.STOP.toString());
 						//将该策略从策略集合中移除
 						stratagyConcurrentHashMap.remove(stratagyId,stratagy2);
 						//如果该消费者不在可用消费者集合中，添加至可用消费者集合
-						if(Global.availableEventConcurrentHashMap.get(marketEventHandler.getId())==null) {
-							Global.availableEventConcurrentHashMap.put(marketEventHandler.getId(),marketEventHandler);
+						if(Global.availableEventConcurrentHashMap.get(marketEventHandler.getHandlerStratagyThread().getId())==null) {
+							Global.availableEventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(),marketEventHandler);
 						}
 						resp=CommonUtils.formatMsg(ni.clientNo,CommandEnum.STRATAGY_STOP,MessageConst.STRATAGYSTOP);
 //						NettyGlobal.returnData2CentralQueue.add();
