@@ -1,18 +1,14 @@
 package com.zd;
 
-import java.util.HashMap;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.common.collect.Maps;
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
 import com.zd.business.common.CommonUtils;
 import com.zd.business.engine.main.market.MarketEventEngine;
 import com.zd.business.engine.main.market.MarketEventHandler;
-import com.zd.business.service.ctp.MdSpi;
 import com.zd.config.Global;
 
 import io.netty.channel.ChannelHandlerContext;
