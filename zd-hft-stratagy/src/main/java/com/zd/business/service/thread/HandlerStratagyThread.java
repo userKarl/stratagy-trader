@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +22,6 @@ import com.zd.business.constant.order.RiskOrderEnum;
 import com.zd.business.constant.order.UserTypeEnum;
 import com.zd.business.entity.MarketProvider;
 import com.zd.business.entity.Stratagy;
-import com.zd.config.Global;
 
 /**
  * 处理策略计算
@@ -39,6 +37,11 @@ public class HandlerStratagyThread implements Runnable{
 	private ConcurrentLinkedQueue<MarketInfo> queue=new ConcurrentLinkedQueue<>();
 	
 	private String id;
+	
+	private double buyAllPrice[]=new double[5];
+	private double saleAllPrice[]=new double[5];
+	private double buyAllNumber[]=new double[5];
+	private double saleAllNumber[]=new double[5];
 	
 	public HandlerStratagyThread(String id) {
 		this.id=id;
@@ -86,12 +89,25 @@ public class HandlerStratagyThread implements Runnable{
 								MarketProvider mp=stratagy.getMp();
 								MarketInfo mi=marketInfo;
 								List<String> list = Lists.newArrayList();
-								double buyAllPrice[] = { Double.valueOf(mi.buyPrice), Double.valueOf(mi.buyPrice2),
-										Double.valueOf(mi.buyPrice3), Double.valueOf(mi.buyPrice4),
-										Double.valueOf(mi.buyPrice5) };
-								double saleAllPrice[] = { Double.valueOf(mi.salePrice), Double.valueOf(mi.salePrice2),
-										Double.valueOf(mi.salePrice3), Double.valueOf(mi.salePrice4),
-										Double.valueOf(mi.salePrice5) };
+								buyAllPrice[0]=Double.valueOf(mi.buyPrice);
+								buyAllPrice[1]=Double.valueOf(mi.buyPrice2);
+								buyAllPrice[2]=Double.valueOf(mi.buyPrice3);
+								buyAllPrice[3]=Double.valueOf(mi.buyPrice4);
+								buyAllPrice[4]=Double.valueOf(mi.buyPrice5);
+								
+								saleAllPrice[0]=Double.valueOf(mi.salePrice);
+								saleAllPrice[1]=Double.valueOf(mi.salePrice2);
+								saleAllPrice[2]=Double.valueOf(mi.salePrice3);
+								saleAllPrice[3]=Double.valueOf(mi.salePrice4);
+								saleAllPrice[4]=Double.valueOf(mi.salePrice5);
+								
+//								double buyAllPrice[] = { Double.valueOf(mi.buyPrice), Double.valueOf(mi.buyPrice2),
+//										Double.valueOf(mi.buyPrice3), Double.valueOf(mi.buyPrice4),
+//										Double.valueOf(mi.buyPrice5) };
+//								double saleAllPrice[] = { Double.valueOf(mi.salePrice), Double.valueOf(mi.salePrice2),
+//										Double.valueOf(mi.salePrice3), Double.valueOf(mi.salePrice4),
+//										Double.valueOf(mi.salePrice5) };
+								
 								double buy[] = new double[mp.getPriceLevelLimit()];
 								double sale[] = new double[mp.getPriceLevelLimit()];
 								for (int i = 0; i < mp.getPriceLevelLimit(); i++) {
@@ -106,12 +122,24 @@ public class HandlerStratagyThread implements Runnable{
 									}
 								}
 								if (list.size() > 0) {
-									double buyAllNumber[] = { Double.valueOf(mi.buyNumber), Double.valueOf(mi.buyNumber2),
-											Double.valueOf(mi.buyNumber3), Double.valueOf(mi.buyNumber4),
-											Double.valueOf(mi.buyNumber5) };
-									double saleAllNumber[] = { Double.valueOf(mi.saleNumber), Double.valueOf(mi.saleNumber2),
-											Double.valueOf(mi.saleNumber3), Double.valueOf(mi.saleNumber4),
-											Double.valueOf(mi.saleNumber5) };
+									buyAllNumber[0]=Double.valueOf(mi.buyNumber);
+									buyAllNumber[1]=Double.valueOf(mi.buyNumber2);
+									buyAllNumber[2]=Double.valueOf(mi.buyNumber3);
+									buyAllNumber[3]=Double.valueOf(mi.buyNumber4);
+									buyAllNumber[4]=Double.valueOf(mi.buyNumber5);
+									
+									saleAllNumber[0]=Double.valueOf(mi.saleNumber);
+									saleAllNumber[1]=Double.valueOf(mi.saleNumber2);
+									saleAllNumber[2]=Double.valueOf(mi.saleNumber3);
+									saleAllNumber[3]=Double.valueOf(mi.saleNumber4);
+									saleAllNumber[4]=Double.valueOf(mi.saleNumber5);
+									
+//									double buyAllNumber[] = { Double.valueOf(mi.buyNumber), Double.valueOf(mi.buyNumber2),
+//											Double.valueOf(mi.buyNumber3), Double.valueOf(mi.buyNumber4),
+//											Double.valueOf(mi.buyNumber5) };
+//									double saleAllNumber[] = { Double.valueOf(mi.saleNumber), Double.valueOf(mi.saleNumber2),
+//											Double.valueOf(mi.saleNumber3), Double.valueOf(mi.saleNumber4),
+//											Double.valueOf(mi.saleNumber5) };
 									double buyNum[] = new double[mp.getPriceLevelLimit()];
 									double saleNum[] = new double[mp.getPriceLevelLimit()];
 									for (int i = 0; i < mp.getPriceLevelLimit(); i++) {

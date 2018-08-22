@@ -1,14 +1,18 @@
 package com.zd;
 
+import java.util.HashMap;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.collect.Maps;
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
 import com.zd.business.common.CommonUtils;
 import com.zd.business.engine.main.market.MarketEventEngine;
 import com.zd.business.engine.main.market.MarketEventHandler;
+import com.zd.business.service.ctp.MdSpi;
 import com.zd.config.Global;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -16,6 +20,10 @@ import io.netty.channel.ChannelHandlerContext;
 @RestController
 public class TestController {
 
+	@GetMapping("test")
+	public void test() {
+	}
+	
 	@GetMapping("send")
 	public void send() throws Exception {
 		ChannelHandlerContext ctx=Global.market01ChannelMap.get(Global.MARKET01SERVERCHANNELKEY);
