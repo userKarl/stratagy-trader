@@ -71,7 +71,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			}
 			
 			NetInfo ni = new NetInfo();
-			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length()-1));
+			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length()));
 
 			//请求二级行情
 			if(CommandCode.MARKET02.equals(ni.code)) {

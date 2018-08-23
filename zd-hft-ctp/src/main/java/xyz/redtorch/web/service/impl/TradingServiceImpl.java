@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
+import com.zd.common.utils.json.JacksonUtil;
+import com.zd.config.Global;
 
 import xyz.redtorch.trader.base.RtConstant;
 import xyz.redtorch.trader.engine.event.EventConstant;
@@ -333,49 +335,13 @@ public class TradingServiceImpl implements TradingService {
 			if (EventConstant.EVENT_TICK.equals(fastEvent.getEventType())) {
 				try {
 					Tick tick = fastEvent.getTick();
+					tick.setDateTime(null);
+					Global.marketEventProducer.onData(JacksonUtil.objToJson(tick));
+					log.info("接收到tick数据：{}",JacksonUtil.objToJson(tick));
 				} catch (Exception e) {
-					log.error("向SocketIO转发Tick发生异常!!!", e);
+					log.error("向Socket转发Tick发生异常!!!", e);
 				}
-			} else if (EventConstant.EVENT_TRADE.equals(fastEvent.getEventType())) {
-				try {
-					Trade trade = fastEvent.getTrade();
-				} catch (Exception e) {
-					log.error("向SocketIO转发Trade发生异常!!!", e);
-				}
-			} else if (EventConstant.EVENT_ORDER.equals(fastEvent.getEventType())) {
-				try {
-					Order order = fastEvent.getOrder();
-				} catch (Exception e) {
-					log.error("向SocketIO转发Order发生异常!!!", e);
-				}
-			} else if (EventConstant.EVENT_CONTRACT.equals(fastEvent.getEventType())) {
-				try {
-					Contract contract = fastEvent.getContract();
-				} catch (Exception e) {
-					log.error("向SocketIO转发Contract发生异常!!!", e);
-				}
-			} else if (EventConstant.EVENT_POSITION.equals(fastEvent.getEventType())) {
-				try {
-					Position position = fastEvent.getPosition();
-				} catch (Exception e) {
-					log.error("向SocketIO转发Position发生异常!!!", e);
-				}
-			} else if (EventConstant.EVENT_ACCOUNT.equals(fastEvent.getEventType())) {
-				try {
-					Account account = fastEvent.getAccount();
-				} catch (Exception e) {
-					log.error("向SocketIO转发Account发生异常!!!", e);
-				}
-			} else if (EventConstant.EVENT_LOG.equals(fastEvent.getEventType())) {
-				try {
-					LogData logData = fastEvent.getLogData();
-					// 发送所有日志
-				} catch (Exception e) {
-					log.error("向SocketIO转发Order发生异常!!!", e);
-				}
-			} else {
-				log.warn("主引擎未能识别的事件数据类型{}", JSON.toJSONString(fastEvent.getEvent()));
-			}
+			} 
 		}
 
 		@Override

@@ -21,7 +21,6 @@ import xyz.redtorch.api.jctp.CThostFtdcRspUserLoginField;
 import xyz.redtorch.api.jctp.CThostFtdcSpecificInstrumentField;
 import xyz.redtorch.api.jctp.CThostFtdcUserLogoutField;
 import xyz.redtorch.trader.base.RtConstant;
-import xyz.redtorch.trader.gateway.GatewaySetting;
 
 /**
  * @author sun0x00@gmail.com
@@ -431,16 +430,4 @@ public class MdSpi extends CThostFtdcMdSpi {
 		log.info("{}OnRspUnSubForQuoteRsp!", gatewayLogInfo);
 	}
 
-	public static void main(String[] args) {
-		HashMap<String,String> contractExchangeMap=new HashMap<String,String>();
-		contractExchangeMap.put("IH1809", "IH1809");
-		GatewaySetting gatewaySetting=new GatewaySetting();
-		gatewaySetting.setMdAddress("180.168.146.187:10001");
-		gatewaySetting.setBrokerID("9999");
-		gatewaySetting.setUserID("084127");
-		gatewaySetting.setPassword("1a1b1c1d1");
-		CtpGateway ctpGateway=new CtpGateway(gatewaySetting);
-		ctpGateway.setContractExchangeMap(contractExchangeMap);
-		new MdSpi(ctpGateway).connect();
-	}
 }

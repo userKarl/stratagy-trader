@@ -1,12 +1,12 @@
 package com.zd.business.engine.main.market;
 
 import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 import com.shanghaizhida.beans.MarketInfo;
-import com.shanghaizhida.beans.NetInfo;
 import com.zd.business.common.CommonUtils;
 import com.zd.business.engine.event.ZdEventDynamicHandlerAbstract;
 
@@ -48,20 +48,18 @@ public class MarketEventHandler extends ZdEventDynamicHandlerAbstract<MarketEven
 	public void onEvent(MarketEvent event, long sequence, boolean endOfBatch) throws Exception {
 		//广播行情
 		try {
-			NetInfo ni=new NetInfo();
-			ni.MyReadString(event.getNetInfo());
 			MarketInfo mi=new MarketInfo();
-			mi.MyReadString(ni.infoT);
+			mi.MyReadString(event.getMarketInfo());
 			if(ctx!=null) {
 				if(isSubAll) {
 					//订阅全部行情
 					if(!unsubSet.contains(mi.code)) {
-						ctx.channel().writeAndFlush(CommonUtils.toCommandString(event.getNetInfo()));
+						ctx.channel().writeAndFlush(CommonUtils.toCommandString(event.getMarketInfo()));
 					}
 				}else {
 					for(String s:subscribedEventSet) {
 						if(s.equals(mi.code)) {
-							ctx.channel().writeAndFlush(CommonUtils.toCommandString(event.getNetInfo()));
+							ctx.channel().writeAndFlush(CommonUtils.toCommandString(event.getMarketInfo()));
 						}
 					}
 				}

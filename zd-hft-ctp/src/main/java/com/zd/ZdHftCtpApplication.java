@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +20,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zd.config.Global;
+import com.zd.engine.market.MarketEventEngine;
+import com.zd.engine.market.MarketEventProducer;
+import com.zd.netty.NettyServer;
 
+import io.netty.channel.ChannelFuture;
 import xyz.redtorch.trader.gateway.GatewaySetting;
 import xyz.redtorch.web.service.TradingService;
 import xyz.redtorch.web.vo.ResultVO;
@@ -32,11 +38,16 @@ import xyz.redtorch.web.vo.ResultVO;
 @RestController
 @EnableAutoConfiguration(exclude={MongoAutoConfiguration.class})
 @ComponentScan(basePackages= {"com.zd","xyz.redtorch"})
-public class ZdHftCtpApplication {
+public class ZdHftCtpApplication implements CommandLineRunner{
 	
 	@Autowired
 	private TradingService tradingService;
 	
+	@Autowired
+	private NettyServer nettyServer;
+	
+	@Autowired
+	private Global global;
 	
 	@RequestMapping(value = "/sendOrder",method = RequestMethod.POST)
 	@ResponseBody
@@ -318,5 +329,28 @@ public class ZdHftCtpApplication {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(ZdHftCtpApplication.class, args);
+		
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		// 开启行情的Disruptor队列
+		MarketEventProducer mep=new MarketEventProducer(MarketEventEngine.getRingBuffer());
+    	Global.marketEventProducer=mep;
+		    	
+    	//开启二级行情订阅服务器
+    	Thread nettyServerThread=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				ChannelFuture future = nettyServer.start(global.marketCtpServerHost, global.marketCtpServerPort);
+				future.channel().closeFuture().syncUninterruptibly();
+			}
+		});
+    	nettyServerThread.start();
+    	
+    	Global.tradingService=tradingService;
+    	
+		tradingService.changeGatewayConnectStatus("9999.simnow.187.10030");
 	}
 }

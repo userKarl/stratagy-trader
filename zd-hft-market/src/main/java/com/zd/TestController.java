@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shanghaizhida.beans.CommandCode;
+import com.shanghaizhida.beans.MarketInfo;
 import com.shanghaizhida.beans.NetInfo;
 import com.zd.business.common.CommonUtils;
 import com.zd.business.engine.main.market.MarketEventEngine;
@@ -18,6 +19,29 @@ public class TestController {
 
 	@GetMapping("test")
 	public void test() {
+		for(int i=0;i<2;i++) {
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					MarketEventEngine.addHandler();
+					while(true) {
+						MarketInfo mi=new MarketInfo();
+						mi.code=Thread.currentThread().getName();
+						mi.buyNumber=""+Math.random()*20;
+						Global.marketEventProducer.onData(mi.MyToString());
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					
+				}
+			}).start();
+		}
+	
 	}
 	
 	@GetMapping("send")
