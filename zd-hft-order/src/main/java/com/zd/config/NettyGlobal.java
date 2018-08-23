@@ -25,11 +25,13 @@ public class NettyGlobal {
 	public String nettyCentralServerHost;//中控服务器地址
 	
 	
-	//存放与中控服务器的连接，一个交易服务器只连接一个中控服务器，因此该Map中理论上至多有一个值
-	public static ConcurrentHashMap<String,ChannelHandlerContext> centralServerChannalMap=new ConcurrentHashMap<>();
+//	//存放与中控服务器的连接，一个交易服务器只连接一个中控服务器，因此该Map中理论上至多有一个值
+//	public static ConcurrentHashMap<String,ChannelHandlerContext> centralServerChannalMap=new ConcurrentHashMap<>();
+//	
+//	//与中控服务器连接的channel在centralServerChannalMap中的key
+//	public static final String CENTRALSERVERCHANNELKEY="CENTRALSERVERCHANNEL";
 	
-	//与中控服务器连接的channel在centralServerChannalMap中的key
-	public static final String CENTRALSERVERCHANNELKEY="CENTRALSERVERCHANNEL";
-	
+	//请求下单服务器客户端Map
+	public static ConcurrentHashMap<String,ChannelHandlerContext> clientMap=new ConcurrentHashMap<>();
 	
 }

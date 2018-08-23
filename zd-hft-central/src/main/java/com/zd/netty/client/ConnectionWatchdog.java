@@ -55,7 +55,7 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 	 */
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-		NettyGlobal.centralServerChannalMap.put(NettyGlobal.CENTRALSERVERCHANNELKEY, ctx);
+//		NettyGlobal.centralServerChannalMap.put(NettyGlobal.CENTRALSERVERCHANNELKEY, ctx);
 		channel = ctx.channel();
 		attempts = 0;
 		reconnect = true;
@@ -84,7 +84,7 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 	 */
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		NettyGlobal.centralServerChannalMap.remove(NettyGlobal.CENTRALSERVERCHANNELKEY, ctx);
+//		NettyGlobal.centralServerChannalMap.remove(NettyGlobal.CENTRALSERVERCHANNELKEY, ctx);
 		disConnect = true;
 		logger.info("Disconnects with {}, doReconnect = {},attemps == {}", ctx.channel(), reconnect, attempts);
 		if (reconnect) {

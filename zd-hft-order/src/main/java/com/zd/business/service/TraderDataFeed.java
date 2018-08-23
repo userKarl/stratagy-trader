@@ -78,15 +78,17 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 	public String host;
 	public String port;
 
+	private String localSystemCode=null;
 	
 	/**
 	 * 构造函数
 	 */
-	public TraderDataFeed(String host, String port,String userAccount,String userPassWd) {
+	public TraderDataFeed(String host, String port,String userAccount,String userPassWd,String localSystemCode) {
 		this.host = host;
 		this.port = port;
 		this.userAccount=userAccount;
 		this.userPassWd=userPassWd;
+		this.localSystemCode=localSystemCode;
 	}
 
 	/**
@@ -325,7 +327,8 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 //						|| CommandCode.FILLEDINFO.equals(netInfo.code)) {
 //					
 //				}
-				netInfo.clientNo=userAccount;
+//				netInfo.clientNo=userAccount;
+				netInfo.localSystemCode=localSystemCode;
 				Global.traderInfoQueue.add(netInfo.MyToString());
 				
 				if (logger != null) {
@@ -333,7 +336,7 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 					if (CommandCode.MODIFYPW.equals(netInfo.code)) {
 						logger.info("TraderDataFeed ReciveMsg: " + CommandCode.MODIFYPW);
 					} else {
-						logger.info("TraderDataFeed ReciveMsg: " + strNetData);
+						logger.info("TraderDataFeed ReciveMsg: " + netInfo.MyToString());
 					}
 				}
 

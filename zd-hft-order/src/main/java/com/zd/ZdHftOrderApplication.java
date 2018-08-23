@@ -8,10 +8,9 @@ import org.springframework.context.annotation.ComponentScan;
 
 import com.zd.business.engine.main.OrderEventEngine;
 import com.zd.business.engine.main.OrderEventProducer;
-import com.zd.business.service.SendTraderInfo2CentralThread;
+import com.zd.business.service.SendTraderInfoThread;
 import com.zd.config.Global;
 import com.zd.config.NettyGlobal;
-import com.zd.netty.client.NettyClient;
 import com.zd.netty.server.NettyServer;
 
 import io.netty.channel.ChannelFuture;
@@ -26,9 +25,6 @@ public class ZdHftOrderApplication implements CommandLineRunner{
 	
 	@Autowired
 	private NettyServer nettyServer;
-	
-	@Autowired
-	private NettyClient nettyClient;
 	
 	@Autowired
 	private TradingService tradingService;
@@ -48,9 +44,6 @@ public class ZdHftOrderApplication implements CommandLineRunner{
 		Global.orderEventProducer = mep;
 		
 		
-//		//连接中控服务器
-//		nettyClient.start(nettyGlobal.nettyCentralServerHost, nettyGlobal.nettyCentralServerPort);
-		
 		//启动下单服务器
 		Thread nettyServerThread = new Thread(new Runnable() {
 
@@ -65,13 +58,14 @@ public class ZdHftOrderApplication implements CommandLineRunner{
 		
 		Thread.sleep(3000);
 		//启动发送交易数据线程
-//		new SendTraderInfo2CentralThread().start();
+		SendTraderInfoThread sendTraderInfoThread = new SendTraderInfoThread();
+		sendTraderInfoThread.start();
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				nettyClient.stop();
 				nettyServer.destroy();
+				sendTraderInfoThread.stop();
 				nettyServerThread.interrupt();
 			}
 		});

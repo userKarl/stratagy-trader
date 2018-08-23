@@ -7,6 +7,7 @@ import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
 import com.zd.common.utils.StringUtils;
 import com.zd.config.Global;
+import com.zd.config.NettyGlobal;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,6 +30,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		System.out.println("客户端与服务端连接开启");
+		NettyGlobal.clientMap.put(ctx.channel().id().toString(), ctx);
 	}
 	
 	/**
@@ -38,6 +40,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		// 移除连接
 		logger.info("{} 断开连接", ctx.channel());
+		NettyGlobal.clientMap.remove(ctx.channel().id().toString(), ctx);
 	}
 
 	@Override
@@ -66,7 +69,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			}
 			NetInfo ni = new NetInfo();
 			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length()));
-
+			ni.localSystemCode=ctx.channel().id().toString();
 			if(StringUtils.isNotBlank(ni.infoT) && !CommandCode.HEARTBIT.equals(ni.code)) {
 				Global.orderEventProducer.onData(ni);
 			}

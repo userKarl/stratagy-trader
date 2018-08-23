@@ -48,7 +48,7 @@ public class Order implements Serializable{
 	
 	public Order() {}
 	
-	public String MytoString() {
+	public String MyToString() {
 		try {
 			return String.join("@", Lists.newArrayList(this.gatewayID,this.symbol,this.exchange,this.rtSymbol,
 					this.orderID,

@@ -37,7 +37,7 @@ public class OrderEventHandler extends ZdEventDynamicHandlerAbstract<OrderEvent>
 						if (tdf != null) {
 							tdf.stop();
 						}
-						tdf = new TraderDataFeed(Global.zdTraderHost, Global.zdTraderPort, login.userId, login.userPwd);
+						tdf = new TraderDataFeed(Global.zdTraderHost, Global.zdTraderPort, login.userId, login.userPwd,ni.localSystemCode);
 						Global.accountTraderMap.put(login.userId, tdf);
 						tdf.start();
 					} else if (TraderEnvEnum.CTP.getCode().equals(ni.systemCode)) {

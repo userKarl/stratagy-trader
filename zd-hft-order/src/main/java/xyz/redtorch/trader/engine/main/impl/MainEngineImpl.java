@@ -608,7 +608,7 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 	@Override
 	public void connectGateway(String gatewayID) {
 
-		GatewaySetting gatewaySetting = Global.gatewaySettingMap.get(gatewayID);
+		GatewaySetting gatewaySetting = Global.accountTraderCTPMap.get(gatewayID);
 
 		if (gatewaySetting == null) {
 			String logContent = "MAIN_ENGINE:接口" + gatewayID + "无法连接,不存在";
@@ -642,13 +642,13 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 
 	@Override
 	public void saveGateway(GatewaySetting gatewaySetting) {
-		Global.gatewaySettingMap.put(gatewaySetting.getGatewayID(),gatewaySetting);
+		Global.accountTraderCTPMap.put(gatewaySetting.getGatewayID(),gatewaySetting);
 	}
 
 	@Override
 	public void deleteGateway(String gatewayID) {
 		disconnectGateway(gatewayID);
-		Global.gatewaySettingMap.remove(gatewayID);
+		Global.accountTraderCTPMap.remove(gatewayID);
 	}
 
 	@Override
@@ -666,7 +666,7 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 			disconnectGateway(gatewaySetting.getGatewayID());
 			isLoaded = true;
 		}
-		Global.gatewaySettingMap.put(gatewayID,gatewaySetting);
+		Global.accountTraderCTPMap.put(gatewayID,gatewaySetting);
 
 		// 重新连接
 		if (isLoaded) {
@@ -676,12 +676,12 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 
 	@Override
 	public GatewaySetting queryGatewaySetting(String gatewayID) {
-		return Global.gatewaySettingMap.get(gatewayID);
+		return Global.accountTraderCTPMap.get(gatewayID);
 	}
 
 	@Override
 	public List<GatewaySetting> queryGatewaySettings() {
-		return (List<GatewaySetting>) Global.gatewaySettingMap.values();
+		return (List<GatewaySetting>) Global.accountTraderCTPMap.values();
 	}
 
 	@Override

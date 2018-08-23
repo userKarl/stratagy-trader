@@ -17,7 +17,7 @@ public class Global {
 	//CTP交易账号
 	public static ConcurrentHashMap<String,GatewaySetting> accountTraderCTPMap=new ConcurrentHashMap<>();
 	
-	//交易信息队列，此队列的数据需要返回至中控服务器
+	//返回给客户端的交易数据
 	public static ConcurrentLinkedQueue<String> traderInfoQueue=new ConcurrentLinkedQueue<>();
 	
 	public static OrderEventProducer orderEventProducer=null;
@@ -32,8 +32,6 @@ public class Global {
 	public static final String brokerId="9999";
 	public static final String gatewayClassName="xyz.redtorch.trader.gateway.ctp.CtpGateway";
 	
-	//CTP交易用户设置
-	public static ConcurrentHashMap<String, GatewaySetting> gatewaySettingMap=new ConcurrentHashMap<>();
 	
 	public static TradingService tradingService=null;
 }
