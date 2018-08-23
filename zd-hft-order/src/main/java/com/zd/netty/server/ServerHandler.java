@@ -3,6 +3,11 @@ package com.zd.netty.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.shanghaizhida.beans.CommandCode;
+import com.shanghaizhida.beans.NetInfo;
+import com.zd.common.utils.StringUtils;
+import com.zd.config.Global;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -59,7 +64,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			} else if (msg != null) {
 				s = msg.toString();
 			}
-			
+			NetInfo ni = new NetInfo();
+			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length()));
+
+			if(StringUtils.isNotBlank(ni.infoT) && !CommandCode.HEARTBIT.equals(ni.code)) {
+				Global.orderEventProducer.onData(ni);
+			}
 		} catch (Exception e) {
 			logger.error("接收socket请求异常：{}", e.getMessage());
 		}

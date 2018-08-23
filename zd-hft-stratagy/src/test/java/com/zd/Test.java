@@ -22,8 +22,14 @@ public class Test {
 	private static final String exchangeCode = "CME";
 	private static final String code = "6A1808";
 
+	private static double guadanBuy[]=new double[5];
+	private static double guadanSale[]=new double[5];
+	private static double guadanBuyNum[]=new double[5];
+	private static double guadanSaleNum[]=new double[5];
+	private static List<String> guadanList=Lists.newArrayList();
+	
 	public static void order() {
-		for (int m = 0; m < 100; m++) {
+		for (int m = 0; m < 1; m++) {
 			long l = System.nanoTime();
 			List<String> list = Lists.newArrayList();
 
@@ -31,9 +37,10 @@ public class Test {
 			double buy[] = { 13.2, 13.1, 13, 12.8, 12.6 };
 
 			double saleNum[] = { 120, 156, 486, 259, 469 };
-			double buyNum[] = { 35, 169, 158, 249, 1112 };
+			double buyNum[] = { 35, 169, 158, 249, 112 };
 
-			double spread = 2;
+			
+			double spread = 0.6;
 			for (int i = 0; i < sale.length; i++) {
 				for (int j = 0; j < buy.length; j++) {
 					if (sale[i] - buy[j] <= spread) {
@@ -91,13 +98,20 @@ public class Test {
 								currSaleNum += orderNum;
 								buyNum[buyIndex] -= orderNum;
 								saleNum[saleIndex] -= orderNum;
+								
+								guadanBuy[buyIndex]=buy[buyIndex];
+								guadanBuyNum[buyIndex] += orderNum;
+								guadanSale[saleIndex]=sale[saleIndex];
+								guadanSaleNum[saleIndex] += orderNum;
 								OrderInfo oiBuy = generateOrder(fIsRiskOrder,userType,exchangeCode,code,"1", String.valueOf(orderNum),
 										String.valueOf(buy[buyIndex]), "", "1", "1");
 								OrderInfo oiSale = generateOrder(fIsRiskOrder,userType,exchangeCode,code,"2", String.valueOf(orderNum),
 										String.valueOf(sale[saleIndex]), "", "1", "1");
-								NetInfo ni = new NetInfo();
-								ni.infoT = oiBuy.MyToString() + "," + oiSale.MyToString();
-								queue.add(ni.MyToString());
+								guadanList.add(oiBuy.MyToString());
+								guadanList.add(oiSale.MyToString());
+//								NetInfo ni = new NetInfo();
+//								ni.infoT = oiBuy.MyToString() + "," + oiSale.MyToString();
+//								queue.add(ni.MyToString());
 								// logger.info("下单档位：卖{}买{}，下单量：{}，买持仓：{}，卖持仓{},卖档位剩余量：{},买档位剩余量：{}",saleIndex+1,buyIndex+1,min2,currBuyNum,currSaleNum,saleNum[saleIndex],buyNum[buyIndex]);
 							}
 
@@ -107,6 +121,16 @@ public class Test {
 				}
 			}
 			System.out.println("耗时：" + (System.nanoTime() - l) / 1e6 + " ms");
+			for(int i=0;i<guadanBuyNum.length;i++) {
+				logger.info("买{}，价格{}，挂单数量：{}",i+1,guadanBuy[i],guadanBuyNum[i]);
+			}
+			for(int i=0;i<guadanSaleNum.length;i++) {
+				logger.info("卖{}，价格{}，挂单数量：{}",i+1,guadanSale[i],guadanSaleNum[i]);
+			}
+			
+			for(String s:guadanList) {
+				logger.info("挂单：{}",s);
+			}
 			// while (true) {
 			// String poll = queue.poll();
 			// if (StringUtils.isNotBlank(poll)) {
@@ -191,19 +215,37 @@ public class Test {
 }
 
 /**
- * 14.5 469 14.2 259 13.8 486 13.6 156-50-34-50-22 13.4 120-35-50-35
- * ------------ 13.2 35-35 13.1 169-50-35-50-34 13 158-50-22 12.8 249 12.6 112
+ * 14.5 469 
+ * 14.2 259 
+ * 13.8 486 
+ * 13.6 156-50-34-50-22 
+ * 13.4 120-35-50-35
+ * ------------ 
+ * 13.2 35-35 
+ * 13.1 169-50-35-50-34 
+ * 13 	158-50-22 
+ * 12.8 249 
+ * 12.6 112
  * 
- * 卖1买1 35 卖1买2 50 卖1买2 35 卖2买2 50 卖2买2 34 卖2买3 50 卖2买3 22
+ * 卖1买1 35 
+ * 卖1买2 50 
+ * 卖1买2 35 
+ * 卖2买2 50 
+ * 卖2买2 34 
+ * 卖2买3 50 
+ * 卖2买3 22
  * 
  * 
- * double saleNum[]= {120,156,486,259,469}; double buyNum[]=
- * {35,169,158,249,112};
+ * double saleNum[]= {120,156,486,259,469}; 
+ * double buyNum[]= {35,169,158,249,112};
  * 
- * double spread=0.6; double maxOrderNum=50;//最大下单量 double
- * minOrderNum=10;//预设的最小下单量 double maxBuyNum=500;//最大多单持仓量 double
- * maxSaleNum=500;//最大空单持仓量 double currBuyNum=0;//当前多单持仓量 double
- * currSaleNum=0;//当前空单持仓量
+ * double spread=0.6; 
+ * double maxOrderNum=50;//最大下单量 
+ * double minOrderNum=10;//预设的最小下单量
+ * double maxBuyNum=500;//最大多单持仓量 
+ * double maxSaleNum=500;//最大空单持仓量  
+ * double currBuyNum=0;//当前多单持仓量 
+ * double currSaleNum=0;//当前空单持仓量
  * 
  * 
  * 
