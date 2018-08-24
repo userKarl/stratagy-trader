@@ -1,6 +1,7 @@
 package com.zd;
 
 import java.math.BigDecimal;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,8 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shanghaizhida.beans.CommandCode;
+import com.shanghaizhida.beans.LoginInfo;
 import com.shanghaizhida.beans.MarketInfo;
 import com.shanghaizhida.beans.NetInfo;
+import com.zd.business.common.CommonUtils;
 import com.zd.business.constant.StratagyStatusEnum;
 import com.zd.business.constant.StratagyTypeEnum;
 import com.zd.business.engine.main.central.CentralEventEngine;
@@ -21,10 +24,79 @@ import com.zd.business.entity.Contract;
 import com.zd.business.entity.MarketProvider;
 import com.zd.business.entity.Stratagy;
 import com.zd.config.Global;
+import com.zd.config.NettyGlobal;
+
+import io.netty.channel.ChannelHandlerContext;
 
 @RestController
 public class TestController {
 
+	@GetMapping("zd/login")
+	public void zdlogin() throws Exception {
+		NetInfo ni=new NetInfo();
+		ni.code=CommandCode.LOGIN;
+		LoginInfo login=new LoginInfo();
+		login.userId="demo000604";
+		login.userType="I";
+		login.userPwd="888888";
+		ni.infoT=login.MyToString();
+		ni.systemCode="1";
+		ni.localSystemCode="aaaa";
+		ni.accountNo="demo000604";
+		System.out.println("向服务端发送数据："+CommonUtils.toCommandString(ni.MyToString()));
+		ChannelHandlerContext ctx = NettyGlobal.orderServerChannalMap.get(NettyGlobal.ORDERSERVERCHANNELKEY);
+		ctx.channel().writeAndFlush(CommonUtils.toCommandString(ni.MyToString()));
+	}
+	
+	@GetMapping("zd/login1")
+	public void zdlogin1() throws Exception {
+		NetInfo ni=new NetInfo();
+		ni.code=CommandCode.LOGIN;
+		LoginInfo login=new LoginInfo();
+		login.userId="demo003498";
+		login.userType="I";
+		login.userPwd="888888";
+		ni.infoT=login.MyToString();
+		ni.systemCode="1";
+		ni.localSystemCode="aaaa";
+		ni.accountNo="demo003498";
+		System.out.println("向服务端发送数据："+CommonUtils.toCommandString(ni.MyToString()));
+		ChannelHandlerContext ctx = NettyGlobal.orderServerChannalMap.get(NettyGlobal.ORDERSERVERCHANNELKEY);
+		ctx.channel().writeAndFlush(CommonUtils.toCommandString(ni.MyToString()));
+	}
+	
+	@GetMapping("login")
+	public void login() throws Exception {
+		NetInfo ni=new NetInfo();
+		ni.code=CommandCode.LOGIN;
+		LoginInfo login=new LoginInfo();
+		login.userId="122880";
+		login.userType="I";
+		login.userPwd="1a1b1c1d1";
+		ni.infoT=login.MyToString();
+		ni.systemCode="2";
+		ni.accountNo="122880";
+		System.out.println("向服务端发送数据："+CommonUtils.toCommandString(ni.MyToString()));
+		ChannelHandlerContext ctx = NettyGlobal.orderServerChannalMap.get(NettyGlobal.ORDERSERVERCHANNELKEY);
+		ctx.channel().writeAndFlush(CommonUtils.toCommandString(ni.MyToString()));
+	}
+	
+	@GetMapping("login1")
+	public void login1() throws Exception {
+		NetInfo ni=new NetInfo();
+		ni.code=CommandCode.LOGIN;
+		LoginInfo login=new LoginInfo();
+		login.userId="084127";
+		login.userType="I";
+		login.userPwd="1a1b1c1d1";
+		ni.infoT=login.MyToString();
+		ni.systemCode="2";
+		ni.accountNo="084127";
+		System.out.println("向服务端发送数据："+CommonUtils.toCommandString(ni.MyToString()));
+		ChannelHandlerContext ctx = NettyGlobal.orderServerChannalMap.get(NettyGlobal.ORDERSERVERCHANNELKEY);
+		ctx.channel().writeAndFlush(CommonUtils.toCommandString(ni.MyToString()));
+	}
+	
 	/**
 	 * 开始新的策略
 	 */

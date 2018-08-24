@@ -9,12 +9,15 @@ import org.springframework.context.annotation.ComponentScan;
 import com.zd.business.engine.main.central.CentralEventEngine;
 import com.zd.business.engine.main.central.CentralEventProducer;
 import com.zd.business.engine.main.market.MarketEventEngine;
-import com.zd.business.engine.main.market.MarketEventHandler;
 import com.zd.business.engine.main.market.MarketEventProducer;
 import com.zd.business.engine.main.order.OrderEventEngine;
 import com.zd.business.engine.main.order.OrderEventProducer;
 import com.zd.config.Global;
 import com.zd.config.NettyGlobal;
+import com.zd.netty.NettyClient;
+import com.zd.netty.order.OrderConnectionWatchdog;
+
+import io.netty.util.HashedWheelTimer;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.zd" })
@@ -51,13 +54,13 @@ public class ZdHftStratagyApplication implements CommandLineRunner {
 //		 mdf.start();
 			
 			
-//		// 连接下单服务器
-//		NettyClient orderNettyClient = new NettyClient(nettyGlobal.nettyOrderServerHost,
-//				nettyGlobal.nettyOrderServerPort);
-//		orderNettyClient.start();
-//		CentralConnectionWatchdog orderWatchDog=new CentralConnectionWatchdog(orderNettyClient.getBootstrap(),
-//				new HashedWheelTimer(), orderNettyClient.getHost(), orderNettyClient.getPort());
-//		orderNettyClient.addHandler(orderWatchDog);
+		// 连接下单服务器
+		NettyClient orderNettyClient = new NettyClient(nettyGlobal.nettyOrderServerHost,
+				nettyGlobal.nettyOrderServerPort);
+		orderNettyClient.start();
+		OrderConnectionWatchdog orderWatchDog=new OrderConnectionWatchdog(orderNettyClient.getBootstrap(),
+				new HashedWheelTimer(), orderNettyClient.getHost(), orderNettyClient.getPort());
+		orderNettyClient.addHandler(orderWatchDog);
 //		
 //		
 //		// 连接中控服务器

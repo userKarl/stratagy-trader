@@ -2,7 +2,10 @@ package xyz.redtorch.trader.entity;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author sun0x00@gmail.com
@@ -35,6 +38,64 @@ public class Trade implements Serializable{
 	private String tradeTime; // 时间(HHMMSSmmm)
     private DateTime dateTime;
     
+    public void MyReadString(String temp) {
+    	if(StringUtils.isNotBlank(temp)) {
+    		String[] split = temp.split("@");
+    		if(split!=null) {
+    			if(split.length>0) {
+    				this.gatewayID=split[0];
+    			}
+    			if(split.length>1) {
+    				this.symbol=split[1];
+    			}
+    			if(split.length>2) {
+    				this.exchange=split[2];
+    			}
+    			if(split.length>3) {
+    				this.rtSymbol=split[3];
+    			}
+    			if(split.length>4) {
+    				this.tradeID=split[4];
+    			}
+    			if(split.length>5) {
+    				this.rtTradeID=split[5];
+    			}
+    			if(split.length>6) {
+    				this.orderID=split[6];
+    			}
+    			if(split.length>7) {
+    				this.rtOrderID=split[7];
+    			}
+    			if(split.length>8) {
+    				this.direction=split[8];
+    			}
+    			if(split.length>9) {
+    				this.offset=split[9];
+    			}
+    			if(split.length>10) {
+    				this.price=Double.parseDouble(split[10]);
+    			}
+    			if(split.length>11) {
+    				this.volume=Integer.parseInt(split[11]);
+    			}
+    			if(split.length>12) {
+    				this.tradingDay=split[12];
+    			}
+    			if(split.length>13) {
+    				this.tradeDate=split[13];
+    			}
+    			if(split.length>14) {
+    				this.tradeTime=split[14];
+    			}
+    		}
+    	}
+    }
+    
+    public String MyToString() {
+    	return String.join("@", Lists.newArrayList(this.gatewayID,this.symbol,this.exchange,this.rtSymbol,this.tradeID,
+    			this.rtTradeID,this.orderID,this.rtOrderID,this.direction,this.offset,String.valueOf(this.price),
+    			String.valueOf(this.volume),this.tradingDay,this.tradeDate,this.tradeTime));
+    }
     
 	public void setAllValue(String gatewayID, String symbol, String exchange, String rtSymbol, String tradeID, String rtTradeID,
 			String orderID, String rtOrderID, String direction, String offset, double price, int volume,

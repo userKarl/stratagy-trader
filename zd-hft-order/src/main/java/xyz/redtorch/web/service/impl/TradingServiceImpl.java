@@ -9,7 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.zd.common.utils.json.JacksonUtil;
+import com.alibaba.fastjson.JSON;
+import com.shanghaizhida.beans.CommandCode;
+import com.shanghaizhida.beans.NetInfo;
+import com.zd.business.constant.TraderEnvEnum;
+import com.zd.config.Global;
 
 import xyz.redtorch.trader.base.RtConstant;
 import xyz.redtorch.trader.engine.event.EventConstant;
@@ -258,20 +262,71 @@ public class TradingServiceImpl implements TradingService {
 			}
 			// 判断消息类型
 			// 使用复杂的对比判断逻辑,便于扩展修改
-			if (EventConstant.EVENT_ORDER.equals(fastEvent.getEventType())) {
+			
+			NetInfo ni=new NetInfo();
+			ni.exchangeCode=TraderEnvEnum.CTP.getCode();
+			
+			if (EventConstant.EVENT_TICK.equals(fastEvent.getEventType())) {
 				try {
-					Order order=fastEvent.getOrder();
-					log.info("接收到order数据：{}",JacksonUtil.objToJson(order));
+					Tick tick = fastEvent.getTick();
 				} catch (Exception e) {
-					log.error("向Socket转发Tick发生异常!!!", e);
+					log.error("向客户端转发Tick发生异常!!!", e);
+				}
+			} else if (EventConstant.EVENT_TRADE.equals(fastEvent.getEventType())) {
+				try {
+					Trade trade = fastEvent.getTrade();
+					ni.code=CommandCode.CTPTRADE;
+					ni.localSystemCode=trade.getGatewayID().split("@")[0];
+					ni.infoT=trade.MyToString();
+					Global.traderInfoQueue.add(ni.MyToString());
+				} catch (Exception e) {
+					log.error("向客户端转发Trade发生异常!!!", e);
+				}
+			} else if (EventConstant.EVENT_ORDER.equals(fastEvent.getEventType())) {
+				try {
+					Order order = fastEvent.getOrder();
+					ni.code=CommandCode.CTPTRADE;
+					ni.localSystemCode=order.getGatewayID().split("@")[0];
+					ni.infoT=order.MyToString();
+					Global.traderInfoQueue.add(ni.MyToString());
+				} catch (Exception e) {
+					log.error("向客户端转发Order发生异常!!!", e);
+				}
+			} else if (EventConstant.EVENT_CONTRACT.equals(fastEvent.getEventType())) {
+				try {
+					Contract contract = fastEvent.getContract();
+				} catch (Exception e) {
+					log.error("向客户端转发Contract发生异常!!!", e);
+				}
+			} else if (EventConstant.EVENT_POSITION.equals(fastEvent.getEventType())) {
+				try {
+					Position position = fastEvent.getPosition();
+					ni.code=CommandCode.CTPTRADE;
+					ni.localSystemCode=position.getGatewayID().split("@")[0];
+					ni.infoT=position.MyToString();
+					Global.traderInfoQueue.add(ni.MyToString());
+				} catch (Exception e) {
+					log.error("向客户端转发Position发生异常!!!", e);
+				}
+			} else if (EventConstant.EVENT_ACCOUNT.equals(fastEvent.getEventType())) {
+				try {
+					Account account = fastEvent.getAccount();
+					ni.code=CommandCode.CTPTRADE;
+					ni.localSystemCode=account.getGatewayID().split("@")[0];
+					ni.infoT=account.MyToString();
+					Global.traderInfoQueue.add(ni.MyToString());
+				} catch (Exception e) {
+					log.error("向客户端转发Account发生异常!!!", e);
 				}
 			} else if (EventConstant.EVENT_LOG.equals(fastEvent.getEventType())) {
 				try {
 					LogData logData = fastEvent.getLogData();
 					// 发送所有日志
 				} catch (Exception e) {
-					log.error("向SocketIO转发Order发生异常!!!", e);
+					log.error("向客户端转发Order发生异常!!!", e);
 				}
+			} else {
+				log.warn("主引擎未能识别的事件数据类型{}", JSON.toJSONString(fastEvent.getEvent()));
 			}
 		}
 

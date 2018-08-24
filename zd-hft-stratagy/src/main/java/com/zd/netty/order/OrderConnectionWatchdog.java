@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.zd.config.NettyGlobal;
 import com.zd.netty.ConnectionWatchdog;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -122,7 +123,16 @@ public class OrderConnectionWatchdog extends ConnectionWatchdog{
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		try {
-			
+			String s = null;
+			if (msg instanceof ByteBuf) {
+				ByteBuf bb = (ByteBuf) msg;
+				byte[] b = new byte[bb.readableBytes()];
+				bb.readBytes(b);
+				s = new String(b, "UTF-8");
+			} else if (msg != null) {
+				s = msg.toString();
+			}
+			logger.info("接收到下单服务器的返回数据：{}",s);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("接收socket请求异常：{}", e.getMessage());

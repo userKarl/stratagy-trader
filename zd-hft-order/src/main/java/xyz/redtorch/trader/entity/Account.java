@@ -2,6 +2,10 @@ package xyz.redtorch.trader.entity;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.Lists;
+
 /**
  * @author sun0x00@gmail.com
  */
@@ -23,6 +27,51 @@ public class Account implements Serializable{
 	private double margin; // 保证金占用
 	private double closeProfit; // 平仓盈亏
 	private double positionProfit; // 持仓盈亏
+	
+	public void MyReadString(String temp) {
+		if(StringUtils.isNotBlank(temp)) {
+			String[] split = temp.split("@");
+			if(split!=null) {
+				if(split.length>0) {
+					this.gatewayID=split[0];
+				}
+				if(split.length>1) {
+					this.accountID=split[1];
+				}
+				if(split.length>2) {
+					this.rtAccountID=split[2];
+				}
+				if(split.length>3) {
+					this.preBalance=Double.parseDouble(split[3]);
+				}
+				if(split.length>4) {
+					this.balance=Double.parseDouble(split[4]);
+				}
+				if(split.length>5) {
+					this.available=Double.parseDouble(split[5]);
+				}
+				if(split.length>6) {
+					this.commission=Double.parseDouble(split[6]);
+				}
+				if(split.length>7) {
+					this.margin=Double.parseDouble(split[7]);
+				}
+				if(split.length>8) {
+					this.closeProfit=Double.parseDouble(split[8]);
+				}
+				if(split.length>9) {
+					this.positionProfit=Double.parseDouble(split[9]);
+				}
+			}
+		}
+	}
+	
+	public String MyToString() {
+		return String.join("@", Lists.newArrayList(this.gatewayID,this.accountID,this.rtAccountID,String.valueOf(this.preBalance),
+				String.valueOf(this.balance),String.valueOf(this.available),String.valueOf(this.commission),String.valueOf(this.margin),
+				String.valueOf(this.closeProfit),String.valueOf(this.positionProfit)));
+	}
+	
 	public String getGatewayID() {
 		return gatewayID;
 	}

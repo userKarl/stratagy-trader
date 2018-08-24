@@ -1,9 +1,11 @@
 package com.zd.netty;
 
 import java.util.concurrent.TimeUnit;
+
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.TimerTask;
@@ -16,7 +18,7 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 	public ChannelHandler[] handlers() {
 		return new ChannelHandler[]{
 				new StringEncoder(),
-				new StringDecoder(),
+				new DelimiterBasedFrameDecoder(1024*24, Unpooled.copiedBuffer("}".getBytes())),
 				this,
 				// 每隔30s的时间触发一次userEventTriggered的方法，并且指定IdleState的状态位是WRITER_IDLE
 				new IdleStateHandler(0, 30, 0, TimeUnit.SECONDS),

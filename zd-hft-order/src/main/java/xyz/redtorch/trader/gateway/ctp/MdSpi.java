@@ -11,6 +11,12 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+import com.shanghaizhida.beans.CommandCode;
+import com.shanghaizhida.beans.NetInfo;
+import com.zd.business.constant.TraderEnvEnum;
+import com.zd.config.Global;
+
 import xyz.redtorch.api.jctp.CThostFtdcDepthMarketDataField;
 import xyz.redtorch.api.jctp.CThostFtdcForQuoteRspField;
 import xyz.redtorch.api.jctp.CThostFtdcMdApi;
@@ -264,6 +270,12 @@ public class MdSpi extends CThostFtdcMdSpi {
 						pRspUserLogin.getTradingDay(), pRspUserLogin.getSessionID(), pRspUserLogin.getBrokerID(),
 						pRspUserLogin.getUserID());
 				// 修改登录状态为true
+				NetInfo ni=new NetInfo();
+				ni.code=CommandCode.LOGIN;
+				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
+				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
+				ni.infoT=String.join("@", Lists.newArrayList(pRspUserLogin.getTradingDay(),pRspUserLogin.getBrokerID(),pRspUserLogin.getUserID()));
+				Global.traderInfoQueue.add(ni.MyToString());
 				this.loginStatus = true;
 				tradingDayStr = pRspUserLogin.getTradingDay();
 				log.info("{}获取到的交易日为{}", gatewayLogInfo, tradingDayStr);
@@ -305,7 +317,12 @@ public class MdSpi extends CThostFtdcMdSpi {
 			} else {
 				log.info("{}OnRspUserLogout!BrokerID:{},UserID:{}", gatewayLogInfo, pUserLogout.getBrokerID(),
 						pUserLogout.getUserID());
-
+				NetInfo ni=new NetInfo();
+				ni.code=CommandCode.UNLOGIN;
+				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
+				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
+				ni.infoT=String.join("@", Lists.newArrayList(pUserLogout.getBrokerID(),pUserLogout.getUserID()));
+				Global.traderInfoQueue.add(ni.MyToString());
 			}
 			this.loginStatus = false;
 		} catch (Exception e) {
@@ -320,6 +337,12 @@ public class MdSpi extends CThostFtdcMdSpi {
 					gatewayLogInfo, pRspInfo.getErrorID(), pRspInfo.getErrorMsg(), nRequestID, bIsLast);
 			ctpGateway.emitErrorLog(logContent);
 			log.info(logContent);
+			NetInfo ni=new NetInfo();
+			ni.code=CommandCode.CFLOGINERROR;
+			ni.exchangeCode=TraderEnvEnum.CTP.getCode();
+			ni.localSystemCode=ctpGateway.getGatewayDisplayName();
+			ni.infoT=String.join("@", Lists.newArrayList(pRspInfo.getErrorMsg()));
+			Global.traderInfoQueue.add(ni.MyToString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -333,12 +356,24 @@ public class MdSpi extends CThostFtdcMdSpi {
 				String logContent = gatewayLogInfo + "OnRspSubMarketData! 订阅合约成功:" + pSpecificInstrument.getInstrumentID();
 				ctpGateway.emitInfoLog(logContent);
 				log.info(logContent);
+				NetInfo ni=new NetInfo();
+				ni.code=CommandCode.SUBSCRIBE;
+				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
+				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
+				ni.infoT=String.join("@", Lists.newArrayList(logContent));
+				Global.traderInfoQueue.add(ni.MyToString());
 			} else {
 
 				String logContent = gatewayLogInfo + "OnRspSubMarketData! 订阅合约失败,ErrorID：" + pRspInfo.getErrorID()
 						+ "ErrorMsg:" + pRspInfo.getErrorMsg();
 				ctpGateway.emitWarnLog(logContent);
 				log.warn(logContent);
+				NetInfo ni=new NetInfo();
+				ni.code=CommandCode.CFLOGINERROR;
+				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
+				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
+				ni.infoT=String.join("@", Lists.newArrayList(logContent));
+				Global.traderInfoQueue.add(ni.MyToString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -354,11 +389,23 @@ public class MdSpi extends CThostFtdcMdSpi {
 						+ pSpecificInstrument.getInstrumentID();
 				ctpGateway.emitInfoLog(logContent);
 				log.info(logContent);
+				NetInfo ni=new NetInfo();
+				ni.code=CommandCode.UNSUBSCRIBE;
+				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
+				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
+				ni.infoT=String.join("@", Lists.newArrayList(logContent));
+				Global.traderInfoQueue.add(ni.MyToString());
 			} else {
 				String logContent = gatewayLogInfo + "OnRspUnSubMarketData! 退订合约失败,ErrorID：" + pRspInfo.getErrorID()
 						+ "ErrorMsg:" + pRspInfo.getErrorMsg();
 				ctpGateway.emitWarnLog(logContent);
 				log.warn(logContent);
+				NetInfo ni=new NetInfo();
+				ni.code=CommandCode.CFLOGINERROR;
+				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
+				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
+				ni.infoT=String.join("@", Lists.newArrayList(logContent));
+				Global.traderInfoQueue.add(ni.MyToString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -7,12 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
 public class NettyClient {
@@ -58,7 +59,7 @@ public class NettyClient {
 					protected void initChannel(NioSocketChannel ch) throws Exception {
 						ch.pipeline().addLast(watchDog.handlers());
 						ch.pipeline().addLast(new StringEncoder());
-						ch.pipeline().addLast(new StringDecoder());
+						ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024*24, Unpooled.copiedBuffer("}".getBytes())));
 					}
 					
 				});
