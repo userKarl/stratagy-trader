@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -142,6 +143,10 @@ public class TdSpi extends CThostFtdcTraderSpi {
 	// private String gatewayDisplayName;
 
 	private HashMap<String, Position> positionMap = new HashMap<>();
+	
+	//最后一条数据，如果新来的数据和这条数据相同，则不推送
+	private Position lastPosition;
+	private Account lastAccount;
 
 	private HashMap<String, String> contractExchangeMap;
 	private HashMap<String, Integer> contractSizeMap;
@@ -489,6 +494,21 @@ public class TdSpi extends CThostFtdcTraderSpi {
 				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
 				ni.infoT=String.join("@", Lists.newArrayList(pRspUserLogin.getTradingDay(),pRspUserLogin.getBrokerID(),pRspUserLogin.getUserID()));
 				Global.traderInfoQueue.add(ni.MyToString());
+				try {
+					//如果用户登录成功，先检查该用户账户是否有因为断线而未返回的交易数据
+					List<String> list = Global.notSendTraderInfoMap.get(ctpGateway.getGatewayID().split("-")[1]);
+					if(list!=null && list.size()>0) {
+						for(String s:list) {
+							NetInfo netInfo=new NetInfo();
+							netInfo.MyReadString(s);
+							netInfo.localSystemCode=ctpGateway.getGatewayDisplayName();;
+							Global.traderInfoQueue.add(ni.MyToString());
+						}
+					}
+				} catch (Exception e) {
+					log.error("检查未返回的交易数据异常 ",e);
+				}
+				
 				this.sessionID = pRspUserLogin.getSessionID();
 				this.frontID = pRspUserLogin.getFrontID();
 				// 修改登录状态为true
@@ -823,7 +843,14 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			if (bIsLast) {
 				for (Position tmpPosition : positionMap.values()) {
 					// 发送持仓事件
-					ctpGateway.emitPositon(tmpPosition);
+					if(lastPosition==null) {
+						lastPosition=new Position();
+					}
+					if(!lastPosition.MyToString().equals(tmpPosition.MyToString())) {
+						ctpGateway.emitPositon(tmpPosition);
+						lastPosition=tmpPosition;
+					}
+					
 				}
 
 				// 清空缓存
@@ -859,7 +886,14 @@ public class TdSpi extends CThostFtdcTraderSpi {
 
 			account.setBalance(balance);
 
-			ctpGateway.emitAccount(account);
+			if(lastAccount==null) {
+				lastAccount=new Account();
+			}
+			if(!lastAccount.MyToString().equals(account.MyToString())) {
+				ctpGateway.emitAccount(account);
+				lastAccount=account;
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

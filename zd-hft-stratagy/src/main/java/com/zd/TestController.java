@@ -31,6 +31,22 @@ import io.netty.channel.ChannelHandlerContext;
 @RestController
 public class TestController {
 
+	@GetMapping("test")
+	public void test() throws Exception {
+		NetInfo ni=new NetInfo();
+		ni.code=CommandCode.LOGIN;
+		LoginInfo login=new LoginInfo();
+		login.userId="demo000604";
+		login.userType="I";
+		login.userPwd="888888";
+		ni.infoT=login.MyToString();
+		ni.systemCode="1";
+		ni.localSystemCode="aaaa";
+		System.out.println("向服务端发送数据："+CommonUtils.toCommandString(ni.MyToString()));
+		ChannelHandlerContext ctx = NettyGlobal.orderServerChannalMap.get(NettyGlobal.ORDERSERVERCHANNELKEY);
+		ctx.channel().writeAndFlush(CommonUtils.toCommandString(ni.MyToString()));
+	}
+	
 	@GetMapping("zd/login")
 	public void zdlogin() throws Exception {
 		NetInfo ni=new NetInfo();

@@ -140,6 +140,10 @@ public class TdSpi extends CThostFtdcTraderSpi {
 	private HashMap<String, String> contractExchangeMap;
 	private HashMap<String, Integer> contractSizeMap;
 
+	//最后一条数据，如果新来的数据和这条数据相同，则不推送
+	private Position lastPosition;
+	private Account lastAccount;
+		
 	TdSpi(CtpGateway ctpGateway) {
 
 		this.ctpGateway = ctpGateway;
@@ -788,7 +792,13 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			if (bIsLast) {
 				for (Position tmpPosition : positionMap.values()) {
 					// 发送持仓事件
-					ctpGateway.emitPositon(tmpPosition);
+					if(lastPosition==null) {
+						lastPosition=new Position();
+					}
+					if(!lastPosition.MyToString().equals(tmpPosition.MyToString())) {
+						ctpGateway.emitPositon(tmpPosition);
+						lastPosition=tmpPosition;
+					}
 				}
 
 				// 清空缓存
@@ -824,7 +834,13 @@ public class TdSpi extends CThostFtdcTraderSpi {
 
 			account.setBalance(balance);
 
-			ctpGateway.emitAccount(account);
+			if(lastAccount==null) {
+				lastAccount=new Account();
+			}
+			if(!lastAccount.MyToString().equals(account.MyToString())) {
+				ctpGateway.emitAccount(account);
+				lastAccount=account;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

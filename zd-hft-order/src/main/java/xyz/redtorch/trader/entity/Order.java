@@ -25,31 +25,32 @@ public class Order implements Serializable{
 	private String rtOrderID; // 订单在rt系统中的唯一编号,通常是 Gateway名.订单编号
 
 	// 报单相关
-	private String direction; // 报单方向
-	private String offset; // 报单开平仓
-	private double price; // 报单价格
-	private int totalVolume; // 报单总数量
-	private int tradedVolume; // 报单成交数量
-	private String status; // 报单状态
+	private String direction=""; // 报单方向
+	private String offset=""; // 报单开平仓
+	private double price=0; // 报单价格
+	private int totalVolume=0; // 报单总数量
+	private int tradedVolume=0; // 报单成交数量
+	private String status=""; // 报单状态
 
-	private String tradingDay;
+	private String tradingDay="";
 	
-	private String orderDate; // 发单日期
-	private String orderTime; // 发单时间
-	private String cancelTime; // 撤单时间
-	private String activeTime; // 激活时间
-	private String updateTime; // 最后修改时间
+	private String orderDate=""; // 发单日期
+	private String orderTime=""; // 发单时间
+	private String cancelTime=""; // 撤单时间
+	private String activeTime=""; // 激活时间
+	private String updateTime=""; // 最后修改时间
 
-	private String priceType;
+	private String priceType="";
 	
 	// CTP/LTS相关
-	private int frontID; // 前置机编号
-	private int sessionID; // 连接编号
+	private int frontID=0; // 前置机编号
+	private int sessionID=0; // 连接编号
 	
 	public Order() {}
 	
 	public String MyToString() {
 		try {
+			this.rtOrderID="";
 			return String.join("@", Lists.newArrayList(this.gatewayID,this.symbol,this.exchange,this.rtSymbol,
 					this.orderID,
 					this.rtOrderID,
@@ -69,7 +70,7 @@ public class Order implements Serializable{
 					String.valueOf(this.sessionID),
 					this.priceType));
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return null;
 	}

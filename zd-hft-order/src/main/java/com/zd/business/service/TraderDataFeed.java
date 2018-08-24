@@ -80,15 +80,18 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 	private String localSystemCode=null;
 	
+	private String accountNo=null;
+	
 	/**
 	 * 构造函数
 	 */
-	public TraderDataFeed(String host, String port,String userAccount,String userPassWd,String localSystemCode) {
+	public TraderDataFeed(String host, String port,String userAccount,String userPassWd,String localSystemCode,String accountNo) {
 		this.host = host;
 		this.port = port;
 		this.userAccount=userAccount;
 		this.userPassWd=userPassWd;
 		this.localSystemCode=localSystemCode;
+		this.accountNo=accountNo;
 	}
 
 	/**
@@ -327,9 +330,22 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 //						|| CommandCode.FILLEDINFO.equals(netInfo.code)) {
 //					
 //				}
-//				netInfo.clientNo=userAccount;
+				
 				netInfo.localSystemCode=localSystemCode;
+				netInfo.accountNo=accountNo;
 				Global.traderInfoQueue.add(netInfo.MyToString());
+				//如果用户登录成功，先检查该用户账户是否有因为断线而未返回的交易数据
+				if(CommandCode.LOGIN.equals(netInfo.code)){
+					List<String> list = Global.notSendTraderInfoMap.get(netInfo.accountNo);
+					if(list!=null) {
+						for(String s:list) {
+							NetInfo ni=new NetInfo();
+							ni.MyReadString(s);
+							ni.localSystemCode=localSystemCode;
+							Global.traderInfoQueue.add(ni.MyToString());
+						}
+					}
+				}
 				
 				if (logger != null) {
 					// 修改密码的log不保存,包含用户敏感信息

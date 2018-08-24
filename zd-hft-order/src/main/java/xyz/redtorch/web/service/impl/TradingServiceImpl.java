@@ -276,7 +276,9 @@ public class TradingServiceImpl implements TradingService {
 				try {
 					Trade trade = fastEvent.getTrade();
 					ni.code=CommandCode.CTPTRADE;
-					ni.localSystemCode=trade.getGatewayID().split("@")[0];
+					String[] split = trade.getGatewayID().split("-");
+					ni.localSystemCode=split[0];
+					ni.accountNo=split[1];
 					ni.infoT=trade.MyToString();
 					Global.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
@@ -285,8 +287,10 @@ public class TradingServiceImpl implements TradingService {
 			} else if (EventConstant.EVENT_ORDER.equals(fastEvent.getEventType())) {
 				try {
 					Order order = fastEvent.getOrder();
-					ni.code=CommandCode.CTPTRADE;
-					ni.localSystemCode=order.getGatewayID().split("@")[0];
+					ni.code=CommandCode.CTPORDER;
+					String[] split = order.getGatewayID().split("-");
+					ni.localSystemCode=split[0];
+					ni.accountNo=split[1];
 					ni.infoT=order.MyToString();
 					Global.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
@@ -301,8 +305,10 @@ public class TradingServiceImpl implements TradingService {
 			} else if (EventConstant.EVENT_POSITION.equals(fastEvent.getEventType())) {
 				try {
 					Position position = fastEvent.getPosition();
-					ni.code=CommandCode.CTPTRADE;
-					ni.localSystemCode=position.getGatewayID().split("@")[0];
+					ni.code=CommandCode.CTPPOSITION;
+					String[] split = position.getGatewayID().split("-");
+					ni.localSystemCode=split[0];
+					ni.accountNo=split[1];
 					ni.infoT=position.MyToString();
 					Global.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
@@ -311,8 +317,10 @@ public class TradingServiceImpl implements TradingService {
 			} else if (EventConstant.EVENT_ACCOUNT.equals(fastEvent.getEventType())) {
 				try {
 					Account account = fastEvent.getAccount();
-					ni.code=CommandCode.CTPTRADE;
-					ni.localSystemCode=account.getGatewayID().split("@")[0];
+					ni.code=CommandCode.CTPACCOUNT;
+					String[] split = account.getGatewayID().split("-");
+					ni.localSystemCode=split[0];
+					ni.accountNo=split[1];
 					ni.infoT=account.MyToString();
 					Global.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {

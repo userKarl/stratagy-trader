@@ -270,12 +270,6 @@ public class MdSpi extends CThostFtdcMdSpi {
 						pRspUserLogin.getTradingDay(), pRspUserLogin.getSessionID(), pRspUserLogin.getBrokerID(),
 						pRspUserLogin.getUserID());
 				// 修改登录状态为true
-				NetInfo ni=new NetInfo();
-				ni.code=CommandCode.LOGIN;
-				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
-				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
-				ni.infoT=String.join("@", Lists.newArrayList(pRspUserLogin.getTradingDay(),pRspUserLogin.getBrokerID(),pRspUserLogin.getUserID()));
-				Global.traderInfoQueue.add(ni.MyToString());
 				this.loginStatus = true;
 				tradingDayStr = pRspUserLogin.getTradingDay();
 				log.info("{}获取到的交易日为{}", gatewayLogInfo, tradingDayStr);
@@ -317,12 +311,6 @@ public class MdSpi extends CThostFtdcMdSpi {
 			} else {
 				log.info("{}OnRspUserLogout!BrokerID:{},UserID:{}", gatewayLogInfo, pUserLogout.getBrokerID(),
 						pUserLogout.getUserID());
-				NetInfo ni=new NetInfo();
-				ni.code=CommandCode.UNLOGIN;
-				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
-				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
-				ni.infoT=String.join("@", Lists.newArrayList(pUserLogout.getBrokerID(),pUserLogout.getUserID()));
-				Global.traderInfoQueue.add(ni.MyToString());
 			}
 			this.loginStatus = false;
 		} catch (Exception e) {

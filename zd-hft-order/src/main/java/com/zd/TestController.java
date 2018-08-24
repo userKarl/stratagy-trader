@@ -25,18 +25,6 @@ public class TestController {
 	}
 	
 	
-	@GetMapping("connect")
-	public void connect(String s) {
-		String account1="demo000604";
-		TraderDataFeed tdf1=new TraderDataFeed("222.73.119.230", "7003", account1, "888888","");
-		Global.accountTraderMap.put(account1, tdf1);
-		tdf1.start();
-		String account2="demo003498";
-		TraderDataFeed tdf2=new TraderDataFeed("222.73.119.230", "7003", account2, "888888","");
-		Global.accountTraderMap.put(account2, tdf2);
-		tdf2.start();
-	}
-	
 	@GetMapping("order/{userAccount}")
 	public void order(@PathVariable String userAccount) {
 		TraderDataFeed tdf = Global.accountTraderMap.get(userAccount);

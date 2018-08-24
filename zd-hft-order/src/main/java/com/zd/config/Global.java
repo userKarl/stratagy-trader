@@ -1,5 +1,6 @@
 package com.zd.config;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -32,6 +33,8 @@ public class Global {
 	public static final String brokerId="9999";
 	public static final String gatewayClassName="xyz.redtorch.trader.gateway.ctp.CtpGateway";
 	
+	//尚未发送给客户端的交易数据（主要针对客户端断线）
+	public static ConcurrentHashMap<String, List<String>> notSendTraderInfoMap=new ConcurrentHashMap<>();
 	
 	public static TradingService tradingService=null;
 }

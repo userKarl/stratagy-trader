@@ -1,8 +1,12 @@
 package com.zd.business.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
 import com.zd.common.CommonUtils;
 import com.zd.common.utils.StringUtils;
@@ -44,6 +48,17 @@ public class SendTraderInfoThread implements Runnable{
 					ChannelHandlerContext ctx = NettyGlobal.clientMap.get(localSystemCode);
 					if(ctx!=null) {
 						ctx.channel().writeAndFlush(CommonUtils.toCommandString(poll));
+					}else {
+						//如果客户端连接已断开，则先将信息保存，等同一accountNo用户登录成功的时候，将该信息先返回
+						if(!CommandCode.LOGIN.equals(ni.code)) {
+							List<String> list = Global.notSendTraderInfoMap.get(ni.accountNo);
+							if(list==null) {
+								list=Lists.newArrayList();
+							}
+							list.add(poll);
+							Global.notSendTraderInfoMap.put(ni.accountNo,list);
+						}
+						
 					}
 				}
 				Thread.sleep(1);

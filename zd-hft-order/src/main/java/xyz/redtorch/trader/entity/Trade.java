@@ -17,25 +17,25 @@ public class Trade implements Serializable{
 	private String gatewayID; // 接口
 
 	// 代码编号相关
-	private String symbol; // 代码
-	private String exchange; // 交易所代码
-	private String rtSymbol; // 系统中的唯一代码,通常是 合约代码.交易所代码
+	private String symbol=""; // 代码
+	private String exchange=""; // 交易所代码
+	private String rtSymbol=""; // 系统中的唯一代码,通常是 合约代码.交易所代码
 
-	private String tradeID; // 成交编号
-	private String rtTradeID; // 成交在rt系统中的唯一编号,通常是 Gateway名.成交编号
+	private String tradeID=""; // 成交编号
+	private String rtTradeID=""; // 成交在rt系统中的唯一编号,通常是 Gateway名.成交编号
 
-	private String orderID; // 订单编号
-	private String rtOrderID; // 订单在rt系统中的唯一编号,通常是 Gateway名.订单编号
+	private String orderID=""; // 订单编号
+	private String rtOrderID=""; // 订单在rt系统中的唯一编号,通常是 Gateway名.订单编号
 
 	// 成交相关
-	private String direction; // 成交方向
-	private String offset; // 成交开平仓
-	private double price; // 成交价格
-	private int volume; // 成交数量
+	private String direction=""; // 成交方向
+	private String offset=""; // 成交开平仓
+	private double price=0; // 成交价格
+	private int volume=0; // 成交数量
 
-	private String tradingDay; // 交易日
-	private String tradeDate; // 业务发生日
-	private String tradeTime; // 时间(HHMMSSmmm)
+	private String tradingDay=""; // 交易日
+	private String tradeDate=""; // 业务发生日
+	private String tradeTime=""; // 时间(HHMMSSmmm)
     private DateTime dateTime;
     
     public void MyReadString(String temp) {
@@ -92,6 +92,8 @@ public class Trade implements Serializable{
     }
     
     public String MyToString() {
+    	this.rtOrderID="";
+    	this.rtTradeID="";
     	return String.join("@", Lists.newArrayList(this.gatewayID,this.symbol,this.exchange,this.rtSymbol,this.tradeID,
     			this.rtTradeID,this.orderID,this.rtOrderID,this.direction,this.offset,String.valueOf(this.price),
     			String.valueOf(this.volume),this.tradingDay,this.tradeDate,this.tradeTime));

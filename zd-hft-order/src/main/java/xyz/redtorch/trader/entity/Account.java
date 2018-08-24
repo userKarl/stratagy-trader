@@ -67,6 +67,7 @@ public class Account implements Serializable{
 	}
 	
 	public String MyToString() {
+		this.rtAccountID="";
 		return String.join("@", Lists.newArrayList(this.gatewayID,this.accountID,this.rtAccountID,String.valueOf(this.preBalance),
 				String.valueOf(this.balance),String.valueOf(this.available),String.valueOf(this.commission),String.valueOf(this.margin),
 				String.valueOf(this.closeProfit),String.valueOf(this.positionProfit)));

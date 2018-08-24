@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
-import com.zd.business.service.TraderDataFeed;
+import com.zd.business.constant.RespMessage;
+import com.zd.common.CommonUtils;
 import com.zd.common.utils.StringUtils;
 import com.zd.config.Global;
 import com.zd.config.NettyGlobal;
@@ -13,7 +14,6 @@ import com.zd.config.NettyGlobal;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.internal.ConcurrentSet;
 
 /**
  * 
@@ -24,9 +24,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	private final static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
 
-	//每个连接可能会发送多个账户的操作请求
-	private ConcurrentSet<String> accountSet=new ConcurrentSet<>();
-	
 	/**
 	 * 客户端建立连接
 	 */
@@ -73,13 +70,18 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			}
 			NetInfo ni = new NetInfo();
 			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length()));
-			//将该channel添加至localSystemCode，以便于得到交易回报时返回给相应的连接
-			ni.localSystemCode=ctx.channel().id().toString();
-			if(!accountSet.contains(ni.localSystemCode+"-"+ni.accountNo)) {
-				accountSet.add(ni.localSystemCode+"-"+ni.accountNo);
-			}
+			
 			if(StringUtils.isNotBlank(ni.infoT) && !CommandCode.HEARTBIT.equals(ni.code)) {
-				Global.orderEventProducer.onData(ni);
+				if(StringUtils.isNotBlank(ni.accountNo)) {
+					//将该channel添加至localSystemCode，以便于得到交易回报时返回给相应的连接
+					ni.localSystemCode=ctx.channel().id().toString();
+					Global.orderEventProducer.onData(ni);
+				}else {
+					NetInfo netInfo = new NetInfo();
+					netInfo.code=CommandCode.CFLOGINERROR;
+					netInfo.infoT=RespMessage.ACCOUNTNONULL;
+					ctx.channel().writeAndFlush(CommonUtils.toCommandString(netInfo.MyToString()));
+				}
 			}
 		} catch (Exception e) {
 			logger.error("接收socket请求异常：{}", e.getMessage());
