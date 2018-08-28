@@ -6,9 +6,8 @@ public abstract class ZdEventProducer<T> {
 
 	protected final RingBuffer<T> ringBuffer;
 
-    public ZdEventProducer(RingBuffer<T> ringBuffer)
-    {
-        this.ringBuffer = ringBuffer;
-    }
-    
+	public ZdEventProducer(RingBuffer<T> ringBuffer) {
+		this.ringBuffer = ringBuffer;
+	}
+
 }

@@ -20,8 +20,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	private final static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
 
-	Object o=new Object();
-	
+	Object o = new Object();
+
 	/**
 	 * 客户端建立连接
 	 */
@@ -29,7 +29,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		System.out.println("客户端与服务端连接开启");
 	}
-	
+
 	/**
 	 * 客户端断开连接
 	 */
@@ -47,7 +47,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 				localAddress, remoteAddress, cause.getClass().getSimpleName(), cause.getMessage());
 		ctx.channel().close();
 	}
-	
+
 	/**
 	 * 读取到消息
 	 */
@@ -70,12 +70,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length()));
 			if (StringUtils.isNotBlank(ni.infoT) && StringUtils.isNotBlank(ni.code)
 					&& !CommandCode.HEARTBIT.equals(ni.code)) {
-				logger.info("resv msg from order Server:{}",ni.MyToString());
+				logger.info("resv msg from order Server:{}", ni.MyToString());
 			}
 		} catch (Exception e) {
 			logger.error("接收socket请求异常：{}", e.getMessage());
 		}
-
 
 	}
 

@@ -20,7 +20,7 @@ import io.netty.util.Timeout;
 import io.netty.util.Timer;
 
 @ChannelHandler.Sharable
-public class CentralConnectionWatchdog extends ConnectionWatchdog{
+public class CentralConnectionWatchdog extends ConnectionWatchdog {
 
 	private static final Logger logger = LoggerFactory.getLogger(CentralConnectionWatchdog.class);
 
@@ -70,8 +70,7 @@ public class CentralConnectionWatchdog extends ConnectionWatchdog{
 						logger.debug("心跳检查Successs");
 					}
 				}
-			}, 5L, 5L, TimeUnit.SECONDS
-					);
+			}, 5L, 5L, TimeUnit.SECONDS);
 		}
 		logger.info("Connects with {}.", channel);
 		ctx.fireChannelActive();
@@ -135,7 +134,7 @@ public class CentralConnectionWatchdog extends ConnectionWatchdog{
 				s = msg.toString();
 			}
 
-			String data=s.substring(s.indexOf(")") + 1, s.length() - 1);
+			String data = s.substring(s.indexOf(")") + 1, s.length() - 1);
 			NetInfo ni = new NetInfo();
 			ni.MyReadString(data);
 
@@ -144,7 +143,6 @@ public class CentralConnectionWatchdog extends ConnectionWatchdog{
 				Global.centralEventProducer.onData(data);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("接收中控服务器数据异常：{}", e.getMessage());
 		}
 	}

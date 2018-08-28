@@ -569,7 +569,7 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 			workingOrderMap = workingOrderMap.entrySet().stream()
 					.filter(map -> !map.getValue().getGatewayID().equals(gatewayID))
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-			
+
 			Global.accountTraderCTPMap.remove(gatewayID);
 
 		} else {
@@ -642,7 +642,7 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 
 	@Override
 	public void saveGateway(GatewaySetting gatewaySetting) {
-		Global.accountTraderCTPMap.put(gatewaySetting.getGatewayID(),gatewaySetting);
+		Global.accountTraderCTPMap.put(gatewaySetting.getGatewayID(), gatewaySetting);
 	}
 
 	@Override
@@ -666,7 +666,7 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 			disconnectGateway(gatewaySetting.getGatewayID());
 			isLoaded = true;
 		}
-		Global.accountTraderCTPMap.put(gatewayID,gatewaySetting);
+		Global.accountTraderCTPMap.put(gatewayID, gatewaySetting);
 
 		// 重新连接
 		if (isLoaded) {

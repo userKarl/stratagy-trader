@@ -221,7 +221,7 @@ public class CommandCode {
 
 	/** 请求行情 */
 	public static final String MARKET01 = "MARKET01";
-	
+
 	/** 请求二级行情 */
 	public static final String MARKET02 = "MARKET02";
 

@@ -14,8 +14,8 @@ public class GatewaySetting {
 	String authCode;
 	String userProductInfo;
 	String gatewayClassName;
-	
-	//用于运行时区分是否连接
+
+	// 用于运行时区分是否连接
 	Boolean runtimeStatus;
 
 	public String getGatewayID() {
@@ -105,5 +105,5 @@ public class GatewaySetting {
 	public void setRuntimeStatus(Boolean runtimeStatus) {
 		this.runtimeStatus = runtimeStatus;
 	}
-	
+
 }

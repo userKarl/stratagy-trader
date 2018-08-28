@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
 /**
  * @author sun0x00@gmail.com
  */
@@ -33,7 +34,7 @@ public interface RtConstant {
 	static final String STATUS_CANCELLED = "已撤销";
 	static final String STATUS_REJECTED = "拒单";
 	static final String STATUS_UNKNOWN = "未知";
-	
+
 	static HashSet<String> STATUS_FINISHED = new HashSet<String>() {
 		private static final long serialVersionUID = 8777691797309945190L;
 		{
@@ -42,7 +43,7 @@ public interface RtConstant {
 			add(RtConstant.STATUS_ALLTRADED);
 		}
 	};
-	
+
 	static HashSet<String> STATUS_WORKING = new HashSet<String>() {
 		private static final long serialVersionUID = 909683985291870766L;
 		{

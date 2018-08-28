@@ -99,8 +99,8 @@ public class MdSpi extends CThostFtdcMdSpi {
 
 			}
 			String envTmpDir = System.getProperty("java.io.tmpdir");
-			String tempFilePath = envTmpDir + File.separator + "xyz" + File.separator + "redtorch" + File.separator + "api"
-					+ File.separator + "jctp" + File.separator + "TEMP_CTP" + File.separator + "MD_"
+			String tempFilePath = envTmpDir + File.separator + "xyz" + File.separator + "redtorch" + File.separator
+					+ "api" + File.separator + "jctp" + File.separator + "TEMP_CTP" + File.separator + "MD_"
 					+ ctpGateway.getGatewayID() + "_";
 			File tempFile = new File(tempFilePath);
 			if (!tempFile.getParentFile().exists()) {
@@ -149,7 +149,6 @@ public class MdSpi extends CThostFtdcMdSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 
@@ -209,7 +208,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private void login() {
@@ -229,7 +228,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// 前置机联机回报
@@ -245,7 +244,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// 前置机断开回报
@@ -258,7 +257,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// 登录回报
@@ -298,7 +297,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// 登出回报
@@ -325,11 +324,11 @@ public class MdSpi extends CThostFtdcMdSpi {
 					gatewayLogInfo, pRspInfo.getErrorID(), pRspInfo.getErrorMsg(), nRequestID, bIsLast);
 			ctpGateway.emitErrorLog(logContent);
 			log.info(logContent);
-			NetInfo ni=new NetInfo();
-			ni.code=CommandCode.CFLOGINERROR;
-			ni.exchangeCode=TraderEnvEnum.CTP.getCode();
-			ni.localSystemCode=ctpGateway.getGatewayDisplayName();
-			ni.infoT=String.join("@", Lists.newArrayList(pRspInfo.getErrorMsg()));
+			NetInfo ni = new NetInfo();
+			ni.code = CommandCode.CFLOGINERROR;
+			ni.exchangeCode = TraderEnvEnum.CTP.getCode();
+			ni.localSystemCode = ctpGateway.getGatewayDisplayName();
+			ni.infoT = String.join("@", Lists.newArrayList(pRspInfo.getErrorMsg()));
 			Global.traderInfoQueue.add(ni.MyToString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -341,14 +340,15 @@ public class MdSpi extends CThostFtdcMdSpi {
 			CThostFtdcRspInfoField pRspInfo, int nRequestID, boolean bIsLast) {
 		try {
 			if (pRspInfo.getErrorID() == 0) {
-				String logContent = gatewayLogInfo + "OnRspSubMarketData! 订阅合约成功:" + pSpecificInstrument.getInstrumentID();
+				String logContent = gatewayLogInfo + "OnRspSubMarketData! 订阅合约成功:"
+						+ pSpecificInstrument.getInstrumentID();
 				ctpGateway.emitInfoLog(logContent);
 				log.info(logContent);
-				NetInfo ni=new NetInfo();
-				ni.code=CommandCode.SUBSCRIBE;
-				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
-				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
-				ni.infoT=String.join("@", Lists.newArrayList(logContent));
+				NetInfo ni = new NetInfo();
+				ni.code = CommandCode.SUBSCRIBE;
+				ni.exchangeCode = TraderEnvEnum.CTP.getCode();
+				ni.localSystemCode = ctpGateway.getGatewayDisplayName();
+				ni.infoT = String.join("@", Lists.newArrayList(logContent));
 				Global.traderInfoQueue.add(ni.MyToString());
 			} else {
 
@@ -356,11 +356,11 @@ public class MdSpi extends CThostFtdcMdSpi {
 						+ "ErrorMsg:" + pRspInfo.getErrorMsg();
 				ctpGateway.emitWarnLog(logContent);
 				log.warn(logContent);
-				NetInfo ni=new NetInfo();
-				ni.code=CommandCode.CFLOGINERROR;
-				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
-				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
-				ni.infoT=String.join("@", Lists.newArrayList(logContent));
+				NetInfo ni = new NetInfo();
+				ni.code = CommandCode.CFLOGINERROR;
+				ni.exchangeCode = TraderEnvEnum.CTP.getCode();
+				ni.localSystemCode = ctpGateway.getGatewayDisplayName();
+				ni.infoT = String.join("@", Lists.newArrayList(logContent));
 				Global.traderInfoQueue.add(ni.MyToString());
 			}
 		} catch (Exception e) {
@@ -377,22 +377,22 @@ public class MdSpi extends CThostFtdcMdSpi {
 						+ pSpecificInstrument.getInstrumentID();
 				ctpGateway.emitInfoLog(logContent);
 				log.info(logContent);
-				NetInfo ni=new NetInfo();
-				ni.code=CommandCode.UNSUBSCRIBE;
-				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
-				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
-				ni.infoT=String.join("@", Lists.newArrayList(logContent));
+				NetInfo ni = new NetInfo();
+				ni.code = CommandCode.UNSUBSCRIBE;
+				ni.exchangeCode = TraderEnvEnum.CTP.getCode();
+				ni.localSystemCode = ctpGateway.getGatewayDisplayName();
+				ni.infoT = String.join("@", Lists.newArrayList(logContent));
 				Global.traderInfoQueue.add(ni.MyToString());
 			} else {
 				String logContent = gatewayLogInfo + "OnRspUnSubMarketData! 退订合约失败,ErrorID：" + pRspInfo.getErrorID()
 						+ "ErrorMsg:" + pRspInfo.getErrorMsg();
 				ctpGateway.emitWarnLog(logContent);
 				log.warn(logContent);
-				NetInfo ni=new NetInfo();
-				ni.code=CommandCode.CFLOGINERROR;
-				ni.exchangeCode=TraderEnvEnum.CTP.getCode();
-				ni.localSystemCode=ctpGateway.getGatewayDisplayName();
-				ni.infoT=String.join("@", Lists.newArrayList(logContent));
+				NetInfo ni = new NetInfo();
+				ni.code = CommandCode.CFLOGINERROR;
+				ni.exchangeCode = TraderEnvEnum.CTP.getCode();
+				ni.localSystemCode = ctpGateway.getGatewayDisplayName();
+				ni.infoT = String.join("@", Lists.newArrayList(logContent));
 				Global.traderInfoQueue.add(ni.MyToString());
 			}
 		} catch (Exception e) {
@@ -405,10 +405,10 @@ public class MdSpi extends CThostFtdcMdSpi {
 		try {
 			if (pDepthMarketData != null) {
 
-//				// T2T Test
-//				if("IH1805".equals(pDepthMarketData.getInstrumentID())) {
-//					System.out.println("T2T-Tick-"+System.nanoTime());
-//				}
+				// // T2T Test
+				// if("IH1805".equals(pDepthMarketData.getInstrumentID())) {
+				// System.out.println("T2T-Tick-"+System.nanoTime());
+				// }
 				String symbol = pDepthMarketData.getInstrumentID();
 
 				if (!contractExchangeMap.containsKey(symbol)) {
@@ -493,14 +493,14 @@ public class MdSpi extends CThostFtdcMdSpi {
 				Integer askVolume9 = 0;
 				Integer askVolume10 = 0;
 
-				ctpGateway.emitTick(gatewayID, symbol, exchange, rtSymbol, tradingDay, actionDayStr, actionTime, dateTime,
-						status, lastPrice, lastVolume, volume, openInterest, preOpenInterest, preClosePrice, preSettlePrice,
-						openPrice, highPrice, lowPrice, upperLimit, lowerLimit, bidPrice1, bidPrice2, bidPrice3, bidPrice4,
-						bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidPrice10, askPrice1, askPrice2, askPrice3,
-						askPrice4, askPrice5, askPrice6, askPrice7, askPrice8, askPrice9, askPrice10, bidVolume1,
-						bidVolume2, bidVolume3, bidVolume4, bidVolume5, bidVolume6, bidVolume7, bidVolume8, bidVolume9,
-						bidVolume10, askVolume1, askVolume2, askVolume3, askVolume4, askVolume5, askVolume6, askVolume7,
-						askVolume8, askVolume9, askVolume10);
+				ctpGateway.emitTick(gatewayID, symbol, exchange, rtSymbol, tradingDay, actionDayStr, actionTime,
+						dateTime, status, lastPrice, lastVolume, volume, openInterest, preOpenInterest, preClosePrice,
+						preSettlePrice, openPrice, highPrice, lowPrice, upperLimit, lowerLimit, bidPrice1, bidPrice2,
+						bidPrice3, bidPrice4, bidPrice5, bidPrice6, bidPrice7, bidPrice8, bidPrice9, bidPrice10,
+						askPrice1, askPrice2, askPrice3, askPrice4, askPrice5, askPrice6, askPrice7, askPrice8,
+						askPrice9, askPrice10, bidVolume1, bidVolume2, bidVolume3, bidVolume4, bidVolume5, bidVolume6,
+						bidVolume7, bidVolume8, bidVolume9, bidVolume10, askVolume1, askVolume2, askVolume3, askVolume4,
+						askVolume5, askVolume6, askVolume7, askVolume8, askVolume9, askVolume10);
 
 			} else {
 				log.warn("{}OnRtnDepthMarketData! 收到行情信息为空", gatewayLogInfo);

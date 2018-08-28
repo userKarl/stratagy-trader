@@ -19,23 +19,23 @@ public class Global {
 	/**
 	 * 行情Disruptor生产者
 	 */
-	public static MarketEventProducer marketEventProducer=null;
-	
-	//行情订阅者连接
-	public static ConcurrentHashMap<String,ChannelHandlerContext> clientChannelMap=new ConcurrentHashMap<>();
-	
-	//每个行情订阅者对应一个Disruptor队列的消费者
-	public static ConcurrentHashMap<String,MarketEventHandler> client2EventHandlerMap=new ConcurrentHashMap<>();
-	
-	//每个Disruptor队列的消费者对应一个行情订阅者连接
-	public static ConcurrentHashMap<String,ChannelHandlerContext> eventHandler2clientMap=new ConcurrentHashMap<>();
-	
-	public static TradingService tradingService=null;
-	
+	public static MarketEventProducer marketEventProducer = null;
+
+	// 行情订阅者连接
+	public static ConcurrentHashMap<String, ChannelHandlerContext> clientChannelMap = new ConcurrentHashMap<>();
+
+	// 每个行情订阅者对应一个Disruptor队列的消费者
+	public static ConcurrentHashMap<String, MarketEventHandler> client2EventHandlerMap = new ConcurrentHashMap<>();
+
+	// 每个Disruptor队列的消费者对应一个行情订阅者连接
+	public static ConcurrentHashMap<String, ChannelHandlerContext> eventHandler2clientMap = new ConcurrentHashMap<>();
+
+	public static TradingService tradingService = null;
+
 	@Value("${netty.ctp.server.host}")
 	public String marketCtpServerHost;
-	
+
 	@Value("${netty.ctp.server.port}")
 	public int marketCtpServerPort;
-		
+
 }

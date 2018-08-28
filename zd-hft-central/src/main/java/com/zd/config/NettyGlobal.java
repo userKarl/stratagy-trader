@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 public class NettyGlobal {
 
 	@Value("${netty.central.server.port}")
-	public int nettyCentralServerPort;//中控服务器端口
+	public int nettyCentralServerPort;// 中控服务器端口
 
 	@Value("${netty.central.server.host}")
-	public String nettyCentralServerHost;//中控服务器地址
+	public String nettyCentralServerHost;// 中控服务器地址
 }

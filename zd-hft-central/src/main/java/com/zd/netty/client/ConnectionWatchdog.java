@@ -55,7 +55,8 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 	 */
 	@Override
 	public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-//		NettyGlobal.centralServerChannalMap.put(NettyGlobal.CENTRALSERVERCHANNELKEY, ctx);
+		// NettyGlobal.centralServerChannalMap.put(NettyGlobal.CENTRALSERVERCHANNELKEY,
+		// ctx);
 		channel = ctx.channel();
 		attempts = 0;
 		reconnect = true;
@@ -71,8 +72,7 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 						logger.debug("心跳检查Successs");
 					}
 				}
-			}, 5L, 5L, TimeUnit.SECONDS
-					);
+			}, 5L, 5L, TimeUnit.SECONDS);
 		}
 		logger.info("Connects with {}.", channel);
 		ctx.fireChannelActive();
@@ -84,7 +84,8 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 	 */
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-//		NettyGlobal.centralServerChannalMap.remove(NettyGlobal.CENTRALSERVERCHANNELKEY, ctx);
+		// NettyGlobal.centralServerChannalMap.remove(NettyGlobal.CENTRALSERVERCHANNELKEY,
+		// ctx);
 		disConnect = true;
 		logger.info("Disconnects with {}, doReconnect = {},attemps == {}", ctx.channel(), reconnect, attempts);
 		if (reconnect) {
@@ -127,9 +128,8 @@ public abstract class ConnectionWatchdog extends ChannelInboundHandlerAdapter
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		try {
-			
+
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("接收socket请求异常：{}", e.getMessage());
 		}
 	}

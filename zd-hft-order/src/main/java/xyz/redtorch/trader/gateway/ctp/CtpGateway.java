@@ -25,17 +25,19 @@ public class CtpGateway extends GatewayAbstract {
 			if (System.getProperties().getProperty("os.name").toUpperCase().indexOf("WINDOWS") != -1) {
 
 				String envTmpDir = System.getProperty("java.io.tmpdir");
-				String tempLibPath = envTmpDir + File.separator + "xyz" + File.separator + "redtorch" + File.separator + "api"
-						+ File.separator + "jctp" + File.separator + "lib";
-				
+				String tempLibPath = envTmpDir + File.separator + "xyz" + File.separator + "redtorch" + File.separator
+						+ "api" + File.separator + "jctp" + File.separator + "lib";
+
 				CommonUtil.copyURLToFileForTmp(tempLibPath, CtpGateway.class.getResource("/assembly/libiconv.dll"));
-				CommonUtil.copyURLToFileForTmp(tempLibPath, CtpGateway.class.getResource("/assembly/thostmduserapi.dll"));
+				CommonUtil.copyURLToFileForTmp(tempLibPath,
+						CtpGateway.class.getResource("/assembly/thostmduserapi.dll"));
 				CommonUtil.copyURLToFileForTmp(tempLibPath,
 						CtpGateway.class.getResource("/assembly/jctpmdapiv6v3v11x64.dll"));
-				CommonUtil.copyURLToFileForTmp(tempLibPath, CtpGateway.class.getResource("/assembly/thosttraderapi.dll"));
+				CommonUtil.copyURLToFileForTmp(tempLibPath,
+						CtpGateway.class.getResource("/assembly/thosttraderapi.dll"));
 				CommonUtil.copyURLToFileForTmp(tempLibPath,
 						CtpGateway.class.getResource("/assembly/jctptraderapiv6v3v11x64.dll"));
-				
+
 				System.load(tempLibPath + File.separator + "libiconv.dll");
 				System.load(tempLibPath + File.separator + "thostmduserapi.dll");
 				System.load(tempLibPath + File.separator + "jctpmdapiv6v3v11x64.dll");
@@ -44,11 +46,13 @@ public class CtpGateway extends GatewayAbstract {
 			} else {
 
 				String envTmpDir = "/tmp";
-				String tempLibPath = envTmpDir + File.separator + "xyz" + File.separator + "redtorch" + File.separator + "api"
-						+ File.separator + "jctp" + File.separator + "lib";
-				
-				CommonUtil.copyURLToFileForTmp(tempLibPath, CtpGateway.class.getResource("/assembly/libthostmduserapi.so"));
-				CommonUtil.copyURLToFileForTmp(tempLibPath, CtpGateway.class.getResource("/assembly/libthosttraderapi.so"));
+				String tempLibPath = envTmpDir + File.separator + "xyz" + File.separator + "redtorch" + File.separator
+						+ "api" + File.separator + "jctp" + File.separator + "lib";
+
+				CommonUtil.copyURLToFileForTmp(tempLibPath,
+						CtpGateway.class.getResource("/assembly/libthostmduserapi.so"));
+				CommonUtil.copyURLToFileForTmp(tempLibPath,
+						CtpGateway.class.getResource("/assembly/libthosttraderapi.so"));
 				CommonUtil.copyURLToFileForTmp(tempLibPath,
 						CtpGateway.class.getResource("/assembly/libjctpmdapiv6v3v11x64.so"));
 				CommonUtil.copyURLToFileForTmp(tempLibPath,

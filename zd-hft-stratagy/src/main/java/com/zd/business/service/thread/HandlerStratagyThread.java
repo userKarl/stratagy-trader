@@ -25,50 +25,55 @@ import com.zd.business.entity.Stratagy;
 
 /**
  * 处理策略计算
+ * 
  * @author user
  *
  */
-public class HandlerStratagyThread implements Runnable{
+public class HandlerStratagyThread implements Runnable {
 
 	private static final Logger logger = LoggerFactory.getLogger(HandlerStratagyThread.class);
-	
+
+	private volatile boolean isStillRunning = false;
+
 	private volatile Thread thread;
-	
-	private ConcurrentLinkedQueue<MarketInfo> queue=new ConcurrentLinkedQueue<>();
-	
+
+	private ConcurrentLinkedQueue<MarketInfo> queue = new ConcurrentLinkedQueue<>();
+
 	private String id;
-	
-	private double buyAllPrice[]=new double[5];
-	private double saleAllPrice[]=new double[5];
-	private double buyAllNumber[]=new double[5];
-	private double saleAllNumber[]=new double[5];
-	
+
+	private double buyAllPrice[] = new double[5];
+	private double saleAllPrice[] = new double[5];
+	private double buyAllNumber[] = new double[5];
+	private double saleAllNumber[] = new double[5];
+
 	public HandlerStratagyThread(String id) {
-		this.id=id;
+		this.id = id;
 	}
-	
+
 	// 策略容器
 	private ConcurrentHashMap<String, Stratagy> stratagyConcurrentHashMap = new ConcurrentHashMap<>();
-		
+
 	public void start() {
-		thread=new Thread(this);
+		thread = new Thread(this);
 		thread.start();
+		isStillRunning = true;
 	}
-	
+
 	public void stop() {
-		if(thread!=null) {
+		if (thread != null) {
+			isStillRunning = false;
 			thread.interrupt();
-			thread=null;
+			thread = null;
 		}
 	}
-	
+
 	@Override
 	public void run() {
-		while(true) {
-			MarketInfo marketInfo=queue.poll();
-			if(marketInfo!=null) {
+		while (isStillRunning) {
+			MarketInfo marketInfo = queue.poll();
+			if (marketInfo != null) {
 				logger.info("策略计算接收到的数据：{}", marketInfo.MyToString());
-				long l=System.nanoTime();
+				long l = System.nanoTime();
 				// 循环计算集合中的状态为RUNNING的策略
 				for (Entry<String, Stratagy> entry : stratagyConcurrentHashMap.entrySet()) {
 					try {
@@ -84,30 +89,32 @@ public class HandlerStratagyThread implements Runnable{
 							if (StratagyTypeEnum.M.toString().equals(stratagy.getType())) {
 								// 根据套利公式和档位限制计算市商合约行情
 								// TODO
-//								MarketProvider mp = new MarketProvider();
-//								MarketInfo mi = mp.getMarketInfo();
-								MarketProvider mp=stratagy.getMp();
-								MarketInfo mi=marketInfo;
+								// MarketProvider mp = new MarketProvider();
+								// MarketInfo mi = mp.getMarketInfo();
+								MarketProvider mp = stratagy.getMp();
+								MarketInfo mi = marketInfo;
 								List<String> list = Lists.newArrayList();
-								buyAllPrice[0]=Double.valueOf(mi.buyPrice);
-								buyAllPrice[1]=Double.valueOf(mi.buyPrice2);
-								buyAllPrice[2]=Double.valueOf(mi.buyPrice3);
-								buyAllPrice[3]=Double.valueOf(mi.buyPrice4);
-								buyAllPrice[4]=Double.valueOf(mi.buyPrice5);
-								
-								saleAllPrice[0]=Double.valueOf(mi.salePrice);
-								saleAllPrice[1]=Double.valueOf(mi.salePrice2);
-								saleAllPrice[2]=Double.valueOf(mi.salePrice3);
-								saleAllPrice[3]=Double.valueOf(mi.salePrice4);
-								saleAllPrice[4]=Double.valueOf(mi.salePrice5);
-								
-//								double buyAllPrice[] = { Double.valueOf(mi.buyPrice), Double.valueOf(mi.buyPrice2),
-//										Double.valueOf(mi.buyPrice3), Double.valueOf(mi.buyPrice4),
-//										Double.valueOf(mi.buyPrice5) };
-//								double saleAllPrice[] = { Double.valueOf(mi.salePrice), Double.valueOf(mi.salePrice2),
-//										Double.valueOf(mi.salePrice3), Double.valueOf(mi.salePrice4),
-//										Double.valueOf(mi.salePrice5) };
-								
+								buyAllPrice[0] = Double.valueOf(mi.buyPrice);
+								buyAllPrice[1] = Double.valueOf(mi.buyPrice2);
+								buyAllPrice[2] = Double.valueOf(mi.buyPrice3);
+								buyAllPrice[3] = Double.valueOf(mi.buyPrice4);
+								buyAllPrice[4] = Double.valueOf(mi.buyPrice5);
+
+								saleAllPrice[0] = Double.valueOf(mi.salePrice);
+								saleAllPrice[1] = Double.valueOf(mi.salePrice2);
+								saleAllPrice[2] = Double.valueOf(mi.salePrice3);
+								saleAllPrice[3] = Double.valueOf(mi.salePrice4);
+								saleAllPrice[4] = Double.valueOf(mi.salePrice5);
+
+								// double buyAllPrice[] = { Double.valueOf(mi.buyPrice),
+								// Double.valueOf(mi.buyPrice2),
+								// Double.valueOf(mi.buyPrice3), Double.valueOf(mi.buyPrice4),
+								// Double.valueOf(mi.buyPrice5) };
+								// double saleAllPrice[] = { Double.valueOf(mi.salePrice),
+								// Double.valueOf(mi.salePrice2),
+								// Double.valueOf(mi.salePrice3), Double.valueOf(mi.salePrice4),
+								// Double.valueOf(mi.salePrice5) };
+
 								double buy[] = new double[mp.getPriceLevelLimit()];
 								double sale[] = new double[mp.getPriceLevelLimit()];
 								for (int i = 0; i < mp.getPriceLevelLimit(); i++) {
@@ -122,24 +129,26 @@ public class HandlerStratagyThread implements Runnable{
 									}
 								}
 								if (list.size() > 0) {
-									buyAllNumber[0]=Double.valueOf(mi.buyNumber);
-									buyAllNumber[1]=Double.valueOf(mi.buyNumber2);
-									buyAllNumber[2]=Double.valueOf(mi.buyNumber3);
-									buyAllNumber[3]=Double.valueOf(mi.buyNumber4);
-									buyAllNumber[4]=Double.valueOf(mi.buyNumber5);
-									
-									saleAllNumber[0]=Double.valueOf(mi.saleNumber);
-									saleAllNumber[1]=Double.valueOf(mi.saleNumber2);
-									saleAllNumber[2]=Double.valueOf(mi.saleNumber3);
-									saleAllNumber[3]=Double.valueOf(mi.saleNumber4);
-									saleAllNumber[4]=Double.valueOf(mi.saleNumber5);
-									
-//									double buyAllNumber[] = { Double.valueOf(mi.buyNumber), Double.valueOf(mi.buyNumber2),
-//											Double.valueOf(mi.buyNumber3), Double.valueOf(mi.buyNumber4),
-//											Double.valueOf(mi.buyNumber5) };
-//									double saleAllNumber[] = { Double.valueOf(mi.saleNumber), Double.valueOf(mi.saleNumber2),
-//											Double.valueOf(mi.saleNumber3), Double.valueOf(mi.saleNumber4),
-//											Double.valueOf(mi.saleNumber5) };
+									buyAllNumber[0] = Double.valueOf(mi.buyNumber);
+									buyAllNumber[1] = Double.valueOf(mi.buyNumber2);
+									buyAllNumber[2] = Double.valueOf(mi.buyNumber3);
+									buyAllNumber[3] = Double.valueOf(mi.buyNumber4);
+									buyAllNumber[4] = Double.valueOf(mi.buyNumber5);
+
+									saleAllNumber[0] = Double.valueOf(mi.saleNumber);
+									saleAllNumber[1] = Double.valueOf(mi.saleNumber2);
+									saleAllNumber[2] = Double.valueOf(mi.saleNumber3);
+									saleAllNumber[3] = Double.valueOf(mi.saleNumber4);
+									saleAllNumber[4] = Double.valueOf(mi.saleNumber5);
+
+									// double buyAllNumber[] = { Double.valueOf(mi.buyNumber),
+									// Double.valueOf(mi.buyNumber2),
+									// Double.valueOf(mi.buyNumber3), Double.valueOf(mi.buyNumber4),
+									// Double.valueOf(mi.buyNumber5) };
+									// double saleAllNumber[] = { Double.valueOf(mi.saleNumber),
+									// Double.valueOf(mi.saleNumber2),
+									// Double.valueOf(mi.saleNumber3), Double.valueOf(mi.saleNumber4),
+									// Double.valueOf(mi.saleNumber5) };
 									double buyNum[] = new double[mp.getPriceLevelLimit()];
 									double saleNum[] = new double[mp.getPriceLevelLimit()];
 									for (int i = 0; i < mp.getPriceLevelLimit(); i++) {
@@ -156,7 +165,8 @@ public class HandlerStratagyThread implements Runnable{
 
 									for (String s : list) {
 										// 剩余可下单总量
-										double minRemainNum = Math.min(maxBuyNum - currBuyNum, maxSaleNum - currSaleNum);
+										double minRemainNum = Math.min(maxBuyNum - currBuyNum,
+												maxSaleNum - currSaleNum);
 										if (minRemainNum < minOrderNum) {
 											// 单边下单
 											continue;
@@ -191,28 +201,32 @@ public class HandlerStratagyThread implements Runnable{
 														} else if (min2 >= maxOrderNumLimit) {
 															orderNum = maxOrderNumLimit;
 														}
-														if(orderNum>0) {
+														if (orderNum > 0) {
 															currBuyNum += orderNum;
 															currSaleNum += orderNum;
 															buyNum[buyIndex] -= orderNum;
 															saleNum[saleIndex] -= orderNum;
-															//将下单信息发送至下单服务器
+															// 将下单信息发送至下单服务器
 															OrderInfo oiBuy = generateOrder(RiskOrderEnum.C.toString(),
-																	UserTypeEnum.COMMON.toString(), mi.exchangeCode, mi.code,
-																	BuySaleEnum.BUY.toString(), String.valueOf(orderNum),
-																	String.valueOf(buy[buyIndex]), PriceTypeEnum.LIMIT.toString(),
+																	UserTypeEnum.COMMON.toString(), mi.exchangeCode,
+																	mi.code, BuySaleEnum.BUY.toString(),
+																	String.valueOf(orderNum),
+																	String.valueOf(buy[buyIndex]),
+																	PriceTypeEnum.LIMIT.toString(),
 																	AddReduceEnum.TAKE.toString());
 															OrderInfo oiSale = generateOrder(RiskOrderEnum.C.toString(),
-																	UserTypeEnum.COMMON.toString(), mi.exchangeCode, mi.code,
-																	BuySaleEnum.SALE.toString(), String.valueOf(orderNum),
-																	String.valueOf(sale[saleIndex]), PriceTypeEnum.LIMIT.toString(),
+																	UserTypeEnum.COMMON.toString(), mi.exchangeCode,
+																	mi.code, BuySaleEnum.SALE.toString(),
+																	String.valueOf(orderNum),
+																	String.valueOf(sale[saleIndex]),
+																	PriceTypeEnum.LIMIT.toString(),
 																	AddReduceEnum.TAKE.toString());
 															ni.infoT = oiBuy.MyToString() + "," + oiSale.MyToString();
-//															Global.orderEventProducer.onData(ni.MyToString());
-														}else {
+															// Global.orderEventProducer.onData(ni.MyToString());
+														} else {
 															break;
 														}
-														
+
 													}
 												}
 
@@ -223,7 +237,7 @@ public class HandlerStratagyThread implements Runnable{
 							}
 							///////////////////////////////////// 市商套利end/////////////////////////////////////////
 						}
-						logger.info("计算策略完成后耗时：{} ms",(System.nanoTime()-l)/1e6);
+						logger.info("计算策略完成后耗时：{} ms", (System.nanoTime() - l) / 1e6);
 						Thread.sleep(1);
 					} catch (Exception e) {
 						logger.error("策略计算线程异常：{}", e);
@@ -232,7 +246,7 @@ public class HandlerStratagyThread implements Runnable{
 				}
 			}
 		}
-		
+
 	}
 
 	public static OrderInfo generateOrder(String fIsRiskOrder, String userType, String exchangeCode, String code,
@@ -255,7 +269,7 @@ public class HandlerStratagyThread implements Runnable{
 		orderInfo.addReduce = addReduce;
 		return orderInfo;
 	}
-	
+
 	public ConcurrentLinkedQueue<MarketInfo> getQueue() {
 		return queue;
 	}
@@ -279,5 +293,5 @@ public class HandlerStratagyThread implements Runnable{
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 }

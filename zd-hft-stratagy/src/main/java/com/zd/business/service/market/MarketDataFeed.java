@@ -94,7 +94,7 @@ public class MarketDataFeed implements Runnable, ConnectionStateListener {
 					ni.MyReadString(temp);
 					if (StringUtils.isNotBlank(ni.infoT) && StringUtils.isNotBlank(ni.code)
 							&& CommandCode.MARKET01.equals(ni.code)) {
-//						handler(ni.infoT);
+						// handler(ni.infoT);
 						Global.marketEventProducer.onData(ni.infoT);
 					}
 				}

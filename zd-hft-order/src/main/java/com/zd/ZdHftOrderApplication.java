@@ -17,50 +17,50 @@ import io.netty.channel.ChannelFuture;
 import xyz.redtorch.web.service.TradingService;
 
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.zd","xyz.redtorch" })
-public class ZdHftOrderApplication implements CommandLineRunner{
+@ComponentScan(basePackages = { "com.zd", "xyz.redtorch" })
+public class ZdHftOrderApplication implements CommandLineRunner {
 
 	@Autowired
 	private NettyGlobal nettyGlobal;
-	
+
 	@Autowired
 	private NettyServer nettyServer;
-	
+
 	@Autowired
 	private TradingService tradingService;
-	
+
 	public static void main(String[] args) {
 		SpringApplication.run(ZdHftOrderApplication.class, args);
 	}
 
 	@Override
 	public void run(String... arg0) throws Exception {
-		
-		Global.tradingService=tradingService;
-		
+
+		Global.tradingService = tradingService;
+
 		// 开启Disruptor队列
 		OrderEventEngine.addHandler();
 		OrderEventProducer mep = new OrderEventProducer(OrderEventEngine.getRingBuffer());
 		Global.orderEventProducer = mep;
-		
-		
-		//启动下单服务器
+
+		// 启动下单服务器
 		Thread nettyServerThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				// 启动netty服务器
-				ChannelFuture future = nettyServer.start(nettyGlobal.nettyOrderServerHost, nettyGlobal.nettyOrderServerPort);
+				ChannelFuture future = nettyServer.start(nettyGlobal.nettyOrderServerHost,
+						nettyGlobal.nettyOrderServerPort);
 				future.channel().closeFuture().syncUninterruptibly();
 			}
 		});
 		nettyServerThread.start();
-		
+
 		Thread.sleep(3000);
-		//启动发送交易数据线程
+		// 启动发送交易数据线程
 		SendTraderInfoThread sendTraderInfoThread = new SendTraderInfoThread();
 		sendTraderInfoThread.start();
-		
+
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {

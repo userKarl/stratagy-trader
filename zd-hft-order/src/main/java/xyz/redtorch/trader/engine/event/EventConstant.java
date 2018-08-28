@@ -1,4 +1,5 @@
 package xyz.redtorch.trader.engine.event;
+
 /**
  * @author sun0x00@gmail.com
  */

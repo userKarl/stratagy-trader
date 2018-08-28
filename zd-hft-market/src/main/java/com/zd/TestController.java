@@ -19,16 +19,16 @@ public class TestController {
 
 	@GetMapping("test")
 	public void test() {
-		for(int i=0;i<2;i++) {
+		for (int i = 0; i < 2; i++) {
 			new Thread(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					MarketEventEngine.addHandler();
-					while(true) {
-						MarketInfo mi=new MarketInfo();
-						mi.code=Thread.currentThread().getName();
-						mi.buyNumber=""+Math.random()*20;
+					while (true) {
+						MarketInfo mi = new MarketInfo();
+						mi.code = Thread.currentThread().getName();
+						mi.buyNumber = "" + Math.random() * 20;
 						Global.marketEventProducer.onData(mi.MyToString());
 						try {
 							Thread.sleep(1);
@@ -37,40 +37,40 @@ public class TestController {
 							e.printStackTrace();
 						}
 					}
-					
+
 				}
 			}).start();
 		}
-	
+
 	}
-	
+
 	@GetMapping("send")
 	public void send() throws Exception {
-		ChannelHandlerContext ctx=Global.market01ChannelMap.get(Global.MARKET01SERVERCHANNELKEY);
-		NetInfo ni=new NetInfo();
-		ni.code=CommandCode.MARKET01;
-		ni.todayCanUse="++";
-//		ni.systemCode = "1000";
-		System.out.println("向服务端发送数据："+CommonUtils.toCommandString(ni.MyToString()));
+		ChannelHandlerContext ctx = Global.market01ChannelMap.get(Global.MARKET01SERVERCHANNELKEY);
+		NetInfo ni = new NetInfo();
+		ni.code = CommandCode.MARKET01;
+		ni.todayCanUse = "++";
+		// ni.systemCode = "1000";
+		System.out.println("向服务端发送数据：" + CommonUtils.toCommandString(ni.MyToString()));
 		ctx.channel().writeAndFlush(CommonUtils.toCommandString(ni.MyToString()));
 	}
-	
+
 	@GetMapping("sub/{loopCount}/{symbols}")
-	public void sub(@PathVariable Integer loopCount,@PathVariable String symbols) {
-		for(int i=0;i<loopCount;i++) {
+	public void sub(@PathVariable Integer loopCount, @PathVariable String symbols) {
+		for (int i = 0; i < loopCount; i++) {
 			String[] split = symbols.split(",");
 			MarketEventHandler handler = MarketEventEngine.addHandler();
-			for(String s:split) {
+			for (String s : split) {
 				handler.subscribeEvent(s);
 			}
 		}
-		
+
 	}
-	
+
 	@GetMapping("pub/{symbols}")
 	public void pub(@PathVariable String symbols) {
 		String[] split = symbols.split(",");
-		for(String s:split) {
+		for (String s : split) {
 			Global.marketEventProducer.onData(s);
 		}
 	}

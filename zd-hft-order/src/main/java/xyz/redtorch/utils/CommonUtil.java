@@ -247,14 +247,15 @@ public class CommonUtil {
 		}
 		return classes;
 	}
+
 	/**
 	 * 发出error日志事件
 	 * 
 	 * @param eventEngine
 	 * @param logContent
 	 */
-	public static void emitLogBase(String event, String logLevel,String logContent) {
-		RingBuffer<FastEvent> ringBuffer  = FastEventEngine.getRingBuffer();
+	public static void emitLogBase(String event, String logLevel, String logContent) {
+		RingBuffer<FastEvent> ringBuffer = FastEventEngine.getRingBuffer();
 		long sequence = ringBuffer.next(); // Grab the next sequence
 		try {
 			FastEvent fastEvent = ringBuffer.get(sequence); // Get the entry in the Disruptor for the sequence
@@ -267,6 +268,7 @@ public class CommonUtil {
 			ringBuffer.publish(sequence);
 		}
 	}
+
 	/**
 	 * 发出error日志事件
 	 * 
@@ -477,6 +479,7 @@ public class CommonUtil {
 
 	/**
 	 * 复制文件到临时文件夹
+	 * 
 	 * @param targetDir
 	 * @param orginFilePath
 	 * @throws IOException
@@ -494,6 +497,7 @@ public class CommonUtil {
 
 	/**
 	 * 复制URL到临时文件夹,例如从war包中
+	 * 
 	 * @param targetDir
 	 * @param sourceURL
 	 * @throws IOException

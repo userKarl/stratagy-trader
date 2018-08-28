@@ -16,7 +16,7 @@ import io.netty.util.Timeout;
 import io.netty.util.Timer;
 
 @ChannelHandler.Sharable
-public class OrderConnectionWatchdog extends ConnectionWatchdog{
+public class OrderConnectionWatchdog extends ConnectionWatchdog {
 
 	private static final Logger logger = LoggerFactory.getLogger(OrderConnectionWatchdog.class);
 
@@ -67,8 +67,7 @@ public class OrderConnectionWatchdog extends ConnectionWatchdog{
 						logger.debug("心跳检查Successs");
 					}
 				}
-			}, 5L, 5L, TimeUnit.SECONDS
-					);
+			}, 5L, 5L, TimeUnit.SECONDS);
 		}
 		logger.info("Connects with {}.", channel);
 		ctx.fireChannelActive();
@@ -132,9 +131,8 @@ public class OrderConnectionWatchdog extends ConnectionWatchdog{
 			} else if (msg != null) {
 				s = msg.toString();
 			}
-			logger.info("接收到下单服务器的返回数据：{}",s);
+			logger.info("接收到下单服务器的返回数据：{}", s);
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("接收socket请求异常：{}", e.getMessage());
 		}
 	}

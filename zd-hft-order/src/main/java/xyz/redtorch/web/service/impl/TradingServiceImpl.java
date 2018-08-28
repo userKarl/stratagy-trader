@@ -233,7 +233,6 @@ public class TradingServiceImpl implements TradingService {
 		mainEngine.saveGateway(gatewaySetting);
 	}
 
-
 	@Override
 	public List<LogData> getLogDatas() {
 		return mainEngine.getLogDatas();
@@ -262,10 +261,10 @@ public class TradingServiceImpl implements TradingService {
 			}
 			// 判断消息类型
 			// 使用复杂的对比判断逻辑,便于扩展修改
-			
-			NetInfo ni=new NetInfo();
-			ni.exchangeCode=TraderEnvEnum.CTP.getCode();
-			
+
+			NetInfo ni = new NetInfo();
+			ni.exchangeCode = TraderEnvEnum.CTP.getCode();
+
 			if (EventConstant.EVENT_TICK.equals(fastEvent.getEventType())) {
 				try {
 					Tick tick = fastEvent.getTick();
@@ -275,11 +274,11 @@ public class TradingServiceImpl implements TradingService {
 			} else if (EventConstant.EVENT_TRADE.equals(fastEvent.getEventType())) {
 				try {
 					Trade trade = fastEvent.getTrade();
-					ni.code=CommandCode.CTPTRADE;
+					ni.code = CommandCode.CTPTRADE;
 					String[] split = trade.getGatewayID().split("-");
-					ni.localSystemCode=split[0];
-					ni.accountNo=split[1];
-					ni.infoT=trade.MyToString();
+					ni.localSystemCode = split[0];
+					ni.accountNo = split[1];
+					ni.infoT = trade.MyToString();
 					Global.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
 					log.error("向客户端转发Trade发生异常!!!", e);
@@ -287,11 +286,11 @@ public class TradingServiceImpl implements TradingService {
 			} else if (EventConstant.EVENT_ORDER.equals(fastEvent.getEventType())) {
 				try {
 					Order order = fastEvent.getOrder();
-					ni.code=CommandCode.CTPORDER;
+					ni.code = CommandCode.CTPORDER;
 					String[] split = order.getGatewayID().split("-");
-					ni.localSystemCode=split[0];
-					ni.accountNo=split[1];
-					ni.infoT=order.MyToString();
+					ni.localSystemCode = split[0];
+					ni.accountNo = split[1];
+					ni.infoT = order.MyToString();
 					Global.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
 					log.error("向客户端转发Order发生异常!!!", e);
@@ -305,11 +304,11 @@ public class TradingServiceImpl implements TradingService {
 			} else if (EventConstant.EVENT_POSITION.equals(fastEvent.getEventType())) {
 				try {
 					Position position = fastEvent.getPosition();
-					ni.code=CommandCode.CTPPOSITION;
+					ni.code = CommandCode.CTPPOSITION;
 					String[] split = position.getGatewayID().split("-");
-					ni.localSystemCode=split[0];
-					ni.accountNo=split[1];
-					ni.infoT=position.MyToString();
+					ni.localSystemCode = split[0];
+					ni.accountNo = split[1];
+					ni.infoT = position.MyToString();
 					Global.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
 					log.error("向客户端转发Position发生异常!!!", e);
@@ -317,11 +316,11 @@ public class TradingServiceImpl implements TradingService {
 			} else if (EventConstant.EVENT_ACCOUNT.equals(fastEvent.getEventType())) {
 				try {
 					Account account = fastEvent.getAccount();
-					ni.code=CommandCode.CTPACCOUNT;
+					ni.code = CommandCode.CTPACCOUNT;
 					String[] split = account.getGatewayID().split("-");
-					ni.localSystemCode=split[0];
-					ni.accountNo=split[1];
-					ni.infoT=account.MyToString();
+					ni.localSystemCode = split[0];
+					ni.accountNo = split[1];
+					ni.infoT = account.MyToString();
 					Global.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
 					log.error("向客户端转发Account发生异常!!!", e);

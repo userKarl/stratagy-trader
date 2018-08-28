@@ -50,6 +50,7 @@ import com.zd.config.Global;
 
 /**
  * 交易服务器线程
+ * 
  * @author user
  *
  */
@@ -65,33 +66,34 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 	private boolean isConnrcted = false;
 
-	private String userAccount=null;
-	
-	private String userPassWd=null;
-	
-	private boolean ispasswdOverdue=false;
-	
-	private boolean isLogin=false;
-	
-	private List<LoginHistoryIpInfo> loginSameIpList=Lists.newArrayList();
-	
+	private String userAccount = null;
+
+	private String userPassWd = null;
+
+	private boolean ispasswdOverdue = false;
+
+	private boolean isLogin = false;
+
+	private List<LoginHistoryIpInfo> loginSameIpList = Lists.newArrayList();
+
 	public String host;
 	public String port;
 
-	private String localSystemCode=null;
-	
-	private String accountNo=null;
-	
+	private String localSystemCode = null;
+
+	private String accountNo = null;
+
 	/**
 	 * 构造函数
 	 */
-	public TraderDataFeed(String host, String port,String userAccount,String userPassWd,String localSystemCode,String accountNo) {
+	public TraderDataFeed(String host, String port, String userAccount, String userPassWd, String localSystemCode,
+			String accountNo) {
 		this.host = host;
 		this.port = port;
-		this.userAccount=userAccount;
-		this.userPassWd=userPassWd;
-		this.localSystemCode=localSystemCode;
-		this.accountNo=accountNo;
+		this.userAccount = userAccount;
+		this.userPassWd = userPassWd;
+		this.localSystemCode = localSystemCode;
+		this.accountNo = accountNo;
 	}
 
 	/**
@@ -311,42 +313,42 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 				NetInfo netInfo = new NetInfo();
 				netInfo.MyReadString(strNetData);
-				//将信息返回给中控
-				//TODO
-//				if(CommandCode.LOGIN.equals(netInfo.code) 
-//						|| CommandCode.LOGINRID.equals(netInfo.code)
-//						|| CommandCode.LOGINMULTI.equals(netInfo.code)
-//						|| CommandCode.ORDER.equals(netInfo.code)
-//						|| CommandCode.ORDERSTATUS.equals(netInfo.code)
-//						|| CommandCode.HOLDSTATUS.equals(netInfo.code)
-//						|| CommandCode.ACCOUNTLAST.equals(netInfo.code)
-//						|| CommandCode.CANCELCAST.equals(netInfo.code)
-//						|| CommandCode.SearchGuaDan.equals(netInfo.code)
-//						|| CommandCode.SearchHoldTotal.equals(netInfo.code)
-//						|| CommandCode.CURRENCYLIST.equals(netInfo.code)
-//						|| CommandCode.ACCOUNTSEARCH.equals(netInfo.code)
-//						|| CommandCode.FILLEDCAST.equals(netInfo.code)
-//						|| CommandCode.FILLEDSEARCH.equals(netInfo.code)
-//						|| CommandCode.FILLEDINFO.equals(netInfo.code)) {
-//					
-//				}
-				
-				netInfo.localSystemCode=localSystemCode;
-				netInfo.accountNo=accountNo;
+				// 将信息返回给中控
+				// TODO
+				// if(CommandCode.LOGIN.equals(netInfo.code)
+				// || CommandCode.LOGINRID.equals(netInfo.code)
+				// || CommandCode.LOGINMULTI.equals(netInfo.code)
+				// || CommandCode.ORDER.equals(netInfo.code)
+				// || CommandCode.ORDERSTATUS.equals(netInfo.code)
+				// || CommandCode.HOLDSTATUS.equals(netInfo.code)
+				// || CommandCode.ACCOUNTLAST.equals(netInfo.code)
+				// || CommandCode.CANCELCAST.equals(netInfo.code)
+				// || CommandCode.SearchGuaDan.equals(netInfo.code)
+				// || CommandCode.SearchHoldTotal.equals(netInfo.code)
+				// || CommandCode.CURRENCYLIST.equals(netInfo.code)
+				// || CommandCode.ACCOUNTSEARCH.equals(netInfo.code)
+				// || CommandCode.FILLEDCAST.equals(netInfo.code)
+				// || CommandCode.FILLEDSEARCH.equals(netInfo.code)
+				// || CommandCode.FILLEDINFO.equals(netInfo.code)) {
+				//
+				// }
+
+				netInfo.localSystemCode = localSystemCode;
+				netInfo.accountNo = accountNo;
 				Global.traderInfoQueue.add(netInfo.MyToString());
-				//如果用户登录成功，先检查该用户账户是否有因为断线而未返回的交易数据
-				if(CommandCode.LOGIN.equals(netInfo.code)){
+				// 如果用户登录成功，先检查该用户账户是否有因为断线而未返回的交易数据
+				if (CommandCode.LOGIN.equals(netInfo.code)) {
 					List<String> list = Global.notSendTraderInfoMap.get(netInfo.accountNo);
-					if(list!=null) {
-						for(String s:list) {
-							NetInfo ni=new NetInfo();
+					if (list != null) {
+						for (String s : list) {
+							NetInfo ni = new NetInfo();
 							ni.MyReadString(s);
-							ni.localSystemCode=localSystemCode;
+							ni.localSystemCode = localSystemCode;
 							Global.traderInfoQueue.add(ni.MyToString());
 						}
 					}
 				}
-				
+
 				if (logger != null) {
 					// 修改密码的log不保存,包含用户敏感信息
 					if (CommandCode.MODIFYPW.equals(netInfo.code)) {
@@ -399,7 +401,7 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				this.sendLogin(userAccount, userPassWd, MacUtils.getMac());
 			}
 
-			// 
+			//
 			// this.notifyObservers(new TraderTag(TraderTag.TRADER_SOCKET_SUCCESS));
 
 			endtime = 0;
@@ -412,7 +414,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 			isConnrcted = false;
 
-			
 		} else if (code == ConnectionStateListener.SCOKET_CONNECTIONFAIL) {
 
 			logger.error("国际期货交易连接创建失败");
@@ -423,7 +424,7 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 			if (System.currentTimeMillis() - endtime > 30000) {
 				if (logger != null)
 					logger.info("TraderDataFeed onConnectStateChange ConnectionStateListener.SCOKET_CONNECTIONFAIL");
-				
+
 				endtime = System.currentTimeMillis();
 			}
 		}
@@ -582,7 +583,7 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 							isFirstLogin = true;
 							// 发送获取密保认证问题列表
 							sendQuestionListSearch();
-//							return;
+							// return;
 						}
 						// 安全认证添加-----20180306-----end
 					}
@@ -608,10 +609,9 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				logger.info("TraderDataFeed Login failmsg = begin-----" + failMsg + "-----end");
 				// System.out.println(failMsg);
 
-				
 			}
 
-			// 
+			//
 			// this.notifyObservers(tag);
 
 			return;
@@ -633,7 +633,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 			initDateList();
 
-			
 			return;
 		}
 		// 提示用户前面已经有人在别处登陆过的代码
@@ -662,7 +661,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				logger.error("CommandCode.SYSTEMNOGET netInfo.errorCode = " + netInfo.errorCode);
 			}
 
-			
 			return;
 		}
 		// 下单返回
@@ -715,7 +713,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				// refreshYingSunList();
 			}
 
-			
 			return;
 		}
 		// 最新定单状态信息返回
@@ -726,8 +723,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 			OrderResponseInfo info = weituoInfoMap.get(netInfo.systemCode);
 
 			updateGuadanByWeituoInfo(info);
-
-			
 
 			return;
 		}
@@ -745,7 +740,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 			totalInfo.MyReadString(netInfo.infoT);
 			updateChengjiaoTotalInfo(totalInfo);
 
-			
 			return;
 		}
 		// 持仓状态返回
@@ -759,7 +753,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				updateChicangTotalByOrderStatusInfo(orderStatusInfo);
 			}
 
-			
 			return;
 		}
 		// 最新账户资金信息返回
@@ -775,7 +768,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				updateBaseCurrenyByRate();
 			}
 
-			
 			return;
 		}
 		// 撤单
@@ -793,7 +785,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 			else {
 			}
 
-			
 			return;
 		}
 		// 改单
@@ -829,7 +820,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 			else {
 			}
 
-			
 			return;
 		}
 		// 委托
@@ -860,7 +850,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 			}
 
-			
 			return;
 		}
 		// 挂单查询
@@ -880,7 +869,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 			}
 
-			
 			return;
 		}
 		// 持仓合计
@@ -903,7 +891,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				}
 			}
 
-			
 			return;
 		}
 		// 成交查询
@@ -929,7 +916,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 			}
 
-			
 			return;
 		}
 		// 资金查询
@@ -953,7 +939,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				}
 			}
 
-			
 			return;
 		}
 		// 币种对应汇率
@@ -979,7 +964,7 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				// bizhongInfoMap.put(currencyInfo.currencyNo,currencyInfo);
 			}
 
-			// 
+			//
 			// this.notifyObservers(new TraderTag(TraderTag.TRADER_TYPE_ACCOUNT));
 		}
 
@@ -1002,7 +987,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 			}
 
-			
 			return;
 		}
 
@@ -1035,7 +1019,7 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 			// 修改失败
 			else {
 			}
-			
+
 		}
 		// 登陆IP返回
 		else if (CommandCode.GetLoginHistoryList.equals(netInfo.code)) {
@@ -1092,7 +1076,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				// 错误消息
 			}
 
-			
 		}
 		// 发送手机验证码返回
 		else if (CommandCode.ReqVerifyCode.equals(netInfo.code)) {
@@ -1105,7 +1088,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				// 错误消息
 			}
 
-			
 		}
 		// 安全认证返回
 		else if (CommandCode.SafeVerify.equals(netInfo.code)) {
@@ -1123,7 +1105,7 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 					if (arrClass.length < 10) {
 						// 这个返回的是认证的确认
-						
+
 					} else {
 						// 这个返回的是登陆账户信息
 						if (!isLogin) {
@@ -1134,17 +1116,16 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 							isLogin = true;
 
-							
 						}
 					}
 				} else {
-					
+
 				}
 			}
 			// 获取失败
 			else {
 				// 错误消息
-				
+
 			}
 		}
 		// 密保问题答案设置返回
@@ -1157,7 +1138,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 			else {
 			}
 
-			
 		}
 		// 安全认证添加-----20180306-----end
 		// 其他错误消息
@@ -1170,7 +1150,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 			// System.out.println(failMsg);
 			logger.error("TraderDataFeed traderInfoHandler failMsg = " + failMsg);
 
-			
 		}
 	}
 
@@ -1631,7 +1610,6 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 
 		initDateList();
 
-		
 	}
 
 	/**
@@ -1704,8 +1682,8 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 		NetInfo netInfo = new NetInfo();
 		netInfo.code = CommandCode.ORDER;
 
-//		netInfo.localSystemCode = getLocalSystemCode();
-		netInfo.localSystemCode =orderInfo.localSystemCode;
+		// netInfo.localSystemCode = getLocalSystemCode();
+		netInfo.localSystemCode = orderInfo.localSystemCode;
 		netInfo.accountNo = orderInfo.accountNo;
 		netInfo.exchangeCode = orderInfo.exchangeCode;
 		netInfo.infoT = orderInfo.MyToString();
@@ -2223,19 +2201,19 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 	 *
 	 * @return
 	 */
-//	private String getLocalSystemCode() {
-//
-//		if (localSystemNo == -1) {
-//			SimpleDateFormat da = new SimpleDateFormat("yyyyMMdd");
-//			String time = da.format(new Date()) + "8800001";
-//			localSystemNo = Long.parseLong(time);
-//		} else {
-//			localSystemNo++;
-//		}
-//
-//		return "NM" + localSystemNo + "";
-//
-//	}
+	// private String getLocalSystemCode() {
+	//
+	// if (localSystemNo == -1) {
+	// SimpleDateFormat da = new SimpleDateFormat("yyyyMMdd");
+	// String time = da.format(new Date()) + "8800001";
+	// localSystemNo = Long.parseLong(time);
+	// } else {
+	// localSystemNo++;
+	// }
+	//
+	// return "NM" + localSystemNo + "";
+	//
+	// }
 
 	/**
 	 * 分割消息体
@@ -2294,7 +2272,7 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				info.filledPrice = String.valueOf(totalprice * totalnumber);
 				chengjiaoTotalInfoMap.put(info.exchangeCode + info.code + info.buySale, info);
 			}
-			
+
 		}
 	}
 
@@ -2396,6 +2374,5 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 	public void setUserPassWd(String userPassWd) {
 		this.userPassWd = userPassWd;
 	}
-	
-	
+
 }

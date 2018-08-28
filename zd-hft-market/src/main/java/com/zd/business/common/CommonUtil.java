@@ -1,8 +1,6 @@
 package com.zd.business.common;
 
 import java.io.File;
-import java.net.URL;
-import java.util.Scanner;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -14,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,6 +22,7 @@ import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.jar.JarEntry;
@@ -35,8 +35,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.lmax.disruptor.RingBuffer;
 
 /**
  * @author sun0x00@gmail.com
@@ -141,7 +139,7 @@ public class CommonUtil {
 											// 添加到classes
 											classes.add(Class.forName(packageName + '.' + className));
 										} catch (ClassNotFoundException e) {
-											e.printStackTrace();
+											log.error("ClassNotFoundException", e);
 										}
 									}
 								}
@@ -409,6 +407,7 @@ public class CommonUtil {
 
 	/**
 	 * 复制文件到临时文件夹
+	 * 
 	 * @param targetDir
 	 * @param orginFilePath
 	 * @throws IOException
@@ -426,6 +425,7 @@ public class CommonUtil {
 
 	/**
 	 * 复制URL到临时文件夹,例如从war包中
+	 * 
 	 * @param targetDir
 	 * @param sourceURL
 	 * @throws IOException

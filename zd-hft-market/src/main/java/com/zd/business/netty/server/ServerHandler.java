@@ -24,8 +24,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	private final static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
 
-	Object o=new Object();
-	
+	Object o = new Object();
+
 	/**
 	 * 客户端建立连接
 	 */
@@ -34,7 +34,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		System.out.println("客户端与服务端连接开启");
 		Global.clientChannelMap.put(ctx.channel().id().toString(), ctx);
 	}
-	
+
 	/**
 	 * 客户端断开连接
 	 */
@@ -53,7 +53,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 				localAddress, remoteAddress, cause.getClass().getSimpleName(), cause.getMessage());
 		ctx.channel().close();
 	}
-	
+
 	/**
 	 * 读取到消息
 	 */
@@ -69,61 +69,61 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			} else if (msg != null) {
 				s = msg.toString();
 			}
-			
+
 			NetInfo ni = new NetInfo();
 			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length()));
 
-			//请求二级行情
-			if(CommandCode.MARKET02.equals(ni.code)) {
-				//判断该连接是否已经开启队列消费者
+			// 请求二级行情
+			if (CommandCode.MARKET02.equals(ni.code)) {
+				// 判断该连接是否已经开启队列消费者
 				MarketEventHandler handler = Global.client2EventHandlerMap.get(ctx.channel().id().toString());
-				if(handler==null) {
+				if (handler == null) {
 					handler = MarketEventEngine.addHandler();
 					handler.setSubAll(false);
 					handler.setCtx(ctx);
-					Global.client2EventHandlerMap.put(ctx.channel().id().toString(),handler);
+					Global.client2EventHandlerMap.put(ctx.channel().id().toString(), handler);
 					Global.eventHandler2clientMap.put(handler.getId(), ctx);
 				}
-				//订阅行情
-				if(SubMarketTypeEnum.ALL.getCode().equals(ni.todayCanUse)) {
-					//订阅全部行情
+				// 订阅行情
+				if (SubMarketTypeEnum.ALL.getCode().equals(ni.todayCanUse)) {
+					// 订阅全部行情
 					handler.getSubscribedEventSet().clear();
 					handler.setSubAll(true);
-				}else if(SubMarketTypeEnum.ADD.getCode().equals(ni.todayCanUse) && StringUtils.isNotBlank(ni.infoT)) {
-					//追加订阅新的行情
+				} else if (SubMarketTypeEnum.ADD.getCode().equals(ni.todayCanUse) && StringUtils.isNotBlank(ni.infoT)) {
+					// 追加订阅新的行情
 					handler.setSubAll(false);
 					String[] symbols = ni.infoT.split(",");
-					for(String symbol:symbols) {
-						if(handler.isSubAll()) {
-							//之前是订阅所有的行情
+					for (String symbol : symbols) {
+						if (handler.isSubAll()) {
+							// 之前是订阅所有的行情
 							handler.sub(symbol);
-						}else {
+						} else {
 							handler.subscribeEvent(symbol);
 						}
 					}
-				}else if(SubMarketTypeEnum.UNSUB.getCode().equals(ni.todayCanUse)) {
-					//退订行情
-					if(StringUtils.isNotBlank(ni.infoT)) {
+				} else if (SubMarketTypeEnum.UNSUB.getCode().equals(ni.todayCanUse)) {
+					// 退订行情
+					if (StringUtils.isNotBlank(ni.infoT)) {
 						String[] symbols = ni.infoT.split(",");
-						for(String symbol:symbols) {
-							if(handler.isSubAll()) {
-								//之前是订阅所有的行情
+						for (String symbol : symbols) {
+							if (handler.isSubAll()) {
+								// 之前是订阅所有的行情
 								handler.unsub(symbol);
-							}else {
+							} else {
 								handler.unsubscribeEvent(symbol);
 							}
 						}
-					}else {
-						//退订所有行情
+					} else {
+						// 退订所有行情
 						handler.setSubAll(false);
 						handler.getSubscribedEventSet().clear();
 					}
-				}else if(SubMarketTypeEnum.NEW.getCode().equals(ni.todayCanUse) && StringUtils.isNotBlank(ni.infoT)) {
-					//订阅新的行情
+				} else if (SubMarketTypeEnum.NEW.getCode().equals(ni.todayCanUse) && StringUtils.isNotBlank(ni.infoT)) {
+					// 订阅新的行情
 					handler.setSubAll(false);
 					handler.getSubscribedEventSet().clear();
 					String[] symbols = ni.infoT.split(",");
-					for(String symbol:symbols) {
+					for (String symbol : symbols) {
 						handler.subscribeEvent(symbol);
 					}
 				}
@@ -131,7 +131,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		} catch (Exception e) {
 			logger.error("接收行情订阅socket请求异常：{}", e.getMessage());
 		}
-
 
 	}
 

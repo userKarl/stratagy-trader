@@ -32,7 +32,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		System.out.println("客户端与服务端连接开启");
 		NettyGlobal.clientMap.put(ctx.channel().id().toString(), ctx);
 	}
-	
+
 	/**
 	 * 客户端断开连接
 	 */
@@ -41,7 +41,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		// 移除连接
 		NettyGlobal.clientMap.remove(ctx.channel().id().toString(), ctx);
 		logger.info("{} 断开连接", ctx.channel());
-		
+
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 				localAddress, remoteAddress, cause.getClass().getSimpleName(), cause.getMessage());
 		ctx.channel().close();
 	}
-	
+
 	/**
 	 * 读取到消息
 	 */
@@ -70,23 +70,22 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			}
 			NetInfo ni = new NetInfo();
 			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length()));
-			
-			if(StringUtils.isNotBlank(ni.infoT) && !CommandCode.HEARTBIT.equals(ni.code)) {
-				if(StringUtils.isNotBlank(ni.accountNo)) {
-					//将该channel添加至localSystemCode，以便于得到交易回报时返回给相应的连接
-					ni.localSystemCode=ctx.channel().id().toString();
+
+			if (StringUtils.isNotBlank(ni.infoT) && !CommandCode.HEARTBIT.equals(ni.code)) {
+				if (StringUtils.isNotBlank(ni.accountNo)) {
+					// 将该channel添加至localSystemCode，以便于得到交易回报时返回给相应的连接
+					ni.localSystemCode = ctx.channel().id().toString();
 					Global.orderEventProducer.onData(ni);
-				}else {
+				} else {
 					NetInfo netInfo = new NetInfo();
-					netInfo.code=CommandCode.CFLOGINERROR;
-					netInfo.infoT=RespMessage.ACCOUNTNONULL;
+					netInfo.code = CommandCode.CFLOGINERROR;
+					netInfo.infoT = RespMessage.ACCOUNTNONULL;
 					ctx.channel().writeAndFlush(CommonUtils.toCommandString(netInfo.MyToString()));
 				}
 			}
 		} catch (Exception e) {
 			logger.error("接收socket请求异常：{}", e.getMessage());
 		}
-
 
 	}
 

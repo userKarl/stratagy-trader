@@ -67,7 +67,6 @@ public class FastEventEngine {
         	try {
     			handler.awaitShutdown();
     		} catch (InterruptedException e) {
-    			e.printStackTrace();
     			log.error("关闭时发生异常",e);
     		}
             // Remove the gating sequence from the ring buffer

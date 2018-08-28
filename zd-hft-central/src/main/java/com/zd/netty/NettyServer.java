@@ -19,36 +19,34 @@ import io.netty.util.concurrent.ImmediateEventExecutor;
 
 @Component
 public class NettyServer {
-	
-	private static final Logger logger=LoggerFactory.getLogger(NettyServer.class);
-	
+
+	private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
+
 	private final ChannelGroup channelGroup = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
 	private final EventLoopGroup bossGroup = new NioEventLoopGroup();
 	private final EventLoopGroup workGroup = new NioEventLoopGroup();
 	private Channel channel;
-	
-	public ChannelFuture start(String host,int port) {
+
+	public ChannelFuture start(String host, int port) {
 		logger.info("中控服务器启动...");
 		ServerBootstrap bootstrap = new ServerBootstrap();
-		bootstrap.group(bossGroup, workGroup)
-				.channel(NioServerSocketChannel.class)
-				.childHandler(new NettyServerInitializer())
-				.option(ChannelOption.SO_BACKLOG, 128)
+		bootstrap.group(bossGroup, workGroup).channel(NioServerSocketChannel.class)
+				.childHandler(new NettyServerInitializer()).option(ChannelOption.SO_BACKLOG, 128)
 				.childOption(ChannelOption.SO_KEEPALIVE, true);
-		
-		ChannelFuture future = bootstrap.bind(new InetSocketAddress(host,port)).syncUninterruptibly();
+
+		ChannelFuture future = bootstrap.bind(new InetSocketAddress(host, port)).syncUninterruptibly();
 		channel = future.channel();
 		return future;
 	}
+
 	public void destroy() {
-		if(channel != null) {
+		if (channel != null) {
 			channel.close();
 		}
-		
+
 		channelGroup.close();
 		workGroup.shutdownGracefully();
 		bossGroup.shutdownGracefully();
 	}
-	
-		
+
 }

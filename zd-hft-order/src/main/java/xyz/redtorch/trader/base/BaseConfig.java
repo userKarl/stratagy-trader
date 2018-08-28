@@ -40,22 +40,23 @@ public class BaseConfig {
 		}
 		PropertiesBuilderParameters params = new Parameters().properties().setThrowExceptionOnMissing(true)
 				.setListDelimiterHandler(new DefaultListDelimiterHandler(';')).setIncludesAllowed(false);
-		
+
 		String classPath = BaseConfig.class.getResource("/").getPath();
 		// 如果是war包，尝试使用外部配置文件覆盖
-		if(classPath.contains("war!")) {
+		if (classPath.contains("war!")) {
 			try {
 				String warPath = new File(".").getCanonicalPath();
-				log.info("检测到从war启动,尝试加载外部配置文件,当前文件目录{}",warPath);
+				log.info("检测到从war启动,尝试加载外部配置文件,当前文件目录{}", warPath);
 				if (!tryConfig(params, warPath + File.separator + "RtConfig.properties")) {
-					if (tryConfig(params, warPath + File.separator +  "config" + File.separator + "RtConfig.properties")) {
+					if (tryConfig(params,
+							warPath + File.separator + "config" + File.separator + "RtConfig.properties")) {
 						log.info("外部配置文件加载成功{}", warPath + "config" + File.separator + "RtConfig.properties");
 					}
-				}else {
-					log.info("外部配置文件加载成功{}", warPath + "RtConfig.properties" );
+				} else {
+					log.info("外部配置文件加载成功{}", warPath + "RtConfig.properties");
 				}
 			} catch (IOException e) {
-				log.error("获取war所在目录发生错误",e);
+				log.error("获取war所在目录发生错误", e);
 			}
 
 		}

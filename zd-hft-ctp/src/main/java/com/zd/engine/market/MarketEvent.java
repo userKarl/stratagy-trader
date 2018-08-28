@@ -2,7 +2,7 @@ package com.zd.engine.market;
 
 import com.zd.engine.event.ZdEvent;
 
-public class MarketEvent extends ZdEvent{
+public class MarketEvent extends ZdEvent {
 
 	private String marketInfo;
 
@@ -12,6 +12,6 @@ public class MarketEvent extends ZdEvent{
 
 	public void setMarketInfo(String marketInfo) {
 		this.marketInfo = marketInfo;
-	} 
+	}
 
 }

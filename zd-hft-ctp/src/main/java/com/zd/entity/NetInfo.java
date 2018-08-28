@@ -42,13 +42,10 @@ public class NetInfo implements NetParent {
 	public String MyToString() {
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(this.code).append("@").append(this.localSystemCode)
-				.append("@").append(this.systemCode).append("@")
-				.append(this.todayCanUse).append("@").append(this.errorCode)
-				.append("@").append(this.accountNo).append("@")
-				.append(this.exchangeCode).append("@").append(this.errorMsg)
-				.append("@").append(this.clientNo).append("&")
-				.append(this.infoT);
+		sb.append(this.code).append("@").append(this.localSystemCode).append("@").append(this.systemCode).append("@")
+				.append(this.todayCanUse).append("@").append(this.errorCode).append("@").append(this.accountNo)
+				.append("@").append(this.exchangeCode).append("@").append(this.errorMsg).append("@")
+				.append(this.clientNo).append("&").append(this.infoT);
 
 		return sb.toString();
 	}
@@ -131,18 +128,10 @@ public class NetInfo implements NetParent {
 
 	@Override
 	public String toString() {
-		return "NetInfo{" +
-				"code='" + code + '\'' +
-				", localSystemCode='" + localSystemCode + '\'' +
-				", systemCode='" + systemCode + '\'' +
-				", todayCanUse='" + todayCanUse + '\'' +
-				", infoT='" + infoT + '\'' +
-				", errorCode='" + errorCode + '\'' +
-				", accountNo='" + accountNo + '\'' +
-				", exchangeCode='" + exchangeCode + '\'' +
-				", errorMsg='" + errorMsg + '\'' +
-				", clientNo='" + clientNo + '\'' +
-				", secondDeli=" + secondDeli +
-				'}';
+		return "NetInfo{" + "code='" + code + '\'' + ", localSystemCode='" + localSystemCode + '\'' + ", systemCode='"
+				+ systemCode + '\'' + ", todayCanUse='" + todayCanUse + '\'' + ", infoT='" + infoT + '\''
+				+ ", errorCode='" + errorCode + '\'' + ", accountNo='" + accountNo + '\'' + ", exchangeCode='"
+				+ exchangeCode + '\'' + ", errorMsg='" + errorMsg + '\'' + ", clientNo='" + clientNo + '\''
+				+ ", secondDeli=" + secondDeli + '}';
 	}
 }
