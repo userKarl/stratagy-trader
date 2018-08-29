@@ -50,7 +50,6 @@ public class Order implements Serializable {
 
 	public String MyToString() {
 		try {
-			this.rtOrderID = "";
 			return String.join("@", Lists.newArrayList(this.gatewayID, this.symbol, this.exchange, this.rtSymbol,
 					this.orderID, this.rtOrderID, this.direction, this.offset, String.valueOf(this.price),
 					String.valueOf(this.totalVolume), String.valueOf(this.tradedVolume), this.status, this.tradingDay,

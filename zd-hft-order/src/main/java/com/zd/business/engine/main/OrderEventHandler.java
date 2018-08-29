@@ -25,7 +25,7 @@ public class OrderEventHandler extends ZdEventDynamicHandlerAbstract<OrderEvent>
 		try {
 			NetInfo ni = event.getNetInfo();
 			if (ni != null) {
-				String accountKey=ni.localSystemCode+"-"+ni.accountNo;
+				String accountKey = ni.localSystemCode + "-" + ni.accountNo;
 				// 登录
 				if (CommandCode.LOGIN.equals(ni.code)) {
 					LoginInfo login = new LoginInfo();
@@ -37,7 +37,8 @@ public class OrderEventHandler extends ZdEventDynamicHandlerAbstract<OrderEvent>
 						if (tdf != null) {
 							tdf.stop();
 						}
-						tdf = new TraderDataFeed(Global.zdTraderHost, Global.zdTraderPort, login.userId, login.userPwd,ni.localSystemCode,ni.accountNo);
+						tdf = new TraderDataFeed(Global.zdTraderHost, Global.zdTraderPort, login.userId, login.userPwd,
+								ni.localSystemCode, ni.accountNo);
 						Global.accountTraderMap.put(accountKey, tdf);
 						tdf.start();
 					} else if (TraderEnvEnum.CTP.getCode().equals(ni.systemCode)) {
@@ -66,10 +67,9 @@ public class OrderEventHandler extends ZdEventDynamicHandlerAbstract<OrderEvent>
 						TraderDataFeed tdf = Global.accountTraderMap.get(accountKey);
 						if (tdf != null) {
 							tdf.sendOrder(oi);
-						}
-						else {
-							ni.code=CommandCode.CFLOGINERROR;
-							ni.infoT=RespMessage.UNLOGIN;
+						} else {
+							ni.code = CommandCode.CFLOGINERROR;
+							ni.infoT = RespMessage.UNLOGIN;
 							Global.traderInfoQueue.add(ni.MyToString());
 						}
 					} else if (TraderEnvEnum.CTP.getCode().equals(ni.systemCode)) {
@@ -78,12 +78,28 @@ public class OrderEventHandler extends ZdEventDynamicHandlerAbstract<OrderEvent>
 						GatewaySetting gatewaySetting = Global.accountTraderCTPMap.get(accountKey);
 						if (gatewaySetting != null) {
 							order.setGatewayID(gatewaySetting.getGatewayID());
-							Global.tradingService.sendOrder(order.getGatewayID(), order.getSymbol(),
-									order.getPrice(), order.getTotalVolume(), order.getPriceType(), order.getDirection(),
+							Global.tradingService.sendOrder(order.getGatewayID(), order.getSymbol(), order.getPrice(),
+									order.getTotalVolume(), order.getPriceType(), order.getDirection(),
 									order.getOffset());
-						}else {
-							ni.code=CommandCode.CTPERROR;
-							ni.infoT=RespMessage.CTPUNLOGIN;
+						} else {
+							ni.code = CommandCode.CTPERROR;
+							ni.infoT = RespMessage.CTPUNLOGIN;
+							Global.traderInfoQueue.add(ni.MyToString());
+						}
+					}
+				} else if (CommandCode.CANCEL.equals(ni.code)) {
+					// 撤单
+					if (TraderEnvEnum.ZD.getCode().equals(ni.systemCode)) {
+
+					} else if (TraderEnvEnum.CTP.getCode().equals(ni.systemCode)) {
+						Order order = new Order();
+						order.MyReadString(ni.infoT);
+						GatewaySetting gatewaySetting = Global.accountTraderCTPMap.get(accountKey);
+						if (gatewaySetting != null) {
+							Global.tradingService.cancelOrder(order.getRtOrderID());
+						} else {
+							ni.code = CommandCode.CTPERROR;
+							ni.infoT = RespMessage.CTPUNLOGIN;
 							Global.traderInfoQueue.add(ni.MyToString());
 						}
 					}

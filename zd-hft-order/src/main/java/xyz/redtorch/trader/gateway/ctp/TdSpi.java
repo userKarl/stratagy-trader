@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -144,10 +145,10 @@ public class TdSpi extends CThostFtdcTraderSpi {
 
 	private HashMap<String, Position> positionMap = new HashMap<>();
 
-	// 最后一条数据，如果新来的数据和这条数据相同，则不推送
-	private Position lastPosition;
+	//如果新来的数据在缓存中已存在，则不推送
 	private Account lastAccount;
-
+	private ConcurrentHashMap<String, Position> lastPositionMap=new ConcurrentHashMap<String, Position>();
+	
 	private HashMap<String, String> contractExchangeMap;
 	private HashMap<String, Integer> contractSizeMap;
 
@@ -844,14 +845,11 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			if (bIsLast) {
 				for (Position tmpPosition : positionMap.values()) {
 					// 发送持仓事件
-					if (lastPosition == null) {
-						lastPosition = new Position();
-					}
-					if (!lastPosition.MyToString().equals(tmpPosition.MyToString())) {
+					Position pos = lastPositionMap.get(tmpPosition.getRtSymbol());
+					if(pos==null || !pos.MyToString().equals(tmpPosition.MyToString())) {
 						ctpGateway.emitPositon(tmpPosition);
-						lastPosition = tmpPosition;
+						lastPositionMap.put(tmpPosition.getRtSymbol(),tmpPosition);
 					}
-
 				}
 
 				// 清空缓存

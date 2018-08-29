@@ -7,13 +7,16 @@ import java.util.concurrent.Executors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
+import com.zd.business.constant.RedisConst;
 import com.zd.business.constant.TraderEnvEnum;
 import com.zd.config.Global;
+import com.zd.redis.RedisService;
 
 import xyz.redtorch.trader.base.RtConstant;
 import xyz.redtorch.trader.engine.event.EventConstant;
@@ -52,6 +55,9 @@ public class TradingServiceImpl implements TradingService {
 
 	private MainEngine mainEngine = new MainEngineImpl();
 
+	@Autowired
+	private RedisService redisService;
+	
 	public TradingServiceImpl() {
 		EventTransferTask eventTransferTask = new EventTransferTask();
 
@@ -88,7 +94,10 @@ public class TradingServiceImpl implements TradingService {
 	@Override
 	public void cancelOrder(String rtOrderID) {
 
-		Order order = mainEngine.getOrder(rtOrderID);
+//		Order order = mainEngine.getOrder(rtOrderID);//之前系统逻辑
+		
+		Order order=(Order) redisService.hmGet(RedisConst.ORDERINFOKEY, rtOrderID);
+		
 		if (order != null) {
 			if (!RtConstant.STATUS_FINISHED.contains(order.getStatus())) {
 
@@ -286,6 +295,7 @@ public class TradingServiceImpl implements TradingService {
 			} else if (EventConstant.EVENT_ORDER.equals(fastEvent.getEventType())) {
 				try {
 					Order order = fastEvent.getOrder();
+					redisService.hmSet(RedisConst.ORDERINFOKEY, order.getRtOrderID(), order.MyToString());
 					ni.code = CommandCode.CTPORDER;
 					String[] split = order.getGatewayID().split("-");
 					ni.localSystemCode = split[0];
