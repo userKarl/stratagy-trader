@@ -1,7 +1,6 @@
 package com.zd;
 
 import java.math.BigDecimal;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +22,7 @@ import com.zd.business.engine.main.market.MarketEventProducer;
 import com.zd.business.entity.Contract;
 import com.zd.business.entity.MarketProvider;
 import com.zd.business.entity.Stratagy;
-import com.zd.config.Global;
+import com.zd.business.mapper.TraderMapper;
 import com.zd.config.NettyGlobal;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -131,7 +130,6 @@ public class TestController {
 		activeContract.setCode("6A1809");
 		activeContract.setExchangeCode("CME");
 		stratagy.setActiveContract(activeContract);
-		stratagy.setMarketContract(marketContract);
 		MarketProvider mp=new MarketProvider();
 		mp.setCurrBuyNum(0);
 		mp.setCurrSaleNum(0);
@@ -143,14 +141,13 @@ public class TestController {
 		mp.setSpread(2);
 		stratagy.setMp(mp);
 		MarketEventHandler marketEventHandler = MarketEventEngine.addHandler();
-		marketEventHandler.subscribeEvent(stratagy.getMarketContract().MyToString());
-		Global.eventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
+		TraderMapper.eventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
     	//将策略添加至消费者中的策略集合
     	marketEventHandler.getHandlerStratagyThread().getStratagyConcurrentHashMap().put(stratagy.getId(), stratagy);
     	//将该消费者添加至可用消费者集合
-    	Global.availableEventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
+    	TraderMapper.availableEventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
     	//创建该策略与消费者的映射关系
-    	Global.allEventConcurrentHashMap.put(stratagy.getId(), marketEventHandler);
+    	TraderMapper.allEventConcurrentHashMap.put(stratagy.getId(), marketEventHandler);
 	}
 	
 	@GetMapping("startStratagy1")
@@ -168,7 +165,6 @@ public class TestController {
 		activeContract.setCode("6A18019");
 		activeContract.setExchangeCode("CME");
 		stratagy.setActiveContract(activeContract);
-		stratagy.setMarketContract(marketContract);
 		MarketProvider mp=new MarketProvider();
 		mp.setCurrBuyNum(0);
 		mp.setCurrSaleNum(0);
@@ -180,14 +176,13 @@ public class TestController {
 		mp.setSpread(2);
 		stratagy.setMp(mp);
 		MarketEventHandler marketEventHandler = MarketEventEngine.addHandler();
-		marketEventHandler.subscribeEvent(stratagy.getMarketContract().MyToString());
-		Global.eventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
+		TraderMapper.eventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
     	//将策略添加至消费者中的策略集合
     	marketEventHandler.getHandlerStratagyThread().getStratagyConcurrentHashMap().put(stratagy.getId(), stratagy);
     	//将该消费者添加至可用消费者集合
-    	Global.availableEventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
+    	TraderMapper.availableEventConcurrentHashMap.put(marketEventHandler.getHandlerStratagyThread().getId(), marketEventHandler);
     	//创建该策略与消费者的映射关系
-    	Global.allEventConcurrentHashMap.put(stratagy.getId(), marketEventHandler);
+    	TraderMapper.allEventConcurrentHashMap.put(stratagy.getId(), marketEventHandler);
 	}
 	
 	@GetMapping("sendMarket/{loopCount}")
