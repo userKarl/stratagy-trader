@@ -3,8 +3,9 @@ package xyz.redtorch.trader.entity;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
 import org.joda.time.DateTime;
+
+import com.google.common.collect.Lists;
 
 import xyz.redtorch.trader.base.RtConstant;
 
@@ -95,78 +96,204 @@ public class Tick implements Serializable {
 		if (StringUtils.isNotBlank(temp)) {
 			String[] split = temp.split("@");
 			if (split != null) {
-				if(split.length>0){this.gatewayID=split[0];}
-				if(split.length>1){this.symbol=split[1];}
-				if(split.length>2){this.exchange=split[2];}
-				if(split.length>3){this.rtSymbol=split[3];}
-				if(split.length>4){this.tradingDay=split[4];}
-				if(split.length>5){this.actionDay=split[5];}
-				if(split.length>6){this.actionTime=split[6];}
-				if(split.length>7){this.dateTime=RtConstant.DT_FORMAT_WITH_MS_INT_FORMATTER.parseDateTime(split[7]);}
-				if(split.length>8){this.status=Integer.parseInt(split[8]);}
-				if(split.length>9){this.lastPrice=Double.parseDouble(split[9]);}
-				if(split.length>10){this.lastVolume=Integer.parseInt(split[10]);}
-				if(split.length>11){this.volume=Integer.parseInt(split[11]);}
-				if(split.length>12){this.openInterest=Double.parseDouble(split[12]);}
-				if(split.length>13){this.preOpenInterest=Long.parseLong(split[13]);}
-				if(split.length>14){this.preClosePrice=Double.parseDouble(split[14]);}
-				if(split.length>15){this.preSettlePrice=Double.parseDouble(split[15]);}
-				if(split.length>16){this.openPrice=Double.parseDouble(split[16]);}
-				if(split.length>17){this.highPrice=Double.parseDouble(split[17]);}
-				if(split.length>18){this.lowPrice=Double.parseDouble(split[18]);}
-				if(split.length>19){this.upperLimit=Double.parseDouble(split[19]);}
-				if(split.length>20){this.lowerLimit=Double.parseDouble(split[20]);}
-				if(split.length>21){this.bidPrice1=Double.parseDouble(split[21]);}
-				if(split.length>22){this.bidPrice2=Double.parseDouble(split[22]);}
-				if(split.length>23){this.bidPrice3=Double.parseDouble(split[23]);}
-				if(split.length>24){this.bidPrice4=Double.parseDouble(split[24]);}
-				if(split.length>25){this.bidPrice5=Double.parseDouble(split[25]);}
-				if(split.length>26){this.bidPrice6=Double.parseDouble(split[26]);}
-				if(split.length>27){this.bidPrice7=Double.parseDouble(split[27]);}
-				if(split.length>28){this.bidPrice8=Double.parseDouble(split[28]);}
-				if(split.length>29){this.bidPrice9=Double.parseDouble(split[29]);}
-				if(split.length>30){this.bidPrice10=Double.parseDouble(split[30]);}
-				if(split.length>31){this.askPrice1=Double.parseDouble(split[31]);}
-				if(split.length>32){this.askPrice2=Double.parseDouble(split[32]);}
-				if(split.length>33){this.askPrice3=Double.parseDouble(split[33]);}
-				if(split.length>34){this.askPrice4=Double.parseDouble(split[34]);}
-				if(split.length>35){this.askPrice5=Double.parseDouble(split[35]);}
-				if(split.length>36){this.askPrice6=Double.parseDouble(split[36]);}
-				if(split.length>37){this.askPrice7=Double.parseDouble(split[37]);}
-				if(split.length>38){this.askPrice8=Double.parseDouble(split[38]);}
-				if(split.length>39){this.askPrice9=Double.parseDouble(split[39]);}
-				if(split.length>40){this.askPrice10=Double.parseDouble(split[40]);}
-				if(split.length>41){this.bidVolume1=Integer.parseInt(split[41]);}
-				if(split.length>42){this.bidVolume2=Integer.parseInt(split[42]);}
-				if(split.length>43){this.bidVolume3=Integer.parseInt(split[43]);}
-				if(split.length>44){this.bidVolume4=Integer.parseInt(split[44]);}
-				if(split.length>45){this.bidVolume5=Integer.parseInt(split[45]);}
-				if(split.length>46){this.bidVolume6=Integer.parseInt(split[46]);}
-				if(split.length>47){this.bidVolume7=Integer.parseInt(split[47]);}
-				if(split.length>48){this.bidVolume8=Integer.parseInt(split[48]);}
-				if(split.length>49){this.bidVolume9=Integer.parseInt(split[49]);}
-				if(split.length>50){this.bidVolume10=Integer.parseInt(split[50]);}
-				if(split.length>51){this.askVolume1=Integer.parseInt(split[51]);}
-				if(split.length>52){this.askVolume2=Integer.parseInt(split[52]);}
-				if(split.length>53){this.askVolume3=Integer.parseInt(split[53]);}
-				if(split.length>54){this.askVolume4=Integer.parseInt(split[54]);}
-				if(split.length>55){this.askVolume5=Integer.parseInt(split[55]);}
-				if(split.length>56){this.askVolume6=Integer.parseInt(split[56]);}
-				if(split.length>57){this.askVolume7=Integer.parseInt(split[57]);}
-				if(split.length>58){this.askVolume8=Integer.parseInt(split[58]);}
-				if(split.length>59){this.askVolume9=Integer.parseInt(split[59]);}
-				if(split.length>60){this.askVolume10=Integer.parseInt(split[60]);}
-
-
+				if (split.length > 0) {
+					this.gatewayID = split[0];
+				}
+				if (split.length > 1) {
+					this.symbol = split[1];
+				}
+				if (split.length > 2) {
+					this.exchange = split[2];
+				}
+				if (split.length > 3) {
+					this.rtSymbol = split[3];
+				}
+				if (split.length > 4) {
+					this.tradingDay = split[4];
+				}
+				if (split.length > 5) {
+					this.actionDay = split[5];
+				}
+				if (split.length > 6) {
+					this.actionTime = split[6];
+				}
+				if (split.length > 7) {
+					if(StringUtils.isNotBlank(split[7])) {
+						this.dateTime = RtConstant.DT_FORMAT_WITH_MS_INT_FORMATTER.parseDateTime(split[7]);
+					}
+				}
+				if (split.length > 8) {
+					this.status = Integer.parseInt(split[8]);
+				}
+				if (split.length > 9) {
+					this.lastPrice = Double.parseDouble(split[9]);
+				}
+				if (split.length > 10) {
+					this.lastVolume = Integer.parseInt(split[10]);
+				}
+				if (split.length > 11) {
+					this.volume = Integer.parseInt(split[11]);
+				}
+				if (split.length > 12) {
+					this.openInterest = Double.parseDouble(split[12]);
+				}
+				if (split.length > 13) {
+					this.preOpenInterest = Long.parseLong(split[13]);
+				}
+				if (split.length > 14) {
+					this.preClosePrice = Double.parseDouble(split[14]);
+				}
+				if (split.length > 15) {
+					this.preSettlePrice = Double.parseDouble(split[15]);
+				}
+				if (split.length > 16) {
+					this.openPrice = Double.parseDouble(split[16]);
+				}
+				if (split.length > 17) {
+					this.highPrice = Double.parseDouble(split[17]);
+				}
+				if (split.length > 18) {
+					this.lowPrice = Double.parseDouble(split[18]);
+				}
+				if (split.length > 19) {
+					this.upperLimit = Double.parseDouble(split[19]);
+				}
+				if (split.length > 20) {
+					this.lowerLimit = Double.parseDouble(split[20]);
+				}
+				if (split.length > 21) {
+					this.bidPrice1 = Double.parseDouble(split[21]);
+				}
+				if (split.length > 22) {
+					this.bidPrice2 = Double.parseDouble(split[22]);
+				}
+				if (split.length > 23) {
+					this.bidPrice3 = Double.parseDouble(split[23]);
+				}
+				if (split.length > 24) {
+					this.bidPrice4 = Double.parseDouble(split[24]);
+				}
+				if (split.length > 25) {
+					this.bidPrice5 = Double.parseDouble(split[25]);
+				}
+				if (split.length > 26) {
+					this.bidPrice6 = Double.parseDouble(split[26]);
+				}
+				if (split.length > 27) {
+					this.bidPrice7 = Double.parseDouble(split[27]);
+				}
+				if (split.length > 28) {
+					this.bidPrice8 = Double.parseDouble(split[28]);
+				}
+				if (split.length > 29) {
+					this.bidPrice9 = Double.parseDouble(split[29]);
+				}
+				if (split.length > 30) {
+					this.bidPrice10 = Double.parseDouble(split[30]);
+				}
+				if (split.length > 31) {
+					this.askPrice1 = Double.parseDouble(split[31]);
+				}
+				if (split.length > 32) {
+					this.askPrice2 = Double.parseDouble(split[32]);
+				}
+				if (split.length > 33) {
+					this.askPrice3 = Double.parseDouble(split[33]);
+				}
+				if (split.length > 34) {
+					this.askPrice4 = Double.parseDouble(split[34]);
+				}
+				if (split.length > 35) {
+					this.askPrice5 = Double.parseDouble(split[35]);
+				}
+				if (split.length > 36) {
+					this.askPrice6 = Double.parseDouble(split[36]);
+				}
+				if (split.length > 37) {
+					this.askPrice7 = Double.parseDouble(split[37]);
+				}
+				if (split.length > 38) {
+					this.askPrice8 = Double.parseDouble(split[38]);
+				}
+				if (split.length > 39) {
+					this.askPrice9 = Double.parseDouble(split[39]);
+				}
+				if (split.length > 40) {
+					this.askPrice10 = Double.parseDouble(split[40]);
+				}
+				if (split.length > 41) {
+					this.bidVolume1 = Integer.parseInt(split[41]);
+				}
+				if (split.length > 42) {
+					this.bidVolume2 = Integer.parseInt(split[42]);
+				}
+				if (split.length > 43) {
+					this.bidVolume3 = Integer.parseInt(split[43]);
+				}
+				if (split.length > 44) {
+					this.bidVolume4 = Integer.parseInt(split[44]);
+				}
+				if (split.length > 45) {
+					this.bidVolume5 = Integer.parseInt(split[45]);
+				}
+				if (split.length > 46) {
+					this.bidVolume6 = Integer.parseInt(split[46]);
+				}
+				if (split.length > 47) {
+					this.bidVolume7 = Integer.parseInt(split[47]);
+				}
+				if (split.length > 48) {
+					this.bidVolume8 = Integer.parseInt(split[48]);
+				}
+				if (split.length > 49) {
+					this.bidVolume9 = Integer.parseInt(split[49]);
+				}
+				if (split.length > 50) {
+					this.bidVolume10 = Integer.parseInt(split[50]);
+				}
+				if (split.length > 51) {
+					this.askVolume1 = Integer.parseInt(split[51]);
+				}
+				if (split.length > 52) {
+					this.askVolume2 = Integer.parseInt(split[52]);
+				}
+				if (split.length > 53) {
+					this.askVolume3 = Integer.parseInt(split[53]);
+				}
+				if (split.length > 54) {
+					this.askVolume4 = Integer.parseInt(split[54]);
+				}
+				if (split.length > 55) {
+					this.askVolume5 = Integer.parseInt(split[55]);
+				}
+				if (split.length > 56) {
+					this.askVolume6 = Integer.parseInt(split[56]);
+				}
+				if (split.length > 57) {
+					this.askVolume7 = Integer.parseInt(split[57]);
+				}
+				if (split.length > 58) {
+					this.askVolume8 = Integer.parseInt(split[58]);
+				}
+				if (split.length > 59) {
+					this.askVolume9 = Integer.parseInt(split[59]);
+				}
+				if (split.length > 60) {
+					this.askVolume10 = Integer.parseInt(split[60]);
+				}
 
 			}
 		}
 	}
 
 	public String MyToString() {
+		String time="";
+		if(this.dateTime!=null) {
+			time=this.dateTime.toString(RtConstant.DT_FORMAT_WITH_MS_INT_FORMATTER);
+		}
 		return String.join("@", Lists.newArrayList(this.gatewayID, this.symbol, this.exchange, this.rtSymbol,
 				this.tradingDay, this.actionDay, this.actionTime,
-				this.dateTime.toString(RtConstant.DT_FORMAT_WITH_MS_INT_FORMATTER), String.valueOf(this.status),
+				time, String.valueOf(this.status),
 				String.valueOf(this.lastPrice), String.valueOf(this.lastVolume), String.valueOf(this.volume),
 				String.valueOf(this.openInterest), String.valueOf(this.preOpenInterest),
 				String.valueOf(this.preClosePrice), String.valueOf(this.preSettlePrice), String.valueOf(this.openPrice),

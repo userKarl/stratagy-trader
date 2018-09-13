@@ -1,14 +1,16 @@
 package com.zd.netty.order;
 
 import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
-import com.zd.common.utils.StringUtils;
+import com.zd.business.mapper.TraderMapper;
 import com.zd.config.NettyGlobal;
 import com.zd.netty.ConnectionWatchdog;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -137,23 +139,14 @@ public class OrderConnectionWatchdog extends ConnectionWatchdog {
 			}
 			NetInfo ni = new NetInfo();
 			ni.MyReadString(s.substring(s.indexOf(")") + 1, s.length()));
-
-			if (CommandCode.ORDER.equals(ni.code)) {
-				//解析下单服务器返回的数据
-				if(StringUtils.isNotBlank(ni.localSystemCode)) {
-					String split[]=ni.localSystemCode.split("-");
-					if(split!=null && split.length==2) {
-						/**
-						 * split[0] 消费者Id
-						 * split[1] 策略Id
-						 */ 
-					}
-				}
+			if (!CommandCode.HEARTBIT.equals(ni.code)) {
+				// 解析下单服务器返回的数据
+				TraderMapper.resvOrderInfoQueue.add(ni);
 			}
 			logger.info("接收到下单服务器的返回数据：{}", s);
 		} catch (Exception e) {
 			logger.error("接收socket请求异常：{}", e.getMessage());
-		}
+		} 
 	}
 
 }

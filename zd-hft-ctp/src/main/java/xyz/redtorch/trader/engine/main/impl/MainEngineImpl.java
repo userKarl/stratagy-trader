@@ -626,14 +626,24 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 	@Override
 	public void connectGateway(String gatewayID) {
 
-		GatewaySetting gatewaySetting = mainDataUtil.queryGatewaySetting(gatewayID);
+//		GatewaySetting gatewaySetting = mainDataUtil.queryGatewaySetting(gatewayID);
 
-		if (gatewaySetting == null) {
-			String logContent = "MAIN_ENGINE:接口" + gatewayID + "无法连接,数据库中不存在";
-			CommonUtil.emitWarnLog(logContent);
-			log.warn(logContent);
-			return;
-		}
+		GatewaySetting gatewaySetting=new GatewaySetting();
+		gatewaySetting.setGatewayID("9999.simnow.187.10030");
+		gatewaySetting.setGatewayDisplayName("simnow");
+		gatewaySetting.setUserID("084127");
+		gatewaySetting.setPassword("1a1b1c1d1");
+		gatewaySetting.setBrokerID("9999");
+		gatewaySetting.setTdAddress("tcp://180.168.146.187:10003");
+		gatewaySetting.setMdAddress("tcp://180.168.146.187:10013");
+		gatewaySetting.setGatewayClassName("xyz.redtorch.trader.gateway.ctp.CtpGateway");
+		
+//		if (gatewaySetting == null) {
+//			String logContent = "MAIN_ENGINE:接口" + gatewayID + "无法连接,数据库中不存在";
+//			CommonUtil.emitWarnLog(logContent);
+//			log.warn(logContent);
+//			return;
+//		}
 
 		String gatewayClassName = gatewaySetting.getGatewayClassName();
 

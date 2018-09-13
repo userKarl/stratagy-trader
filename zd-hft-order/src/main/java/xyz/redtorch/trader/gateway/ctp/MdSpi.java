@@ -15,7 +15,7 @@ import com.google.common.collect.Lists;
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
 import com.zd.business.constant.TraderEnvEnum;
-import com.zd.config.Global;
+import com.zd.mapper.TraderMapper;
 
 import xyz.redtorch.api.jctp.CThostFtdcDepthMarketDataField;
 import xyz.redtorch.api.jctp.CThostFtdcForQuoteRspField;
@@ -281,6 +281,10 @@ public class MdSpi extends CThostFtdcMdSpi {
 			} else {
 				log.warn("{}行情接口登录回报错误! ErrorID:{},ErrorMsg:{}", gatewayLogInfo, pRspInfo.getErrorID(),
 						pRspInfo.getErrorMsg());
+				String[] split = gatewayID.split("-");
+				if(split!=null && split.length>1) {
+					TraderMapper.accountTraderCTPMap.remove(split[1]);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -329,7 +333,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 			ni.exchangeCode = TraderEnvEnum.CTP.getCode();
 			ni.localSystemCode = ctpGateway.getGatewayDisplayName();
 			ni.infoT = String.join("@", Lists.newArrayList(pRspInfo.getErrorMsg()));
-			Global.traderInfoQueue.add(ni.MyToString());
+			TraderMapper.traderInfoQueue.add(ni.MyToString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -349,7 +353,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 				ni.exchangeCode = TraderEnvEnum.CTP.getCode();
 				ni.localSystemCode = ctpGateway.getGatewayDisplayName();
 				ni.infoT = String.join("@", Lists.newArrayList(logContent));
-				Global.traderInfoQueue.add(ni.MyToString());
+				TraderMapper.traderInfoQueue.add(ni.MyToString());
 			} else {
 
 				String logContent = gatewayLogInfo + "OnRspSubMarketData! 订阅合约失败,ErrorID：" + pRspInfo.getErrorID()
@@ -361,7 +365,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 				ni.exchangeCode = TraderEnvEnum.CTP.getCode();
 				ni.localSystemCode = ctpGateway.getGatewayDisplayName();
 				ni.infoT = String.join("@", Lists.newArrayList(logContent));
-				Global.traderInfoQueue.add(ni.MyToString());
+				TraderMapper.traderInfoQueue.add(ni.MyToString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -382,7 +386,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 				ni.exchangeCode = TraderEnvEnum.CTP.getCode();
 				ni.localSystemCode = ctpGateway.getGatewayDisplayName();
 				ni.infoT = String.join("@", Lists.newArrayList(logContent));
-				Global.traderInfoQueue.add(ni.MyToString());
+				TraderMapper.traderInfoQueue.add(ni.MyToString());
 			} else {
 				String logContent = gatewayLogInfo + "OnRspUnSubMarketData! 退订合约失败,ErrorID：" + pRspInfo.getErrorID()
 						+ "ErrorMsg:" + pRspInfo.getErrorMsg();
@@ -393,7 +397,7 @@ public class MdSpi extends CThostFtdcMdSpi {
 				ni.exchangeCode = TraderEnvEnum.CTP.getCode();
 				ni.localSystemCode = ctpGateway.getGatewayDisplayName();
 				ni.infoT = String.join("@", Lists.newArrayList(logContent));
-				Global.traderInfoQueue.add(ni.MyToString());
+				TraderMapper.traderInfoQueue.add(ni.MyToString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

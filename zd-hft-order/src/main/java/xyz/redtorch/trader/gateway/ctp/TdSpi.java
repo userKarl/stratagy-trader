@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
@@ -17,9 +16,8 @@ import com.google.common.collect.Lists;
 import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
 import com.zd.business.constant.TraderEnvEnum;
-import com.zd.config.Global;
+import com.zd.mapper.TraderMapper;
 
-import xyz.redtorch.api.jctp.CtpConstant;
 import xyz.redtorch.api.jctp.CThostFtdcAccountregisterField;
 import xyz.redtorch.api.jctp.CThostFtdcBatchOrderActionField;
 import xyz.redtorch.api.jctp.CThostFtdcBrokerTradingAlgosField;
@@ -116,11 +114,13 @@ import xyz.redtorch.api.jctp.CThostFtdcTransferBankField;
 import xyz.redtorch.api.jctp.CThostFtdcTransferSerialField;
 import xyz.redtorch.api.jctp.CThostFtdcUserLogoutField;
 import xyz.redtorch.api.jctp.CThostFtdcUserPasswordUpdateField;
+import xyz.redtorch.api.jctp.CtpConstant;
 import xyz.redtorch.api.jctp.jctptraderapiv6v3v11x64Constants;
 import xyz.redtorch.trader.base.RtConstant;
 import xyz.redtorch.trader.entity.Account;
 import xyz.redtorch.trader.entity.CancelOrderReq;
 import xyz.redtorch.trader.entity.Contract;
+import xyz.redtorch.trader.entity.Order;
 import xyz.redtorch.trader.entity.OrderReq;
 import xyz.redtorch.trader.entity.Position;
 import xyz.redtorch.trader.entity.Trade;
@@ -185,6 +185,9 @@ public class TdSpi extends CThostFtdcTraderSpi {
 
 	private int frontID = 0; // 前置机编号
 	private int sessionID = 0; // 会话编号
+	// 最后一条数据，如果新来的数据和这条数据相同，则不推送
+	private Order lastOrder;
+	private Trade lastTrade;
 
 	/**
 	 * 连接
@@ -344,7 +347,11 @@ public class TdSpi extends CThostFtdcTraderSpi {
 					CtpConstant.directionMap.getOrDefault(orderReq.getDirection(), Character.valueOf('\0')));
 			cThostFtdcInputOrderField.setCombOffsetFlag(
 					String.valueOf(CtpConstant.offsetMap.getOrDefault(orderReq.getOffset(), Character.valueOf('\0'))));
-			cThostFtdcInputOrderField.setOrderRef(orderRef + "");
+			if(StringUtils.isNotBlank(orderReq.getOrderRef())) {
+				cThostFtdcInputOrderField.setOrderRef(orderReq.getOrderRef());
+			}else {
+				cThostFtdcInputOrderField.setOrderRef(orderRef + "");
+			}
 			cThostFtdcInputOrderField.setInvestorID(userID);
 			cThostFtdcInputOrderField.setUserID(userID);
 			cThostFtdcInputOrderField.setBrokerID(brokerID);
@@ -406,7 +413,8 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			cThostFtdcInputOrderActionField.setActionFlag(jctptraderapiv6v3v11x64Constants.THOST_FTDC_AF_Delete);
 			cThostFtdcInputOrderActionField.setBrokerID(brokerID);
 			cThostFtdcInputOrderActionField.setInvestorID(userID);
-
+			cThostFtdcInputOrderActionField.setOrderSysID(cancelOrderReq.getOrderSysId());
+			
 			cThostFtdcTraderApi.ReqOrderAction(cThostFtdcInputOrderActionField, reqID);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -491,27 +499,14 @@ public class TdSpi extends CThostFtdcTraderSpi {
 						pRspUserLogin.getUserID());
 				ctpGateway.emitInfoLog(gatewayLogInfo + "交易接口登录成功");
 				NetInfo ni = new NetInfo();
-				ni.code = CommandCode.LOGIN;
+				ni.code = CommandCode.CFLOGINERROR;
 				ni.exchangeCode = TraderEnvEnum.CTP.getCode();
-				ni.localSystemCode = ctpGateway.getGatewayDisplayName();
+				String[] split = ctpGateway.getGatewayID().split("-");
+				ni.localSystemCode = split[0];
+				ni.accountNo = split[1];
 				ni.infoT = String.join("@", Lists.newArrayList(pRspUserLogin.getTradingDay(),
 						pRspUserLogin.getBrokerID(), pRspUserLogin.getUserID()));
-				Global.traderInfoQueue.add(ni.MyToString());
-				try {
-					// 如果用户登录成功，先检查该用户账户是否有因为断线而未返回的交易数据
-					List<String> list = Global.notSendTraderInfoMap.get(ctpGateway.getGatewayID().split("-")[1]);
-					if (list != null && list.size() > 0) {
-						for (String s : list) {
-							NetInfo netInfo = new NetInfo();
-							netInfo.MyReadString(s);
-							netInfo.localSystemCode = ctpGateway.getGatewayDisplayName();
-							;
-							Global.traderInfoQueue.add(ni.MyToString());
-						}
-					}
-				} catch (Exception e) {
-					log.error("检查未返回的交易数据异常 ", e);
-				}
+				TraderMapper.traderInfoQueue.add(ni.MyToString());
 
 				this.sessionID = pRspUserLogin.getSessionID();
 				this.frontID = pRspUserLogin.getFrontID();
@@ -531,6 +526,10 @@ public class TdSpi extends CThostFtdcTraderSpi {
 				log.warn("{}交易接口登录回报错误! ErrorID:{},ErrorMsg:{}", gatewayLogInfo, pRspInfo.getErrorID(),
 						pRspInfo.getErrorMsg());
 				loginFailed = true;
+				String[] split = gatewayID.split("-");
+				if(split!=null && split.length>1) {
+					TraderMapper.accountTraderCTPMap.remove(split[1]);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -561,11 +560,13 @@ public class TdSpi extends CThostFtdcTraderSpi {
 				log.info("{}OnRspUserLogout!BrokerID:{},UserID:{}", gatewayLogInfo, pUserLogout.getBrokerID(),
 						pUserLogout.getUserID());
 				NetInfo ni = new NetInfo();
-				ni.code = CommandCode.UNLOGIN;
+				ni.code = CommandCode.CFLOGINERROR;
 				ni.exchangeCode = TraderEnvEnum.CTP.getCode();
-				ni.localSystemCode = ctpGateway.getGatewayDisplayName();
+				String[] split = ctpGateway.getGatewayID().split("-");
+				ni.localSystemCode = split[0];
+				ni.accountNo = split[1];
 				ni.infoT = String.join("@", Lists.newArrayList(pUserLogout.getBrokerID(), pUserLogout.getUserID()));
-				Global.traderInfoQueue.add(ni.MyToString());
+				TraderMapper.traderInfoQueue.add(ni.MyToString());
 			}
 			this.loginStatus = false;
 		} catch (Exception e) {
@@ -584,9 +585,11 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			NetInfo ni = new NetInfo();
 			ni.code = CommandCode.CFLOGINERROR;
 			ni.exchangeCode = TraderEnvEnum.CTP.getCode();
-			ni.localSystemCode = ctpGateway.getGatewayDisplayName();
+			String[] split = ctpGateway.getGatewayID().split("-");
+			ni.localSystemCode = split[0];
+			ni.accountNo = split[1];
 			ni.infoT = pRspInfo.getErrorMsg();
-			Global.traderInfoQueue.add(ni.MyToString());
+			TraderMapper.traderInfoQueue.add(ni.MyToString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -652,10 +655,11 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			String cancelTime = null;
 			String activeTime = null;
 			String updateTime = null;
+			String orderSysId=null;
 
 			ctpGateway.emitOrder(gatewayID, symbol, exchange, rtSymbol, orderID, rtOrderID, direction, offset, price,
 					totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, activeTime,
-					updateTime, frontID, sessionID);
+					updateTime, frontID, sessionID,orderSysId);
 
 			// 发送委托事件
 			String logContent = MessageFormat.format("{0}交易接口发单错误回报(柜台)! ErrorID:{1},ErrorMsg:{2}", gatewayLogInfo,
@@ -665,9 +669,11 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			NetInfo ni = new NetInfo();
 			ni.code = CommandCode.CFLOGINERROR;
 			ni.exchangeCode = TraderEnvEnum.CTP.getCode();
-			ni.localSystemCode = ctpGateway.getGatewayDisplayName();
+			String[] split = ctpGateway.getGatewayID().split("-");
+			ni.localSystemCode = split[0];
+			ni.accountNo = split[1];
 			ni.infoT = pRspInfo.getErrorMsg();
-			Global.traderInfoQueue.add(ni.MyToString());
+			TraderMapper.traderInfoQueue.add(ni.MyToString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -695,9 +701,11 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			NetInfo ni = new NetInfo();
 			ni.code = CommandCode.CFLOGINERROR;
 			ni.exchangeCode = TraderEnvEnum.CTP.getCode();
-			ni.localSystemCode = ctpGateway.getGatewayDisplayName();
+			String[] split = ctpGateway.getGatewayID().split("-");
+			ni.localSystemCode = split[0];
+			ni.accountNo = split[1];
 			ni.infoT = pRspInfo.getErrorMsg();
-			Global.traderInfoQueue.add(ni.MyToString());
+			TraderMapper.traderInfoQueue.add(ni.MyToString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1129,10 +1137,21 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			String cancelTime = pOrder.getCancelTime();
 			String activeTime = pOrder.getActiveTime();
 			String updateTime = pOrder.getUpdateTime();
+			String orderSysId=pOrder.getOrderSysID();
 
-			ctpGateway.emitOrder(gatewayID, symbol, exchange, rtSymbol, orderID, rtOrderID, direction, offset, price,
-					totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, activeTime,
-					updateTime, frontID, sessionID);
+			Order order=new Order();
+			order.setAllValue(newRef, symbol, exchange, rtSymbol, orderID, rtOrderID, direction, offset, 
+					price, totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, 
+					activeTime, updateTime, totalVolume, tradedVolume);
+			if(lastOrder==null) {
+				lastOrder=new Order();
+			}
+			if(!lastOrder.MyToString().equals(order.MyToString())) {
+				ctpGateway.emitOrder(gatewayID, symbol, exchange, rtSymbol, orderID, rtOrderID, direction, offset, price,
+						totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, activeTime, updateTime,
+						frontID, sessionID,orderSysId);
+				lastOrder=order;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1181,9 +1200,17 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			String tradeDate = pTrade.getTradeDate();
 			String tradeTime = pTrade.getTradeTime();
 			DateTime dateTime = null;
-
-			ctpGateway.emitTrade(gatewayID, symbol, exchange, rtSymbol, tradeID, rtTradeID, orderID, rtOrderID,
+			Trade trade2=new Trade();
+			trade2.setAllValue(tradeTime, symbol, exchange, rtSymbol, tradeID, rtTradeID, orderID, rtOrderID, 
 					direction, offset, price, volume, tradingDay, tradeDate, tradeTime, dateTime);
+			if(lastTrade==null) {
+				lastTrade=new Trade();
+			}
+			if(!lastTrade.MyToString().equals(trade2.MyToString())) {
+				ctpGateway.emitTrade(gatewayID, symbol, exchange, rtSymbol, tradeID, rtTradeID, orderID, rtOrderID,
+						direction, offset, price, volume, tradingDay, tradeDate, tradeTime, dateTime);
+				lastTrade=trade2;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1211,14 +1238,23 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			String cancelTime = null;
 			String activeTime = null;
 			String updateTime = null;
+			String orderSysId=null;
 
 			ctpGateway.emitOrder(gatewayID, symbol, exchange, rtSymbol, orderID, rtOrderID, direction, offset, price,
 					totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, activeTime,
-					updateTime, frontID, sessionID);
+					updateTime, frontID, sessionID,orderSysId);
 			String logContent = MessageFormat.format("{0}交易接口发单错误回报（交易所）! ErrorID:{1},ErrorMsg:{2}", gatewayLogInfo,
 					pRspInfo.getErrorID(), pRspInfo.getErrorMsg());
 			log.error(logContent);
 			ctpGateway.emitErrorLog(logContent);
+			NetInfo ni = new NetInfo();
+			ni.code = CommandCode.CFLOGINERROR;
+			ni.exchangeCode = TraderEnvEnum.CTP.getCode();
+			String[] split = ctpGateway.getGatewayID().split("-");
+			ni.localSystemCode = split[0];
+			ni.accountNo = split[1];
+			ni.infoT = pRspInfo.getErrorMsg();
+			TraderMapper.traderInfoQueue.add(ni.MyToString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

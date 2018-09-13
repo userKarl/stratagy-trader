@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
-import com.zd.config.Global;
+import com.zd.mapper.TraderMapper;
 
 import xyz.redtorch.trader.base.RtConstant;
 import xyz.redtorch.trader.engine.event.EventConstant;
@@ -570,7 +570,10 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 					.filter(map -> !map.getValue().getGatewayID().equals(gatewayID))
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-			Global.accountTraderCTPMap.remove(gatewayID);
+			String[] split = gatewayID.split("-");
+			if(split!=null && split.length>1) {
+				TraderMapper.accountTraderCTPMap.remove(split[1]);
+			}
 
 		} else {
 			String logContent = "MAIN_ENGINE:接口" + gatewayID + "不存在,无法断开!";
@@ -608,7 +611,12 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 	@Override
 	public void connectGateway(String gatewayID) {
 
-		GatewaySetting gatewaySetting = Global.accountTraderCTPMap.get(gatewayID);
+		String key="";
+		String[] split = gatewayID.split("-");
+		if(split!=null && split.length>1) {
+			key=split[1];
+		}
+		GatewaySetting gatewaySetting = TraderMapper.accountTraderCTPMap.get(key);
 
 		if (gatewaySetting == null) {
 			String logContent = "MAIN_ENGINE:接口" + gatewayID + "无法连接,不存在";
@@ -642,13 +650,23 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 
 	@Override
 	public void saveGateway(GatewaySetting gatewaySetting) {
-		Global.accountTraderCTPMap.put(gatewaySetting.getGatewayID(), gatewaySetting);
+		String key="";
+		String[] split = gatewaySetting.getGatewayID().split("-");
+		if(split!=null && split.length>1) {
+			key=split[1];
+		}
+		TraderMapper.accountTraderCTPMap.put(key, gatewaySetting);
 	}
 
 	@Override
 	public void deleteGateway(String gatewayID) {
 		disconnectGateway(gatewayID);
-		Global.accountTraderCTPMap.remove(gatewayID);
+		String key="";
+		String[] split = gatewayID.split("-");
+		if(split!=null && split.length>1) {
+			key=split[1];
+		}
+		TraderMapper.accountTraderCTPMap.remove(key);
 	}
 
 	@Override
@@ -666,7 +684,12 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 			disconnectGateway(gatewaySetting.getGatewayID());
 			isLoaded = true;
 		}
-		Global.accountTraderCTPMap.put(gatewayID, gatewaySetting);
+		String key="";
+		String[] split = gatewayID.split("-");
+		if(split!=null && split.length>1) {
+			key=split[1];
+		}
+		TraderMapper.accountTraderCTPMap.put(key, gatewaySetting);
 
 		// 重新连接
 		if (isLoaded) {
@@ -676,12 +699,12 @@ public class MainEngineImpl extends FastEventDynamicHandlerAbstract implements M
 
 	@Override
 	public GatewaySetting queryGatewaySetting(String gatewayID) {
-		return Global.accountTraderCTPMap.get(gatewayID);
+		return TraderMapper.accountTraderCTPMap.get(gatewayID);
 	}
 
 	@Override
 	public List<GatewaySetting> queryGatewaySettings() {
-		return (List<GatewaySetting>) Global.accountTraderCTPMap.values();
+		return (List<GatewaySetting>) TraderMapper.accountTraderCTPMap.values();
 	}
 
 	@Override

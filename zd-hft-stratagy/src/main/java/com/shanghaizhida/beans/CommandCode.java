@@ -441,4 +441,16 @@ public class CommandCode {
 	/** 手机验证码发送请求 */
 	public static String ReqVerifyCode = "RequVfCd";
 	// 双重认证-----end
+	
+	public final static String CTPTICK = "CTPTICK";
+	public final static String CTPTRADE = "CTPTRADE";
+	public final static String CTPORDER = "CTPORDER";
+	public final static String CTPCANCEL="CTPCANCEL";
+	public final static String CTPPOSITION = "CTPPOSITION";
+	public final static String CTPACCOUNT = "CTPACCOUNT";
+	public final static String CTPCONTRACT = "CTPCONTRACT";
+	public final static String CTPERROR = "CTPERROR";
+	public final static String CTPGATEWAY = "CTPGATEWAY";
+	public final static String CTPLOG = "CTPLOG";
+	public final static String CTPTHREAD_STOP = "CTPTHREAD_STOP";
 }

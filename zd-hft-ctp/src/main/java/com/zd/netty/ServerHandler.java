@@ -91,15 +91,15 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 					// 追加订阅新的行情
 					String[] symbols = ni.infoT.split(",");
 					for (String symbol : symbols) {
-						handler.subscribeEvent(symbol);
-						Global.tradingService.subscribe(symbol, "");
+						handler.subscribeEvent(symbol.split("@")[1]);
+						Global.tradingService.subscribe(symbol.split("@")[1], "");
 					}
 				} else if (SubMarketTypeEnum.UNSUB.getCode().equals(ni.todayCanUse)) {
 					// 退订行情
 					if (StringUtils.isNotBlank(ni.infoT)) {
 						String[] symbols = ni.infoT.split(",");
 						for (String symbol : symbols) {
-							handler.unsubscribeEvent(symbol);
+							handler.unsubscribeEvent(symbol.split("@")[1]);
 						}
 					} else {
 						// 退订所有行情
@@ -110,8 +110,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 					handler.getSubscribedEventSet().clear();
 					String[] symbols = ni.infoT.split(",");
 					for (String symbol : symbols) {
-						handler.subscribeEvent(symbol);
-						Global.tradingService.subscribe(symbol, "");
+						handler.subscribeEvent(symbol.split("@")[1]);
+						Global.tradingService.subscribe(symbol.split("@")[1], "");
 					}
 				}
 

@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.zd.business.engine.main.market.MarketEventEngine;
+import com.zd.business.engine.main.market.MarketEventHandler;
 import com.zd.business.engine.main.market.MarketEventProducer;
 import com.zd.business.netty.server.NettyServer;
 import com.zd.business.service.market.MarketDataFeed;
@@ -34,6 +35,7 @@ public class ZdHftMarketApplication implements CommandLineRunner {
 		MarketEventProducer mep = new MarketEventProducer(MarketEventEngine.getRingBuffer());
 		Global.marketEventProducer = mep;
 
+		MarketEventEngine.addHandler();
 		// 连接一级行情服务器
 		MarketDataFeed mdf = new MarketDataFeed(global.market01ServerHost, String.valueOf(global.market01ServerPort));
 		mdf.start();

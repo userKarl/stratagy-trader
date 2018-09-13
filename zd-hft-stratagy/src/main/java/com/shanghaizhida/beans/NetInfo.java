@@ -38,17 +38,18 @@ public class NetInfo implements NetParent {
 	/** 01股票数据 02板块数据 */
 	public String clientNo = "";
 
+	public String timestampSend="";
+	
+	public String timestampRecv="";
+	
 	@Override
 	public String MyToString() {
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(this.code).append("@").append(this.localSystemCode)
-				.append("@").append(this.systemCode).append("@")
-				.append(this.todayCanUse).append("@").append(this.errorCode)
-				.append("@").append(this.accountNo).append("@")
-				.append(this.exchangeCode).append("@").append(this.errorMsg)
-				.append("@").append(this.clientNo).append("&")
-				.append(this.infoT);
+		sb.append(this.code).append("@").append(this.localSystemCode).append("@").append(this.systemCode).append("@")
+				.append(this.todayCanUse).append("@").append(this.errorCode).append("@").append(this.accountNo)
+				.append("@").append(this.exchangeCode).append("@").append(this.errorMsg).append("@")
+				.append(this.clientNo).append("@").append(this.timestampSend).append("@").append(this.timestampRecv).append("&").append(this.infoT);
 
 		return sb.toString();
 	}
@@ -111,6 +112,12 @@ public class NetInfo implements NetParent {
 		if (arrClass.length > 8) {
 			this.clientNo = arrClass[8];
 		}
+		if (arrClass.length > 9) {
+			this.timestampSend = arrClass[9];
+		}
+		if (arrClass.length > 10) {
+			this.timestampRecv = arrClass[10];
+		}
 	}
 
 	@Override
@@ -131,18 +138,11 @@ public class NetInfo implements NetParent {
 
 	@Override
 	public String toString() {
-		return "NetInfo{" +
-				"code='" + code + '\'' +
-				", localSystemCode='" + localSystemCode + '\'' +
-				", systemCode='" + systemCode + '\'' +
-				", todayCanUse='" + todayCanUse + '\'' +
-				", infoT='" + infoT + '\'' +
-				", errorCode='" + errorCode + '\'' +
-				", accountNo='" + accountNo + '\'' +
-				", exchangeCode='" + exchangeCode + '\'' +
-				", errorMsg='" + errorMsg + '\'' +
-				", clientNo='" + clientNo + '\'' +
-				", secondDeli=" + secondDeli +
-				'}';
+		return "NetInfo{" + "code='" + code + '\'' + ", localSystemCode='" + localSystemCode + '\'' + ", systemCode='"
+				+ systemCode + '\'' + ", todayCanUse='" + todayCanUse + '\'' + ", infoT='" + infoT + '\''
+				+ ", errorCode='" + errorCode + '\'' + ", accountNo='" + accountNo + '\'' + ", exchangeCode='"
+				+ exchangeCode + '\'' + ", errorMsg='" + errorMsg + '\'' + ", clientNo='" + clientNo + '\''
+				+ ", secondDeli=" + secondDeli + '}';
 	}
+
 }

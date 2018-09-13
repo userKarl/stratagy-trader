@@ -15,7 +15,7 @@ import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
 import com.zd.business.constant.RedisConst;
 import com.zd.business.constant.TraderEnvEnum;
-import com.zd.config.Global;
+import com.zd.mapper.TraderMapper;
 import com.zd.redis.RedisService;
 
 import xyz.redtorch.trader.base.RtConstant;
@@ -68,7 +68,7 @@ public class TradingServiceImpl implements TradingService {
 
 	@Override
 	public String sendOrder(String gatewayID, String rtSymbol, double price, int volume, String priceType,
-			String direction, String offset) {
+			String direction, String offset,String orderRef) {
 
 		Contract contract = mainEngine.getContract(rtSymbol, gatewayID);
 		if (contract != null) {
@@ -82,7 +82,7 @@ public class TradingServiceImpl implements TradingService {
 			orderReq.setDirection(direction);
 			orderReq.setOffset(offset);
 			orderReq.setPriceType(priceType);
-
+			orderReq.setOrderRef(orderRef);
 			return mainEngine.sendOrder(orderReq);
 		} else {
 			log.error("发单失败,未找到合约");
@@ -95,10 +95,10 @@ public class TradingServiceImpl implements TradingService {
 	public void cancelOrder(String rtOrderID) {
 
 //		Order order = mainEngine.getOrder(rtOrderID);//之前系统逻辑
-		
-		Order order=(Order) redisService.hmGet(RedisConst.ORDERINFOKEY, rtOrderID);
-		
-		if (order != null) {
+		Order order=new Order();
+		String orderInfo=(String)redisService.hmGet(RedisConst.ORDERINFOKEY, rtOrderID);
+		if (StringUtils.isNotBlank(orderInfo)) {
+			order.MyReadString(orderInfo);
 			if (!RtConstant.STATUS_FINISHED.contains(order.getStatus())) {
 
 				CancelOrderReq cancelOrderReq = new CancelOrderReq();
@@ -288,7 +288,7 @@ public class TradingServiceImpl implements TradingService {
 					ni.localSystemCode = split[0];
 					ni.accountNo = split[1];
 					ni.infoT = trade.MyToString();
-					Global.traderInfoQueue.add(ni.MyToString());
+					TraderMapper.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
 					log.error("向客户端转发Trade发生异常!!!", e);
 				}
@@ -301,7 +301,7 @@ public class TradingServiceImpl implements TradingService {
 					ni.localSystemCode = split[0];
 					ni.accountNo = split[1];
 					ni.infoT = order.MyToString();
-					Global.traderInfoQueue.add(ni.MyToString());
+					TraderMapper.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
 					log.error("向客户端转发Order发生异常!!!", e);
 				}
@@ -319,7 +319,7 @@ public class TradingServiceImpl implements TradingService {
 					ni.localSystemCode = split[0];
 					ni.accountNo = split[1];
 					ni.infoT = position.MyToString();
-					Global.traderInfoQueue.add(ni.MyToString());
+					TraderMapper.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
 					log.error("向客户端转发Position发生异常!!!", e);
 				}
@@ -331,7 +331,7 @@ public class TradingServiceImpl implements TradingService {
 					ni.localSystemCode = split[0];
 					ni.accountNo = split[1];
 					ni.infoT = account.MyToString();
-					Global.traderInfoQueue.add(ni.MyToString());
+					TraderMapper.traderInfoQueue.add(ni.MyToString());
 				} catch (Exception e) {
 					log.error("向客户端转发Account发生异常!!!", e);
 				}

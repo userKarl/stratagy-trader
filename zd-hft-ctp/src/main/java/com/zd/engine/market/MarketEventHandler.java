@@ -29,10 +29,12 @@ public class MarketEventHandler extends ZdEventDynamicHandlerAbstract<MarketEven
 		// 广播行情
 		try {
 			String marketInfo = event.getMarketInfo();
-			Tick tick = JacksonUtil.jsonToObj(marketInfo, Tick.class);
+			Tick tick = new Tick();
+			tick.MyReadString(marketInfo);
 			NetInfo ni = new NetInfo();
 			ni.code = CommandCode.MARKET02;
 			ni.infoT = marketInfo;
+			ni.exchangeCode="2";
 			if (ctx != null) {
 				for (String s : subscribedEventSet) {
 					if (s.equals(tick.getSymbol())) {

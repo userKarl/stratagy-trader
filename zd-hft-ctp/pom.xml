@@ -5,7 +5,7 @@
 	<groupId>com.zd</groupId>
 	<artifactId>zd-hft-ctp</artifactId>
 	<version>1.0</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>zd-hft-ctp</name>
 	<description>zd-hft-ctp</description>

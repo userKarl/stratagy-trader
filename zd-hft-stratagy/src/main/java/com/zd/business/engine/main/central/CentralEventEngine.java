@@ -8,7 +8,9 @@ import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.util.DaemonThreadFactory;
+import com.zd.business.common.BaseService;
 import com.zd.business.engine.event.ZdEventEngine;
+import com.zd.redis.RedisService;
 
 public class CentralEventEngine{
 
@@ -25,8 +27,8 @@ public class CentralEventEngine{
 		engine.init();
 	}
 	
-	public static void addHandler() {
-		engine.addHandler(new CentralEventHandler());
+	public static void addHandler(RedisService redisService,BaseService baseService) {
+		engine.addHandler(new CentralEventHandler(redisService,baseService));
 	}
 	
 	public static void removeHandler(CentralEventHandler handler) {

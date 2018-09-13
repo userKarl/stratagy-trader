@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
+import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.MarketInfo;
+import com.shanghaizhida.beans.NetInfo;
 import com.zd.business.common.CommonUtils;
 import com.zd.business.engine.event.ZdEventDynamicHandlerAbstract;
 
@@ -52,16 +54,19 @@ public class MarketEventHandler extends ZdEventDynamicHandlerAbstract<MarketEven
 		try {
 			MarketInfo mi = new MarketInfo();
 			mi.MyReadString(event.getMarketInfo());
+			NetInfo ni=new NetInfo();
+			ni.code=CommandCode.MARKET02;
+			ni.infoT=mi.MyToString();
 			if (ctx != null) {
 				if (isSubAll) {
 					// 订阅全部行情
 					if (!unsubSet.contains(mi.code)) {
-						ctx.channel().writeAndFlush(CommonUtils.toCommandString(event.getMarketInfo()));
+						ctx.channel().writeAndFlush(CommonUtils.toCommandString(ni.MyToString()));
 					}
 				} else {
 					for (String s : subscribedEventSet) {
 						if (s.equals(mi.code)) {
-							ctx.channel().writeAndFlush(CommonUtils.toCommandString(event.getMarketInfo()));
+							ctx.channel().writeAndFlush(CommonUtils.toCommandString(ni.MyToString()));
 						}
 					}
 				}

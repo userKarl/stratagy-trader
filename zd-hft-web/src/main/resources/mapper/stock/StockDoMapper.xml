@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zd.dao.stock.StockDoMapper" >
+  <resultMap id="BaseResultMap" type="com.zd.domain.StockDo" >
+    <result column="FExchangeNo" property="fexchangeno" jdbcType="VARCHAR" />
+    <result column="FCommodityNo" property="fcommodityno" jdbcType="VARCHAR" />
+    <result column="CommodityFName" property="commodityfname" jdbcType="VARCHAR" />
+    <result column="FCommodityType" property="fcommoditytype" jdbcType="VARCHAR" />
+    <result column="FRegDate" property="fregdate" jdbcType="VARCHAR" />
+    <result column="CommodityFCurrencyNo" property="commodityfcurrencyno" jdbcType="VARCHAR" />
+    <result column="FExchangeName" property="fexchangename" jdbcType="VARCHAR" />
+    <result column="FProductDot" property="fproductdot" jdbcType="NUMERIC" />
+    <result column="FUpperTick" property="fuppertick" jdbcType="NUMERIC" />
+    <result column="FDotNum" property="fdotnum" jdbcType="INTEGER" />
+    <result column="FLowerTick" property="flowertick" jdbcType="INTEGER" />
+    <result column="FTickPrice" property="ftickprice" jdbcType="NUMERIC" />
+    <result column="FUpperTick2" property="fuppertick2" jdbcType="NUMERIC" />
+    <result column="FExchangeNo2" property="fexchangeno2" jdbcType="VARCHAR" />
+    <result column="FOptionType" property="foptiontype" jdbcType="VARCHAR" />
+    <result column="FCurrencyName" property="fcurrencyname" jdbcType="VARCHAR" />
+    <result column="FFreezenPercent" property="ffreezenpercent" jdbcType="NUMERIC" />
+    <result column="FFreezenMoney" property="ffreezenmoney" jdbcType="NUMERIC" />
+    <result column="FFeeMoney" property="ffeemoney" jdbcType="NUMERIC" />
+    <result column="FFeePercent" property="ffeepercent" jdbcType="NUMERIC" />
+    <result column="FMortgagePercent" property="fmortgagepercent" jdbcType="NUMERIC" />
+    <result column="FUpperTickCode" property="fuppertickcode" jdbcType="VARCHAR" />
+    <result column="FLotSize" property="flotsize" jdbcType="INTEGER" />
+    <result column="FPrice" property="fprice" jdbcType="NUMERIC" />
+    <result column="FSettleType" property="fsettletype" jdbcType="VARCHAR" />
+    <result column="CommodityFNameEN" property="commodityfnameen" jdbcType="VARCHAR" />
+    <result column="FCanSell" property="fcansell" jdbcType="VARCHAR" />
+    <result column="FSellRate" property="fsellrate" jdbcType="NUMERIC" />
+    <result column="FSellMax" property="fsellmax" jdbcType="INTEGER" />
+    <result column="FConversionRatio" property="fconversionratio" jdbcType="DECIMAL" />
+    <result column="FStrickPrice" property="fstrickprice" jdbcType="NUMERIC" />
+    <result column="FCallPrice" property="fcallprice" jdbcType="NUMERIC" />
+    <result column="FMaturityDate" property="fmaturitydate" jdbcType="TIMESTAMP" />
+    <result column="FSellRateKeep" property="fsellratekeep" jdbcType="NUMERIC" />
+    <result column="FCallPutFlag" property="fcallputflag" jdbcType="VARCHAR" />
+    <result column="FStockCommodityNo" property="fstockcommodityno" jdbcType="VARCHAR" />
+    <result column="FPublisher" property="fpublisher" jdbcType="VARCHAR" />
+    <result column="FlastTradingDate" property="flasttradingdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <insert id="insert" parameterType="com.zd.domain.StockDo" >
+    insert into S_ZD_GetAllUseContract (FExchangeNo, FCommodityNo, CommodityFName, 
+      FCommodityType, FRegDate, CommodityFCurrencyNo, 
+      FExchangeName, FProductDot, FUpperTick, 
+      FDotNum, FLowerTick, FTickPrice, 
+      FUpperTick2, FExchangeNo2, FOptionType, 
+      FCurrencyName, FFreezenPercent, FFreezenMoney, 
+      FFeeMoney, FFeePercent, FMortgagePercent, 
+      FUpperTickCode, FLotSize, FPrice, 
+      FSettleType, CommodityFNameEN, FCanSell, 
+      FSellRate, FSellMax, FConversionRatio, 
+      FStrickPrice, FCallPrice, FMaturityDate, 
+      FSellRateKeep, FCallPutFlag, FStockCommodityNo, 
+      FPublisher, FlastTradingDate)
+    values (#{fexchangeno,jdbcType=VARCHAR}, #{fcommodityno,jdbcType=VARCHAR}, #{commodityfname,jdbcType=VARCHAR}, 
+      #{fcommoditytype,jdbcType=VARCHAR}, #{fregdate,jdbcType=VARCHAR}, #{commodityfcurrencyno,jdbcType=VARCHAR}, 
+      #{fexchangename,jdbcType=VARCHAR}, #{fproductdot,jdbcType=NUMERIC}, #{fuppertick,jdbcType=NUMERIC}, 
+      #{fdotnum,jdbcType=INTEGER}, #{flowertick,jdbcType=INTEGER}, #{ftickprice,jdbcType=NUMERIC}, 
+      #{fuppertick2,jdbcType=NUMERIC}, #{fexchangeno2,jdbcType=VARCHAR}, #{foptiontype,jdbcType=VARCHAR}, 
+      #{fcurrencyname,jdbcType=VARCHAR}, #{ffreezenpercent,jdbcType=NUMERIC}, #{ffreezenmoney,jdbcType=NUMERIC}, 
+      #{ffeemoney,jdbcType=NUMERIC}, #{ffeepercent,jdbcType=NUMERIC}, #{fmortgagepercent,jdbcType=NUMERIC}, 
+      #{fuppertickcode,jdbcType=VARCHAR}, #{flotsize,jdbcType=INTEGER}, #{fprice,jdbcType=NUMERIC}, 
+      #{fsettletype,jdbcType=VARCHAR}, #{commodityfnameen,jdbcType=VARCHAR}, #{fcansell,jdbcType=VARCHAR}, 
+      #{fsellrate,jdbcType=NUMERIC}, #{fsellmax,jdbcType=INTEGER}, #{fconversionratio,jdbcType=DECIMAL}, 
+      #{fstrickprice,jdbcType=NUMERIC}, #{fcallprice,jdbcType=NUMERIC}, #{fmaturitydate,jdbcType=TIMESTAMP}, 
+      #{fsellratekeep,jdbcType=NUMERIC}, #{fcallputflag,jdbcType=VARCHAR}, #{fstockcommodityno,jdbcType=VARCHAR}, 
+      #{fpublisher,jdbcType=VARCHAR}, #{flasttradingdate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zd.domain.StockDo" >
+    insert into S_ZD_GetAllUseContract
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fexchangeno != null" >
+        FExchangeNo,
+      </if>
+      <if test="fcommodityno != null" >
+        FCommodityNo,
+      </if>
+      <if test="commodityfname != null" >
+        CommodityFName,
+      </if>
+      <if test="fcommoditytype != null" >
+        FCommodityType,
+      </if>
+      <if test="fregdate != null" >
+        FRegDate,
+      </if>
+      <if test="commodityfcurrencyno != null" >
+        CommodityFCurrencyNo,
+      </if>
+      <if test="fexchangename != null" >
+        FExchangeName,
+      </if>
+      <if test="fproductdot != null" >
+        FProductDot,
+      </if>
+      <if test="fuppertick != null" >
+        FUpperTick,
+      </if>
+      <if test="fdotnum != null" >
+        FDotNum,
+      </if>
+      <if test="flowertick != null" >
+        FLowerTick,
+      </if>
+      <if test="ftickprice != null" >
+        FTickPrice,
+      </if>
+      <if test="fuppertick2 != null" >
+        FUpperTick2,
+      </if>
+      <if test="fexchangeno2 != null" >
+        FExchangeNo2,
+      </if>
+      <if test="foptiontype != null" >
+        FOptionType,
+      </if>
+      <if test="fcurrencyname != null" >
+        FCurrencyName,
+      </if>
+      <if test="ffreezenpercent != null" >
+        FFreezenPercent,
+      </if>
+      <if test="ffreezenmoney != null" >
+        FFreezenMoney,
+      </if>
+      <if test="ffeemoney != null" >
+        FFeeMoney,
+      </if>
+      <if test="ffeepercent != null" >
+        FFeePercent,
+      </if>
+      <if test="fmortgagepercent != null" >
+        FMortgagePercent,
+      </if>
+      <if test="fuppertickcode != null" >
+        FUpperTickCode,
+      </if>
+      <if test="flotsize != null" >
+        FLotSize,
+      </if>
+      <if test="fprice != null" >
+        FPrice,
+      </if>
+      <if test="fsettletype != null" >
+        FSettleType,
+      </if>
+      <if test="commodityfnameen != null" >
+        CommodityFNameEN,
+      </if>
+      <if test="fcansell != null" >
+        FCanSell,
+      </if>
+      <if test="fsellrate != null" >
+        FSellRate,
+      </if>
+      <if test="fsellmax != null" >
+        FSellMax,
+      </if>
+      <if test="fconversionratio != null" >
+        FConversionRatio,
+      </if>
+      <if test="fstrickprice != null" >
+        FStrickPrice,
+      </if>
+      <if test="fcallprice != null" >
+        FCallPrice,
+      </if>
+      <if test="fmaturitydate != null" >
+        FMaturityDate,
+      </if>
+      <if test="fsellratekeep != null" >
+        FSellRateKeep,
+      </if>
+      <if test="fcallputflag != null" >
+        FCallPutFlag,
+      </if>
+      <if test="fstockcommodityno != null" >
+        FStockCommodityNo,
+      </if>
+      <if test="fpublisher != null" >
+        FPublisher,
+      </if>
+      <if test="flasttradingdate != null" >
+        FlastTradingDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fexchangeno != null" >
+        #{fexchangeno,jdbcType=VARCHAR},
+      </if>
+      <if test="fcommodityno != null" >
+        #{fcommodityno,jdbcType=VARCHAR},
+      </if>
+      <if test="commodityfname != null" >
+        #{commodityfname,jdbcType=VARCHAR},
+      </if>
+      <if test="fcommoditytype != null" >
+        #{fcommoditytype,jdbcType=VARCHAR},
+      </if>
+      <if test="fregdate != null" >
+        #{fregdate,jdbcType=VARCHAR},
+      </if>
+      <if test="commodityfcurrencyno != null" >
+        #{commodityfcurrencyno,jdbcType=VARCHAR},
+      </if>
+      <if test="fexchangename != null" >
+        #{fexchangename,jdbcType=VARCHAR},
+      </if>
+      <if test="fproductdot != null" >
+        #{fproductdot,jdbcType=NUMERIC},
+      </if>
+      <if test="fuppertick != null" >
+        #{fuppertick,jdbcType=NUMERIC},
+      </if>
+      <if test="fdotnum != null" >
+        #{fdotnum,jdbcType=INTEGER},
+      </if>
+      <if test="flowertick != null" >
+        #{flowertick,jdbcType=INTEGER},
+      </if>
+      <if test="ftickprice != null" >
+        #{ftickprice,jdbcType=NUMERIC},
+      </if>
+      <if test="fuppertick2 != null" >
+        #{fuppertick2,jdbcType=NUMERIC},
+      </if>
+      <if test="fexchangeno2 != null" >
+        #{fexchangeno2,jdbcType=VARCHAR},
+      </if>
+      <if test="foptiontype != null" >
+        #{foptiontype,jdbcType=VARCHAR},
+      </if>
+      <if test="fcurrencyname != null" >
+        #{fcurrencyname,jdbcType=VARCHAR},
+      </if>
+      <if test="ffreezenpercent != null" >
+        #{ffreezenpercent,jdbcType=NUMERIC},
+      </if>
+      <if test="ffreezenmoney != null" >
+        #{ffreezenmoney,jdbcType=NUMERIC},
+      </if>
+      <if test="ffeemoney != null" >
+        #{ffeemoney,jdbcType=NUMERIC},
+      </if>
+      <if test="ffeepercent != null" >
+        #{ffeepercent,jdbcType=NUMERIC},
+      </if>
+      <if test="fmortgagepercent != null" >
+        #{fmortgagepercent,jdbcType=NUMERIC},
+      </if>
+      <if test="fuppertickcode != null" >
+        #{fuppertickcode,jdbcType=VARCHAR},
+      </if>
+      <if test="flotsize != null" >
+        #{flotsize,jdbcType=INTEGER},
+      </if>
+      <if test="fprice != null" >
+        #{fprice,jdbcType=NUMERIC},
+      </if>
+      <if test="fsettletype != null" >
+        #{fsettletype,jdbcType=VARCHAR},
+      </if>
+      <if test="commodityfnameen != null" >
+        #{commodityfnameen,jdbcType=VARCHAR},
+      </if>
+      <if test="fcansell != null" >
+        #{fcansell,jdbcType=VARCHAR},
+      </if>
+      <if test="fsellrate != null" >
+        #{fsellrate,jdbcType=NUMERIC},
+      </if>
+      <if test="fsellmax != null" >
+        #{fsellmax,jdbcType=INTEGER},
+      </if>
+      <if test="fconversionratio != null" >
+        #{fconversionratio,jdbcType=DECIMAL},
+      </if>
+      <if test="fstrickprice != null" >
+        #{fstrickprice,jdbcType=NUMERIC},
+      </if>
+      <if test="fcallprice != null" >
+        #{fcallprice,jdbcType=NUMERIC},
+      </if>
+      <if test="fmaturitydate != null" >
+        #{fmaturitydate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fsellratekeep != null" >
+        #{fsellratekeep,jdbcType=NUMERIC},
+      </if>
+      <if test="fcallputflag != null" >
+        #{fcallputflag,jdbcType=VARCHAR},
+      </if>
+      <if test="fstockcommodityno != null" >
+        #{fstockcommodityno,jdbcType=VARCHAR},
+      </if>
+      <if test="fpublisher != null" >
+        #{fpublisher,jdbcType=VARCHAR},
+      </if>
+      <if test="flasttradingdate != null" >
+        #{flasttradingdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="getStockByExchangeNo" resultMap="BaseResultMap">
+    select z.FExchangeNo,z.FExchangeName,z.FCommodityNo from S_ZD_GetAllUseContract z
+      <where>
+          <if test="exchangeNo != null and exchangeNo != ''"> z.FExchangeNo = #{exchangeNo}</if>
+      </where>
+  </select>
+</mapper>

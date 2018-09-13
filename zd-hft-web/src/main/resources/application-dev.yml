@@ -1,0 +1,41 @@
+bootdo:
+  uploadPath: D:/var/uploaded_files/
+logging:
+  level:
+    root: info
+    com.bootdo: debug
+spring:
+  datasource:
+    master:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://192.168.1.187:3306/bootdo?useUnicode=true&characterEncoding=utf8&useSSL=false
+      username: root
+      password: root
+    ForeignShare:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driverClassName: net.sourceforge.jtds.jdbc.Driver
+      url: jdbc:jtds:sqlserver://192.168.1.219;DatabaseName=ForeignShare
+      username: sa
+      password: 123456
+    StockShare:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driverClassName: net.sourceforge.jtds.jdbc.Driver
+      url: jdbc:jtds:sqlserver://192.168.1.219;DatabaseName=StockShare
+      username: sa
+      password: 123456
+  redis:
+      host: 192.168.1.187
+      port: 6379
+      password:
+      # 连接超时时间（毫秒）
+      timeout: 10000
+      pool:
+        # 连接池中的最大空闲连接
+        max-idle: 8
+        # 连接池中的最小空闲连接
+        min-idle: 10
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 100
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1

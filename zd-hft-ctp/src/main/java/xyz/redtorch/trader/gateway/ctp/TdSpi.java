@@ -11,7 +11,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xyz.redtorch.api.jctp.CtpConstant;
 import xyz.redtorch.api.jctp.CThostFtdcAccountregisterField;
 import xyz.redtorch.api.jctp.CThostFtdcBatchOrderActionField;
 import xyz.redtorch.api.jctp.CThostFtdcBrokerTradingAlgosField;
@@ -108,11 +107,13 @@ import xyz.redtorch.api.jctp.CThostFtdcTransferBankField;
 import xyz.redtorch.api.jctp.CThostFtdcTransferSerialField;
 import xyz.redtorch.api.jctp.CThostFtdcUserLogoutField;
 import xyz.redtorch.api.jctp.CThostFtdcUserPasswordUpdateField;
+import xyz.redtorch.api.jctp.CtpConstant;
 import xyz.redtorch.api.jctp.jctptraderapiv6v3v11x64Constants;
 import xyz.redtorch.trader.base.RtConstant;
 import xyz.redtorch.trader.entity.Account;
 import xyz.redtorch.trader.entity.CancelOrderReq;
 import xyz.redtorch.trader.entity.Contract;
+import xyz.redtorch.trader.entity.Order;
 import xyz.redtorch.trader.entity.OrderReq;
 import xyz.redtorch.trader.entity.Position;
 import xyz.redtorch.trader.entity.Trade;
@@ -140,10 +141,12 @@ public class TdSpi extends CThostFtdcTraderSpi {
 	private HashMap<String, String> contractExchangeMap;
 	private HashMap<String, Integer> contractSizeMap;
 
-	//最后一条数据，如果新来的数据和这条数据相同，则不推送
+	// 最后一条数据，如果新来的数据和这条数据相同，则不推送
 	private Position lastPosition;
 	private Account lastAccount;
-		
+	private Order lastOrder;
+	private Trade lastTrade;
+
 	TdSpi(CtpGateway ctpGateway) {
 
 		this.ctpGateway = ctpGateway;
@@ -200,8 +203,8 @@ public class TdSpi extends CThostFtdcTraderSpi {
 
 			}
 			String envTmpDir = System.getProperty("java.io.tmpdir");
-			String tempFilePath = envTmpDir + File.separator + "xyz" + File.separator + "redtorch" + File.separator + "api"
-					+ File.separator + "jctp" + File.separator + "TEMP_CTP" + File.separator + "TD_"
+			String tempFilePath = envTmpDir + File.separator + "xyz" + File.separator + "redtorch" + File.separator
+					+ "api" + File.separator + "jctp" + File.separator + "TEMP_CTP" + File.separator + "TD_"
 					+ ctpGateway.getGatewayID() + "_";
 			File tempFile = new File(tempFilePath);
 			if (!tempFile.getParentFile().exists()) {
@@ -227,7 +230,6 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 
@@ -286,7 +288,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -308,7 +310,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -333,8 +335,8 @@ public class TdSpi extends CThostFtdcTraderSpi {
 
 			cThostFtdcInputOrderField.setOrderPriceType(
 					CtpConstant.priceTypeMap.getOrDefault(orderReq.getPriceType(), Character.valueOf('\0')));
-			cThostFtdcInputOrderField
-					.setDirection(CtpConstant.directionMap.getOrDefault(orderReq.getDirection(), Character.valueOf('\0')));
+			cThostFtdcInputOrderField.setDirection(
+					CtpConstant.directionMap.getOrDefault(orderReq.getDirection(), Character.valueOf('\0')));
 			cThostFtdcInputOrderField.setCombOffsetFlag(
 					String.valueOf(CtpConstant.offsetMap.getOrDefault(orderReq.getOffset(), Character.valueOf('\0'))));
 			cThostFtdcInputOrderField.setOrderRef(orderRef + "");
@@ -344,8 +346,10 @@ public class TdSpi extends CThostFtdcTraderSpi {
 
 			cThostFtdcInputOrderField
 					.setCombHedgeFlag(String.valueOf(jctptraderapiv6v3v11x64Constants.THOST_FTDC_HF_Speculation));
-			cThostFtdcInputOrderField.setContingentCondition(jctptraderapiv6v3v11x64Constants.THOST_FTDC_CC_Immediately);
-			cThostFtdcInputOrderField.setForceCloseReason(jctptraderapiv6v3v11x64Constants.THOST_FTDC_FCC_NotForceClose);
+			cThostFtdcInputOrderField
+					.setContingentCondition(jctptraderapiv6v3v11x64Constants.THOST_FTDC_CC_Immediately);
+			cThostFtdcInputOrderField
+					.setForceCloseReason(jctptraderapiv6v3v11x64Constants.THOST_FTDC_FCC_NotForceClose);
 			cThostFtdcInputOrderField.setIsAutoSuspend(0);
 			cThostFtdcInputOrderField.setTimeCondition(jctptraderapiv6v3v11x64Constants.THOST_FTDC_TC_GFD);
 			cThostFtdcInputOrderField.setVolumeCondition(jctptraderapiv6v3v11x64Constants.THOST_FTDC_VC_AV);
@@ -361,14 +365,14 @@ public class TdSpi extends CThostFtdcTraderSpi {
 				cThostFtdcInputOrderField.setTimeCondition(jctptraderapiv6v3v11x64Constants.THOST_FTDC_TC_IOC);
 				cThostFtdcInputOrderField.setVolumeCondition(jctptraderapiv6v3v11x64Constants.THOST_FTDC_VC_CV);
 			}
-			
-//			if("IH1805".equals(orderReq.getSymbol())) {
-//				System.out.println("T2T-OrderBefore-"+System.nanoTime());
-//			}
+
+			// if("IH1805".equals(orderReq.getSymbol())) {
+			// System.out.println("T2T-OrderBefore-"+System.nanoTime());
+			// }
 			cThostFtdcTraderApi.ReqOrderInsert(cThostFtdcInputOrderField, reqID);
-//			if("IH1805".equals(orderReq.getSymbol())) {
-//				System.out.println("T2T-Order-"+System.nanoTime());
-//			}
+			// if("IH1805".equals(orderReq.getSymbol())) {
+			// System.out.println("T2T-Order-"+System.nanoTime());
+			// }
 			String rtOrderID = gatewayID + "." + orderRef;
 
 			return rtOrderID;
@@ -402,7 +406,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private void login() {
@@ -440,7 +444,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// 前置机联机回报
@@ -456,7 +460,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// 前置机断开回报
@@ -469,7 +473,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// 登录回报
@@ -515,7 +519,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// 登出回报
@@ -534,7 +538,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// 错误回报
@@ -547,7 +551,6 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 
@@ -612,8 +615,8 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			String updateTime = null;
 
 			ctpGateway.emitOrder(gatewayID, symbol, exchange, rtSymbol, orderID, rtOrderID, direction, offset, price,
-					totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, activeTime, updateTime,
-					frontID, sessionID);
+					totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, activeTime,
+					updateTime, frontID, sessionID);
 
 			// 发送委托事件
 			String logContent = MessageFormat.format("{0}交易接口发单错误回报(柜台)! ErrorID:{1},ErrorMsg:{2}", gatewayLogInfo,
@@ -623,7 +626,6 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 
@@ -648,7 +650,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public void OnRspQueryMaxOrderVolume(CThostFtdcQueryMaxOrderVolumeField pQueryMaxOrderVolume,
@@ -792,12 +794,12 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			if (bIsLast) {
 				for (Position tmpPosition : positionMap.values()) {
 					// 发送持仓事件
-					if(lastPosition==null) {
-						lastPosition=new Position();
+					if (lastPosition == null) {
+						lastPosition = new Position();
 					}
-					if(!lastPosition.MyToString().equals(tmpPosition.MyToString())) {
+					if (!lastPosition.MyToString().equals(tmpPosition.MyToString())) {
 						ctpGateway.emitPositon(tmpPosition);
-						lastPosition=tmpPosition;
+						lastPosition = tmpPosition;
 					}
 				}
 
@@ -807,14 +809,13 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 
 	// 账户查询回报
 	public void OnRspQryTradingAccount(CThostFtdcTradingAccountField pTradingAccount, CThostFtdcRspInfoField pRspInfo,
 			int nRequestID, boolean bIsLast) {
-		
+
 		try {
 			Account account = new Account();
 			account.setAccountID(pTradingAccount.getAccountID());
@@ -829,22 +830,22 @@ public class TdSpi extends CThostFtdcTraderSpi {
 
 			double balance = pTradingAccount.getPreBalance() - pTradingAccount.getPreCredit()
 					- pTradingAccount.getPreMortgage() + pTradingAccount.getMortgage() - pTradingAccount.getWithdraw()
-					+ pTradingAccount.getDeposit() + pTradingAccount.getCloseProfit() + pTradingAccount.getPositionProfit()
-					+ pTradingAccount.getCashIn() - pTradingAccount.getCommission();
+					+ pTradingAccount.getDeposit() + pTradingAccount.getCloseProfit()
+					+ pTradingAccount.getPositionProfit() + pTradingAccount.getCashIn()
+					- pTradingAccount.getCommission();
 
 			account.setBalance(balance);
 
-			if(lastAccount==null) {
-				lastAccount=new Account();
+			if (lastAccount == null) {
+				lastAccount = new Account();
 			}
-			if(!lastAccount.MyToString().equals(account.MyToString())) {
+			if (!lastAccount.MyToString().equals(account.MyToString())) {
 				ctpGateway.emitAccount(account);
-				lastAccount=account;
+				lastAccount = account;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 
@@ -875,7 +876,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 	// 合约查询回报
 	public void OnRspQryInstrument(CThostFtdcInstrumentField pInstrument, CThostFtdcRspInfoField pRspInfo,
 			int nRequestID, boolean bIsLast) {
-	
+
 		try {
 			Contract contract = new Contract();
 			contract.setGatewayID(gatewayID);
@@ -915,7 +916,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public void OnRspQryDepthMarketData(CThostFtdcDepthMarketDataField pDepthMarketData,
@@ -1078,10 +1079,20 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			String cancelTime = pOrder.getCancelTime();
 			String activeTime = pOrder.getActiveTime();
 			String updateTime = pOrder.getUpdateTime();
-
-			ctpGateway.emitOrder(gatewayID, symbol, exchange, rtSymbol, orderID, rtOrderID, direction, offset, price,
-					totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, activeTime, updateTime,
-					frontID, sessionID);
+			Order order=new Order();
+			order.setAllValue(newRef, symbol, exchange, rtSymbol, orderID, rtOrderID, direction, offset, 
+					price, totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, 
+					activeTime, updateTime, totalVolume, tradedVolume);
+			if(lastOrder==null) {
+				lastOrder=new Order();
+			}
+			if(!lastOrder.MyToString().equals(order.MyToString())) {
+				ctpGateway.emitOrder(gatewayID, symbol, exchange, rtSymbol, orderID, rtOrderID, direction, offset, price,
+						totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, activeTime, updateTime,
+						frontID, sessionID);
+				lastOrder=order;
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1131,13 +1142,21 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			String tradeDate = pTrade.getTradeDate();
 			String tradeTime = pTrade.getTradeTime();
 			DateTime dateTime = null;
-
-			ctpGateway.emitTrade(gatewayID, symbol, exchange, rtSymbol, tradeID, rtTradeID, orderID, rtOrderID, direction,
-					offset, price, volume, tradingDay, tradeDate, tradeTime, dateTime);
+			Trade trade2=new Trade();
+			trade.setAllValue(tradeTime, symbol, exchange, rtSymbol, tradeID, rtTradeID, orderID, rtOrderID, 
+					direction, offset, price, volume, tradingDay, tradeDate, tradeTime, dateTime);
+			if(lastTrade==null) {
+				lastTrade=new Trade();
+			}
+			if(!lastTrade.MyToString().equals(trade2.MyToString())) {
+				ctpGateway.emitTrade(gatewayID, symbol, exchange, rtSymbol, tradeID, rtTradeID, orderID, rtOrderID,
+						direction, offset, price, volume, tradingDay, tradeDate, tradeTime, dateTime);
+				lastTrade=trade2;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	
+
 	}
 
 	// 发单错误回报（交易所）
@@ -1163,8 +1182,8 @@ public class TdSpi extends CThostFtdcTraderSpi {
 			String updateTime = null;
 
 			ctpGateway.emitOrder(gatewayID, symbol, exchange, rtSymbol, orderID, rtOrderID, direction, offset, price,
-					totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, activeTime, updateTime,
-					frontID, sessionID);
+					totalVolume, tradedVolume, status, tradingDay, orderDate, orderTime, cancelTime, activeTime,
+					updateTime, frontID, sessionID);
 			String logContent = MessageFormat.format("{0}交易接口发单错误回报（交易所）! ErrorID:{1},ErrorMsg:{2}", gatewayLogInfo,
 					pRspInfo.getErrorID(), pRspInfo.getErrorMsg());
 			log.error(logContent);
@@ -1172,13 +1191,12 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 
 	// 撤单错误回报（交易所）
 	public void OnErrRtnOrderAction(CThostFtdcOrderActionField pOrderAction, CThostFtdcRspInfoField pRspInfo) {
-		
+
 		try {
 			String logContent = MessageFormat.format("{0}交易接口撤单错误回报（交易所）! ErrorID:{1},ErrorMsg:{2}", gatewayLogInfo,
 					pRspInfo.getErrorID(), pRspInfo.getErrorMsg());
@@ -1187,7 +1205,7 @@ public class TdSpi extends CThostFtdcTraderSpi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public void OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField pInstrumentStatus) {

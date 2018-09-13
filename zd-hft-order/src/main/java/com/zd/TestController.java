@@ -9,8 +9,8 @@ import com.shanghaizhida.beans.CommandCode;
 import com.shanghaizhida.beans.NetInfo;
 import com.shanghaizhida.beans.OrderInfo;
 import com.zd.business.service.TraderDataFeed;
-import com.zd.config.Global;
 import com.zd.config.NettyGlobal;
+import com.zd.mapper.TraderMapper;
 
 @RestController
 public class TestController {
@@ -25,7 +25,7 @@ public class TestController {
 
 	@GetMapping("order/{userAccount}")
 	public void order(@PathVariable String userAccount) {
-		TraderDataFeed tdf = Global.accountTraderMap.get(userAccount);
+		TraderDataFeed tdf = TraderMapper.accountTraderMap.get(userAccount);
 		if (tdf != null) {
 			NetInfo niBuy = new NetInfo();
 			niBuy.code = CommandCode.ORDER;

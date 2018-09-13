@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zd.dao.foreign.FutureDoMapper" >
+  <resultMap id="BaseResultMap" type="com.zd.domain.FutureDo" >
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="FContractNo" property="fcontractno" jdbcType="VARCHAR" />
+    <result column="ContractFName" property="contractfname" jdbcType="VARCHAR" />
+    <result column="FCommodityNo" property="fcommodityno" jdbcType="VARCHAR" />
+    <result column="CommodityFName" property="commodityfname" jdbcType="VARCHAR" />
+    <result column="CommodityFCurrencyNo" property="commodityfcurrencyno" jdbcType="VARCHAR" />
+    <result column="CurrencyFName" property="currencyfname" jdbcType="VARCHAR" />
+    <result column="FProductDot" property="fproductdot" jdbcType="NUMERIC" />
+    <result column="FUpperTick" property="fuppertick" jdbcType="NUMERIC" />
+    <result column="FCommodityType" property="fcommoditytype" jdbcType="VARCHAR" />
+    <result column="FExchangeNo" property="fexchangeno" jdbcType="VARCHAR" />
+    <result column="FName" property="fname" jdbcType="VARCHAR" />
+    <result column="FPrice" property="fprice" jdbcType="NUMERIC" />
+    <result column="FTradeMonth" property="ftrademonth" jdbcType="VARCHAR" />
+    <result column="FDotNum" property="fdotnum" jdbcType="INTEGER" />
+    <result column="FLowerTick" property="flowertick" jdbcType="INTEGER" />
+    <result column="FDotNum_Carry" property="fdotnumCarry" jdbcType="INTEGER" />
+    <result column="FUpperTick_Carry" property="fuppertickCarry" jdbcType="NUMERIC" />
+    <result column="FFirstNoticeDay" property="ffirstnoticeday" jdbcType="VARCHAR" />
+    <result column="FFreezenPercent" property="ffreezenpercent" jdbcType="NUMERIC" />
+    <result column="FFreezenMoney" property="ffreezenmoney" jdbcType="NUMERIC" />
+    <result column="FFeePercent" property="ffeepercent" jdbcType="NUMERIC" />
+    <result column="FFeeMoney" property="ffeemoney" jdbcType="NUMERIC" />
+    <result column="FStrikeCommodityId" property="fstrikecommodityid" jdbcType="INTEGER" />
+    <result column="FProductDotStrike" property="fproductdotstrike" jdbcType="NUMERIC" />
+    <result column="FUpperTickStrike" property="fuppertickstrike" jdbcType="NUMERIC" />
+    <result column="FPriceStrike" property="fpricestrike" jdbcType="NUMERIC" />
+    <result column="FStrikePrice" property="fstrikeprice" jdbcType="NUMERIC" />
+    <result column="FuturesCommodityID" property="futurescommodityid" jdbcType="INTEGER" />
+    <result column="FuturesContractNo" property="futurescontractno" jdbcType="VARCHAR" />
+    <result column="FExpiryDate" property="fexpirydate" jdbcType="VARCHAR" />
+    <result column="FRegDate" property="fregdate" jdbcType="VARCHAR" />
+    <result column="FTickPrice" property="ftickprice" jdbcType="NUMERIC" />
+    <result column="FUpperTick2" property="fuppertick2" jdbcType="NUMERIC" />
+    <result column="FExchangeNo2" property="fexchangeno2" jdbcType="VARCHAR" />
+    <result column="FOptionType" property="foptiontype" jdbcType="VARCHAR" />
+    <result column="FOptionMonth" property="foptionmonth" jdbcType="VARCHAR" />
+    <result column="FOptionCommodityNo" property="foptioncommodityno" jdbcType="VARCHAR" />
+    <result column="FuturesCode" property="futurescode" jdbcType="VARCHAR" />
+    <result column="CommodityFNameEN" property="commodityfnameen" jdbcType="VARCHAR" />
+    <result column="ContractFNameEN" property="contractfnameen" jdbcType="VARCHAR" />
+    <result column="FOptionStyle" property="foptionstyle" jdbcType="CHAR" />
+    <result column="UpdateTime" property="updatetime" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.zd.domain.FutureDo" >
+    insert into S_ZD_GetAllUseContract (code, FContractNo, ContractFName, 
+      FCommodityNo, CommodityFName, CommodityFCurrencyNo, 
+      CurrencyFName, FProductDot, FUpperTick, 
+      FCommodityType, FExchangeNo, FName, 
+      FPrice, FTradeMonth, FDotNum, 
+      FLowerTick, FDotNum_Carry, FUpperTick_Carry, 
+      FFirstNoticeDay, FFreezenPercent, FFreezenMoney, 
+      FFeePercent, FFeeMoney, FStrikeCommodityId, 
+      FProductDotStrike, FUpperTickStrike, FPriceStrike, 
+      FStrikePrice, FuturesCommodityID, FuturesContractNo, 
+      FExpiryDate, FRegDate, FTickPrice, 
+      FUpperTick2, FExchangeNo2, FOptionType, 
+      FOptionMonth, FOptionCommodityNo, FuturesCode, 
+      CommodityFNameEN, ContractFNameEN, FOptionStyle, 
+      UpdateTime)
+    values (#{code,jdbcType=VARCHAR}, #{fcontractno,jdbcType=VARCHAR}, #{contractfname,jdbcType=VARCHAR}, 
+      #{fcommodityno,jdbcType=VARCHAR}, #{commodityfname,jdbcType=VARCHAR}, #{commodityfcurrencyno,jdbcType=VARCHAR}, 
+      #{currencyfname,jdbcType=VARCHAR}, #{fproductdot,jdbcType=NUMERIC}, #{fuppertick,jdbcType=NUMERIC}, 
+      #{fcommoditytype,jdbcType=VARCHAR}, #{fexchangeno,jdbcType=VARCHAR}, #{fname,jdbcType=VARCHAR}, 
+      #{fprice,jdbcType=NUMERIC}, #{ftrademonth,jdbcType=VARCHAR}, #{fdotnum,jdbcType=INTEGER}, 
+      #{flowertick,jdbcType=INTEGER}, #{fdotnumCarry,jdbcType=INTEGER}, #{fuppertickCarry,jdbcType=NUMERIC}, 
+      #{ffirstnoticeday,jdbcType=VARCHAR}, #{ffreezenpercent,jdbcType=NUMERIC}, #{ffreezenmoney,jdbcType=NUMERIC}, 
+      #{ffeepercent,jdbcType=NUMERIC}, #{ffeemoney,jdbcType=NUMERIC}, #{fstrikecommodityid,jdbcType=INTEGER}, 
+      #{fproductdotstrike,jdbcType=NUMERIC}, #{fuppertickstrike,jdbcType=NUMERIC}, #{fpricestrike,jdbcType=NUMERIC}, 
+      #{fstrikeprice,jdbcType=NUMERIC}, #{futurescommodityid,jdbcType=INTEGER}, #{futurescontractno,jdbcType=VARCHAR}, 
+      #{fexpirydate,jdbcType=VARCHAR}, #{fregdate,jdbcType=VARCHAR}, #{ftickprice,jdbcType=NUMERIC}, 
+      #{fuppertick2,jdbcType=NUMERIC}, #{fexchangeno2,jdbcType=VARCHAR}, #{foptiontype,jdbcType=VARCHAR}, 
+      #{foptionmonth,jdbcType=VARCHAR}, #{foptioncommodityno,jdbcType=VARCHAR}, #{futurescode,jdbcType=VARCHAR}, 
+      #{commodityfnameen,jdbcType=VARCHAR}, #{contractfnameen,jdbcType=VARCHAR}, #{foptionstyle,jdbcType=CHAR}, 
+      #{updatetime,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zd.domain.FutureDo" >
+    insert into S_ZD_GetAllUseContract
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="code != null" >
+        code,
+      </if>
+      <if test="fcontractno != null" >
+        FContractNo,
+      </if>
+      <if test="contractfname != null" >
+        ContractFName,
+      </if>
+      <if test="fcommodityno != null" >
+        FCommodityNo,
+      </if>
+      <if test="commodityfname != null" >
+        CommodityFName,
+      </if>
+      <if test="commodityfcurrencyno != null" >
+        CommodityFCurrencyNo,
+      </if>
+      <if test="currencyfname != null" >
+        CurrencyFName,
+      </if>
+      <if test="fproductdot != null" >
+        FProductDot,
+      </if>
+      <if test="fuppertick != null" >
+        FUpperTick,
+      </if>
+      <if test="fcommoditytype != null" >
+        FCommodityType,
+      </if>
+      <if test="fexchangeno != null" >
+        FExchangeNo,
+      </if>
+      <if test="fname != null" >
+        FName,
+      </if>
+      <if test="fprice != null" >
+        FPrice,
+      </if>
+      <if test="ftrademonth != null" >
+        FTradeMonth,
+      </if>
+      <if test="fdotnum != null" >
+        FDotNum,
+      </if>
+      <if test="flowertick != null" >
+        FLowerTick,
+      </if>
+      <if test="fdotnumCarry != null" >
+        FDotNum_Carry,
+      </if>
+      <if test="fuppertickCarry != null" >
+        FUpperTick_Carry,
+      </if>
+      <if test="ffirstnoticeday != null" >
+        FFirstNoticeDay,
+      </if>
+      <if test="ffreezenpercent != null" >
+        FFreezenPercent,
+      </if>
+      <if test="ffreezenmoney != null" >
+        FFreezenMoney,
+      </if>
+      <if test="ffeepercent != null" >
+        FFeePercent,
+      </if>
+      <if test="ffeemoney != null" >
+        FFeeMoney,
+      </if>
+      <if test="fstrikecommodityid != null" >
+        FStrikeCommodityId,
+      </if>
+      <if test="fproductdotstrike != null" >
+        FProductDotStrike,
+      </if>
+      <if test="fuppertickstrike != null" >
+        FUpperTickStrike,
+      </if>
+      <if test="fpricestrike != null" >
+        FPriceStrike,
+      </if>
+      <if test="fstrikeprice != null" >
+        FStrikePrice,
+      </if>
+      <if test="futurescommodityid != null" >
+        FuturesCommodityID,
+      </if>
+      <if test="futurescontractno != null" >
+        FuturesContractNo,
+      </if>
+      <if test="fexpirydate != null" >
+        FExpiryDate,
+      </if>
+      <if test="fregdate != null" >
+        FRegDate,
+      </if>
+      <if test="ftickprice != null" >
+        FTickPrice,
+      </if>
+      <if test="fuppertick2 != null" >
+        FUpperTick2,
+      </if>
+      <if test="fexchangeno2 != null" >
+        FExchangeNo2,
+      </if>
+      <if test="foptiontype != null" >
+        FOptionType,
+      </if>
+      <if test="foptionmonth != null" >
+        FOptionMonth,
+      </if>
+      <if test="foptioncommodityno != null" >
+        FOptionCommodityNo,
+      </if>
+      <if test="futurescode != null" >
+        FuturesCode,
+      </if>
+      <if test="commodityfnameen != null" >
+        CommodityFNameEN,
+      </if>
+      <if test="contractfnameen != null" >
+        ContractFNameEN,
+      </if>
+      <if test="foptionstyle != null" >
+        FOptionStyle,
+      </if>
+      <if test="updatetime != null" >
+        UpdateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="fcontractno != null" >
+        #{fcontractno,jdbcType=VARCHAR},
+      </if>
+      <if test="contractfname != null" >
+        #{contractfname,jdbcType=VARCHAR},
+      </if>
+      <if test="fcommodityno != null" >
+        #{fcommodityno,jdbcType=VARCHAR},
+      </if>
+      <if test="commodityfname != null" >
+        #{commodityfname,jdbcType=VARCHAR},
+      </if>
+      <if test="commodityfcurrencyno != null" >
+        #{commodityfcurrencyno,jdbcType=VARCHAR},
+      </if>
+      <if test="currencyfname != null" >
+        #{currencyfname,jdbcType=VARCHAR},
+      </if>
+      <if test="fproductdot != null" >
+        #{fproductdot,jdbcType=NUMERIC},
+      </if>
+      <if test="fuppertick != null" >
+        #{fuppertick,jdbcType=NUMERIC},
+      </if>
+      <if test="fcommoditytype != null" >
+        #{fcommoditytype,jdbcType=VARCHAR},
+      </if>
+      <if test="fexchangeno != null" >
+        #{fexchangeno,jdbcType=VARCHAR},
+      </if>
+      <if test="fname != null" >
+        #{fname,jdbcType=VARCHAR},
+      </if>
+      <if test="fprice != null" >
+        #{fprice,jdbcType=NUMERIC},
+      </if>
+      <if test="ftrademonth != null" >
+        #{ftrademonth,jdbcType=VARCHAR},
+      </if>
+      <if test="fdotnum != null" >
+        #{fdotnum,jdbcType=INTEGER},
+      </if>
+      <if test="flowertick != null" >
+        #{flowertick,jdbcType=INTEGER},
+      </if>
+      <if test="fdotnumCarry != null" >
+        #{fdotnumCarry,jdbcType=INTEGER},
+      </if>
+      <if test="fuppertickCarry != null" >
+        #{fuppertickCarry,jdbcType=NUMERIC},
+      </if>
+      <if test="ffirstnoticeday != null" >
+        #{ffirstnoticeday,jdbcType=VARCHAR},
+      </if>
+      <if test="ffreezenpercent != null" >
+        #{ffreezenpercent,jdbcType=NUMERIC},
+      </if>
+      <if test="ffreezenmoney != null" >
+        #{ffreezenmoney,jdbcType=NUMERIC},
+      </if>
+      <if test="ffeepercent != null" >
+        #{ffeepercent,jdbcType=NUMERIC},
+      </if>
+      <if test="ffeemoney != null" >
+        #{ffeemoney,jdbcType=NUMERIC},
+      </if>
+      <if test="fstrikecommodityid != null" >
+        #{fstrikecommodityid,jdbcType=INTEGER},
+      </if>
+      <if test="fproductdotstrike != null" >
+        #{fproductdotstrike,jdbcType=NUMERIC},
+      </if>
+      <if test="fuppertickstrike != null" >
+        #{fuppertickstrike,jdbcType=NUMERIC},
+      </if>
+      <if test="fpricestrike != null" >
+        #{fpricestrike,jdbcType=NUMERIC},
+      </if>
+      <if test="fstrikeprice != null" >
+        #{fstrikeprice,jdbcType=NUMERIC},
+      </if>
+      <if test="futurescommodityid != null" >
+        #{futurescommodityid,jdbcType=INTEGER},
+      </if>
+      <if test="futurescontractno != null" >
+        #{futurescontractno,jdbcType=VARCHAR},
+      </if>
+      <if test="fexpirydate != null" >
+        #{fexpirydate,jdbcType=VARCHAR},
+      </if>
+      <if test="fregdate != null" >
+        #{fregdate,jdbcType=VARCHAR},
+      </if>
+      <if test="ftickprice != null" >
+        #{ftickprice,jdbcType=NUMERIC},
+      </if>
+      <if test="fuppertick2 != null" >
+        #{fuppertick2,jdbcType=NUMERIC},
+      </if>
+      <if test="fexchangeno2 != null" >
+        #{fexchangeno2,jdbcType=VARCHAR},
+      </if>
+      <if test="foptiontype != null" >
+        #{foptiontype,jdbcType=VARCHAR},
+      </if>
+      <if test="foptionmonth != null" >
+        #{foptionmonth,jdbcType=VARCHAR},
+      </if>
+      <if test="foptioncommodityno != null" >
+        #{foptioncommodityno,jdbcType=VARCHAR},
+      </if>
+      <if test="futurescode != null" >
+        #{futurescode,jdbcType=VARCHAR},
+      </if>
+      <if test="commodityfnameen != null" >
+        #{commodityfnameen,jdbcType=VARCHAR},
+      </if>
+      <if test="contractfnameen != null" >
+        #{contractfnameen,jdbcType=VARCHAR},
+      </if>
+      <if test="foptionstyle != null" >
+        #{foptionstyle,jdbcType=CHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="getCodeByExchangeNo" resultMap="BaseResultMap">
+      select g.code ,g.FExchangeNo,g.FName from S_ZD_GetAllUseContract g
+      <where>
+          <if test="exchangeNo != null and exchangeNo != ''"> g.FExchangeNo = #{exchangeNo}</if>
+      </where>
+  </select>
+</mapper>

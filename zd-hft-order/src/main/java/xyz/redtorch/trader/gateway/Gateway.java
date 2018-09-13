@@ -138,7 +138,7 @@ public interface Gateway {
 	void emitOrder(String gatewayID, String symbol, String exchange, String rtSymbol, String orderID, String rtOrderID,
 			String direction, String offset, double price, int totalVolume, int tradedVolume, String status,
 			String tradingDay, String orderDate, String orderTime, String cancelTime, String activeTime,
-			String updateTime, int frontID, int sessionID);
+			String updateTime, int frontID, int sessionID,String orderSysId);
 
 	/**
 	 * 获取配置

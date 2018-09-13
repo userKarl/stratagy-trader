@@ -8,6 +8,7 @@ import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.util.DaemonThreadFactory;
+import com.zd.business.common.BaseService;
 import com.zd.business.engine.event.ZdEventEngine;
 
 public class MarketEventEngine {
@@ -25,8 +26,8 @@ public class MarketEventEngine {
 		engine.init();
 	}
 	
-	public static MarketEventHandler addHandler() {
-		MarketEventHandler handler=new MarketEventHandler();
+	public static MarketEventHandler addHandler(BaseService baseService) {
+		MarketEventHandler handler=new MarketEventHandler(baseService);
 		handler.init();
 		engine.addHandler(handler);
 		return handler;

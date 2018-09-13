@@ -8,6 +8,7 @@ public enum CommandEnum {
 	STRATAGY_STOP, // 停止策略
 	STRATAGY_STRIKE, // 策略触发
 	STRATAGY_CACL, // 策略计算
+	STRATAGY_ORDER, // 策略下单
 	SYSTEMEXCEPTION // 系统异常
 
 }

@@ -1,7 +1,8 @@
 package com.zd.business.entity;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.collect.Lists;
-import com.zd.common.utils.StringUtils;
 
 import lombok.Data;
 

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.zd.config.NettyGlobal;
-import com.zd.netty.NettyServer;
+import com.zd.netty.server.NettyServer;
 
 import io.netty.channel.ChannelFuture;
 

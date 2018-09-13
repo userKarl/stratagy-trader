@@ -42,7 +42,7 @@ public interface TradingService {
 	List<LogData> getLogDatas();
 
 	String sendOrder(String gatewayID, String rtSymbol, double price, int volume, String priceType, String direction,
-			String offset);
+			String offset,String orderRef);
 
 	void cancelOrder(String rtOrderID);
 

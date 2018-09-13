@@ -46,7 +46,7 @@ import com.shanghaizhida.core.net.TradingClient;
 import com.zd.common.utils.MacUtils;
 import com.zd.common.utils.calc.ArithDecimal;
 import com.zd.common.utils.datetime.TimeUtil;
-import com.zd.config.Global;
+import com.zd.mapper.TraderMapper;
 
 /**
  * 交易服务器线程
@@ -79,21 +79,20 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 	public String host;
 	public String port;
 
-	private String localSystemCode = null;
-
 	private String accountNo = null;
+	private String localSystemCode = null;
 
 	/**
 	 * 构造函数
 	 */
-	public TraderDataFeed(String host, String port, String userAccount, String userPassWd, String localSystemCode,
-			String accountNo) {
+	public TraderDataFeed(String host, String port, String userAccount, String userPassWd,
+			String accountNo,String localSystemCode) {
 		this.host = host;
 		this.port = port;
 		this.userAccount = userAccount;
 		this.userPassWd = userPassWd;
-		this.localSystemCode = localSystemCode;
 		this.accountNo = accountNo;
+		this.localSystemCode=localSystemCode;
 	}
 
 	/**
@@ -333,22 +332,10 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 				//
 				// }
 
-				netInfo.localSystemCode = localSystemCode;
+				netInfo.localSystemCode=localSystemCode;
 				netInfo.accountNo = accountNo;
-				Global.traderInfoQueue.add(netInfo.MyToString());
-				// 如果用户登录成功，先检查该用户账户是否有因为断线而未返回的交易数据
-				if (CommandCode.LOGIN.equals(netInfo.code)) {
-					List<String> list = Global.notSendTraderInfoMap.get(netInfo.accountNo);
-					if (list != null) {
-						for (String s : list) {
-							NetInfo ni = new NetInfo();
-							ni.MyReadString(s);
-							ni.localSystemCode = localSystemCode;
-							Global.traderInfoQueue.add(ni.MyToString());
-						}
-					}
-				}
-
+				TraderMapper.traderInfoQueue.add(netInfo.MyToString());
+				
 				if (logger != null) {
 					// 修改密码的log不保存,包含用户敏感信息
 					if (CommandCode.MODIFYPW.equals(netInfo.code)) {
@@ -536,7 +523,7 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 					loginInfoMap = new HashMap<String, LoginResponseInfo>();
 				else
 					loginInfoMap.clear();
-
+				
 				// 接收用户下的账户信息列表
 				String[] moneyAccount = infoTSplit(netInfo.infoT);
 
@@ -639,517 +626,518 @@ public class TraderDataFeed implements Runnable, ConnectionStateListener {
 		else if (CommandCode.LOGINMULTI.equals(netInfo.code)) {
 
 			return;
-		}
-		// 订单系统号返回
-		else if (CommandCode.SYSTEMNOGET.equals(netInfo.code)) {
-			// 返回的代码为SUCCESS
-			if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
-				// 正常数据返回,map中找不到这个系统号,且本地号能找到时移除本地号保存的数据到系统号保存数据列表
-				if (!weituoInfoMap.containsKey(netInfo.systemCode)
-						&& xiadanInfoMap.containsKey(netInfo.localSystemCode)) {
+		} else {
+			OrderResponseInfo remove = xiadanInfoMap.remove(netInfo.localSystemCode);
+			if (CommandCode.SYSTEMNOGET.equals(netInfo.code)) {
+				// 返回的代码为SUCCESS
+				if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
+					// 正常数据返回,map中找不到这个系统号,且本地号能找到时移除本地号保存的数据到系统号保存数据列表
+					if (!weituoInfoMap.containsKey(netInfo.systemCode)
+							&& xiadanInfoMap.containsKey(netInfo.localSystemCode)) {
 
-					OrderResponseInfo orderResponseInfo = xiadanInfoMap.remove(netInfo.localSystemCode);
+						OrderResponseInfo orderResponseInfo = remove;
 
-					orderResponseInfo.systemNo = netInfo.systemCode;
-					orderResponseInfo.localNo = netInfo.localSystemCode;
-					orderResponseInfo.accountNo = netInfo.accountNo;
+						orderResponseInfo.systemNo = netInfo.systemCode;
+						orderResponseInfo.localNo = netInfo.localSystemCode;
+						orderResponseInfo.accountNo = netInfo.accountNo;
 
-					weituoInfoMap.put(netInfo.systemCode, orderResponseInfo);
-					guadanInfoMap.put(netInfo.systemCode, orderResponseInfo);
+						weituoInfoMap.put(netInfo.systemCode, orderResponseInfo);
+						guadanInfoMap.put(netInfo.systemCode, orderResponseInfo);
+					}
+				} else {
+					logger.error("CommandCode.SYSTEMNOGET netInfo.errorCode = " + netInfo.errorCode);
 				}
-			} else {
-				logger.error("CommandCode.SYSTEMNOGET netInfo.errorCode = " + netInfo.errorCode);
+
+				return;
 			}
+			// 下单返回
+			else if (CommandCode.ORDER.equals(netInfo.code)) {
 
-			return;
-		}
-		// 下单返回
-		else if (CommandCode.ORDER.equals(netInfo.code)) {
+				String errorMsg = "";
 
-			String errorMsg = "";
+				// 下单成功,infoT中是正常的完整数据
+				if (netInfo.errorCode.equals(ErrorCode.SUCCESS)) {
+					OrderResponseInfo orderResponseInfo = new OrderResponseInfo();
+					orderResponseInfo.MyReadString(netInfo.infoT);
 
-			// 下单成功,infoT中是正常的完整数据
-			if (netInfo.errorCode.equals(ErrorCode.SUCCESS)) {
-				OrderResponseInfo orderResponseInfo = new OrderResponseInfo();
-				orderResponseInfo.MyReadString(netInfo.infoT);
+					// orderResponseInfo.orderState =
+					// Constants.tradeStatusByNum(orderResponseInfo.orderState);
+					orderResponseInfo.orderState = Constants.TRADE_STATUS_YIPAIDUI;
 
-				// orderResponseInfo.orderState =
-				// Constants.tradeStatusByNum(orderResponseInfo.orderState);
-				orderResponseInfo.orderState = Constants.TRADE_STATUS_YIPAIDUI;
+					weituoInfoMap.put(orderResponseInfo.systemNo, orderResponseInfo);
+					guadanInfoMap.put(orderResponseInfo.systemNo, orderResponseInfo);
+				}
+				// 下单出现异常.或失败时,order中返回的数据是空的,这时候需要从下单的时候保存的列表中取出来用
+				else {
+					errorMsg = ErrorCode.getErrorMsgByCode(netInfo.errorCode);
 
-				weituoInfoMap.put(orderResponseInfo.systemNo, orderResponseInfo);
-				guadanInfoMap.put(orderResponseInfo.systemNo, orderResponseInfo);
+					// 如果order消息先来,systemno后来
+					if (!weituoInfoMap.containsKey(netInfo.systemCode)) {
+						if (xiadanInfoMap.containsKey(netInfo.localSystemCode)) {
+							OrderResponseInfo info = xiadanInfoMap.get(netInfo.localSystemCode);
 
-			}
-			// 下单出现异常.或失败时,order中返回的数据是空的,这时候需要从下单的时候保存的列表中取出来用
-			else {
-				errorMsg = ErrorCode.getErrorMsgByCode(netInfo.errorCode);
+							if (Constants.TRADE_STATUS_ZIJIN_LESS.equals(errorMsg))
+								info.orderState = Constants.TRADE_STATUS_ZIJIN_LESS;
+							else
+								info.orderState = Constants.TRADE_STATUS_ZHILING_FAIL;
 
-				// 如果order消息先来,systemno后来
-				if (!weituoInfoMap.containsKey(netInfo.systemCode)) {
-					if (xiadanInfoMap.containsKey(netInfo.localSystemCode)) {
-						OrderResponseInfo info = xiadanInfoMap.get(netInfo.localSystemCode);
+							OrderResponseInfo removeOrderResponseInfo=xiadanInfoMap.remove(netInfo.localSystemCode);
+							weituoInfoMap.put(netInfo.systemCode, removeOrderResponseInfo);
+						}
+					} else {
+						// 如果是正常情况,先来systemno 后来order 此时在systemno中已经将订单加进来了,只需要设置订单状态为指令失败就好了
+						OrderResponseInfo info = weituoInfoMap.get(netInfo.systemCode);
 
 						if (Constants.TRADE_STATUS_ZIJIN_LESS.equals(errorMsg))
 							info.orderState = Constants.TRADE_STATUS_ZIJIN_LESS;
 						else
 							info.orderState = Constants.TRADE_STATUS_ZHILING_FAIL;
-
-						weituoInfoMap.put(netInfo.systemCode, xiadanInfoMap.remove(netInfo.localSystemCode));
 					}
-				} else {
-					// 如果是正常情况,先来systemno 后来order 此时在systemno中已经将订单加进来了,只需要设置订单状态为指令失败就好了
-					OrderResponseInfo info = weituoInfoMap.get(netInfo.systemCode);
 
-					if (Constants.TRADE_STATUS_ZIJIN_LESS.equals(errorMsg))
-						info.orderState = Constants.TRADE_STATUS_ZIJIN_LESS;
-					else
-						info.orderState = Constants.TRADE_STATUS_ZHILING_FAIL;
+					// 下单失败 移除
+					guadanInfoMap.remove(netInfo.systemCode);
+
+					// refreshYingSunList();
 				}
 
-				// 下单失败 移除
-				guadanInfoMap.remove(netInfo.systemCode);
-
-				// refreshYingSunList();
+				return;
 			}
+			// 最新定单状态信息返回
+			else if (CommandCode.ORDERSTATUS.equals(netInfo.code)) {
 
-			return;
-		}
-		// 最新定单状态信息返回
-		else if (CommandCode.ORDERSTATUS.equals(netInfo.code)) {
+				updateWeituoInfoByOrderStatusInfo(netInfo);
 
-			updateWeituoInfoByOrderStatusInfo(netInfo);
+				OrderResponseInfo info = weituoInfoMap.get(netInfo.systemCode);
 
-			OrderResponseInfo info = weituoInfoMap.get(netInfo.systemCode);
+				updateGuadanByWeituoInfo(info);
 
-			updateGuadanByWeituoInfo(info);
-
-			return;
-		}
-		// 成交数据返回
-		else if (CommandCode.FILLEDCAST.equals(netInfo.code)) {
-
-			FilledResponseInfo responseInfo = new FilledResponseInfo();
-			responseInfo.MyReadString(netInfo.infoT);
-
-			// 将成交数据插入成交列表(明细)
-			chengjiaoInfoMap.put(responseInfo.filledNo, responseInfo);
-
-			// 更新成交合计
-			FilledResponseInfo totalInfo = new FilledResponseInfo();
-			totalInfo.MyReadString(netInfo.infoT);
-			updateChengjiaoTotalInfo(totalInfo);
-
-			return;
-		}
-		// 持仓状态返回
-		else if (CommandCode.HOLDSTATUS.equals(netInfo.code)) {
-
-			OrderStatusInfo orderStatusInfo = new OrderStatusInfo();
-			orderStatusInfo.MyReadString(netInfo.infoT);
-
-			// 对持仓map加线程同步
-			synchronized (chicangInfoMap) {
-				updateChicangTotalByOrderStatusInfo(orderStatusInfo);
+				return;
 			}
+			// 成交数据返回
+			else if (CommandCode.FILLEDCAST.equals(netInfo.code)) {
 
-			return;
-		}
-		// 最新账户资金信息返回
-		else if (CommandCode.ACCOUNTLAST.equals(netInfo.code)) {
-
-			AccountInfo responseInfo = new AccountInfo();
-			responseInfo.MyReadString(netInfo.infoT);
-
-			// 对资金map加线程同步
-			synchronized (zijinInfoMap) {
-				updateLastAccountByAccountInfo(responseInfo);
-
-				updateBaseCurrenyByRate();
-			}
-
-			return;
-		}
-		// 撤单
-		else if (CommandCode.CANCELCAST.equals(netInfo.code)) {
-
-			// 撤单成功
-			if (netInfo.errorCode.equals(ErrorCode.SUCCESS)) {
-				CancelResponseInfo cancelResponseInfo = new CancelResponseInfo();
-				cancelResponseInfo.MyReadString(netInfo.infoT);
-
-				updateGuadanWeituoByCancelInfo(cancelResponseInfo);
-
-			}
-			// 撤单失败
-			else {
-			}
-
-			return;
-		}
-		// 改单
-		else if (CommandCode.MODIFY.equals(netInfo.code)) {
-
-			// 改单成功
-			if (netInfo.errorCode.equals(ErrorCode.SUCCESS)) {
-
-				OrderResponseInfo responseInfo = new OrderResponseInfo();
+				FilledResponseInfo responseInfo = new FilledResponseInfo();
 				responseInfo.MyReadString(netInfo.infoT);
 
-				if (weituoInfoMap.containsKey(responseInfo.systemNo)) {
+				// 将成交数据插入成交列表(明细)
+				chengjiaoInfoMap.put(responseInfo.filledNo, responseInfo);
 
-					OrderResponseInfo orderInfo = weituoInfoMap.get(responseInfo.systemNo);
+				// 更新成交合计
+				FilledResponseInfo totalInfo = new FilledResponseInfo();
+				totalInfo.MyReadString(netInfo.infoT);
+				updateChengjiaoTotalInfo(totalInfo);
 
-					orderInfo.filledNumber = responseInfo.filledNumber;
-					orderInfo.orderNumber = responseInfo.orderNumber;
-					orderInfo.orderPrice = responseInfo.orderPrice;
-					orderInfo.triggerPrice = responseInfo.triggerPrice;
-				}
-
-				if (guadanInfoMap.containsKey(responseInfo.systemNo)) {
-
-					OrderResponseInfo orderInfo = guadanInfoMap.get(responseInfo.systemNo);
-
-					orderInfo.filledNumber = responseInfo.filledNumber;
-					orderInfo.orderNumber = responseInfo.orderNumber;
-					orderInfo.orderPrice = responseInfo.orderPrice;
-					orderInfo.triggerPrice = responseInfo.triggerPrice;
-				}
+				return;
 			}
-			// 改单失败
-			else {
-			}
+			// 持仓状态返回
+			else if (CommandCode.HOLDSTATUS.equals(netInfo.code)) {
 
-			return;
-		}
-		// 委托
-		else if (CommandCode.ORDERSEARCH.equals(netInfo.code)) {
+				OrderStatusInfo orderStatusInfo = new OrderStatusInfo();
+				orderStatusInfo.MyReadString(netInfo.infoT);
 
-			String[] weituoList = infoTSplit(netInfo.infoT);
-
-			// 当委托列表为空时,分割出来的list长度为1,且为空
-			if (StringUtils.isNotBlank(weituoList[0])) {
-
-				for (int i = 0; i < weituoList.length; i++) {
-					OrderResponseInfo orderResponseInfo = new OrderResponseInfo();
-					orderResponseInfo.MyReadString(weituoList[i]);
-
-					orderResponseInfo.orderState = Constants.tradeStatusByNum(orderResponseInfo.orderState);
-
-					weituoInfoMap.put(orderResponseInfo.systemNo, orderResponseInfo);
-
-					// 委托单中存在没有完全成交的挂单 放入挂单列表
-					if (Constants.TRADE_STATUS_BUFEN.equals(orderResponseInfo.orderState)
-							|| Constants.TRADE_STATUS_YIPAIDUI.equals(orderResponseInfo.orderState)
-							|| Constants.TRADE_STATUS_YIQINGQIU.equals(orderResponseInfo.orderState)) {
-
-						guadanInfoMap.put(orderResponseInfo.systemNo, orderResponseInfo);
-
-					}
-				}
-
-			}
-
-			return;
-		}
-		// 挂单查询
-		else if (CommandCode.SearchGuaDan.equals(netInfo.code)) {
-
-			String[] guadanList = infoTSplit(netInfo.infoT);
-
-			// 当挂单列表为空时,分割出来的list长度为1,且为空
-			if (StringUtils.isNotBlank(guadanList[0])) {
-
-				for (int i = 0; i < guadanList.length; i++) {
-					OrderResponseInfo orderResponseInfo = new OrderResponseInfo();
-					orderResponseInfo.MyReadString(guadanList[i]);
-
-					guadanInfoMap.put(orderResponseInfo.systemNo, orderResponseInfo);
-				}
-
-			}
-
-			return;
-		}
-		// 持仓合计
-		else if (CommandCode.SearchHoldTotal.equals(netInfo.code)) {
-
-			String[] chicangList = infoTSplit(netInfo.infoT);
-
-			// 当持仓列表为空时,分割出来的list长度为1,且为空
-			if (StringUtils.isNotBlank(chicangList[0])) {
+				// 对持仓map加线程同步
 				synchronized (chicangInfoMap) {
-					chicangInfoMap.clear();
-					for (int i = 0; i < chicangList.length; i++) {
-						OrderStatusInfo statusInfo = new OrderStatusInfo();
-						statusInfo.MyReadString(chicangList[i]);
-
-						// synchronized (chicangInfoMap) {
-						updateChicangTotalByOrderStatusInfo(statusInfo);
-						// }
-					}
-				}
-			}
-
-			return;
-		}
-		// 成交查询
-		else if (CommandCode.FILLEDSEARCH.equals(netInfo.code)) {
-
-			String[] chengjiaoList = infoTSplit(netInfo.infoT);
-
-			// 当持仓列表为空时,分割出来的list长度为1,且为空
-			if (StringUtils.isNotBlank(chengjiaoList[0])) {
-
-				for (int i = 0; i < chengjiaoList.length; i++) {
-					FilledResponseInfo filledResponseInfo = new FilledResponseInfo();
-					filledResponseInfo.MyReadString(chengjiaoList[i]);
-
-					// 将成交数据插入成交列表(明细)
-					chengjiaoInfoMap.put(filledResponseInfo.filledNo, filledResponseInfo);
-
-					// 更新成交合计
-					FilledResponseInfo filledTotalInfo = new FilledResponseInfo();
-					filledTotalInfo.MyReadString(chengjiaoList[i]);
-					updateChengjiaoTotalInfo(filledTotalInfo);
+					updateChicangTotalByOrderStatusInfo(orderStatusInfo);
 				}
 
+				return;
 			}
+			// 最新账户资金信息返回
+			else if (CommandCode.ACCOUNTLAST.equals(netInfo.code)) {
 
-			return;
-		}
-		// 资金查询
-		else if (CommandCode.ACCOUNTSEARCH.equals(netInfo.code)) {
+				AccountInfo responseInfo = new AccountInfo();
+				responseInfo.MyReadString(netInfo.infoT);
 
-			String[] zijinList = infoTSplit(netInfo.infoT);
-
-			// 当持仓列表为空时,分割出来的list长度为1,且为空
-			if (StringUtils.isNotBlank(zijinList[0])) {
 				// 对资金map加线程同步
 				synchronized (zijinInfoMap) {
-					zijinInfoMap.clear();
-					for (int i = 0; i < zijinList.length; i++) {
-						AccountResponseInfo info = new AccountResponseInfo();
-						info.MyReadString(zijinList[i]);
-
-						zijinInfoMap.put(info.accountNo, info);
-					}
+					updateLastAccountByAccountInfo(responseInfo);
 
 					updateBaseCurrenyByRate();
 				}
-			}
 
-			return;
-		}
-		// 币种对应汇率
-		else if (CommandCode.CURRENCYLIST.equals(netInfo.code)) {
-
-			String[] bizhongList = infoTSplit(netInfo.infoT);
-
-			// 每次登陆时清空一下币种信息
-			// bizhongInfoMap.clear();
-
-			// 当持仓列表为空时,分割出来的list长度为1,且为空
-			if (bizhongList.length == 1 && bizhongList[0].isEmpty())
 				return;
-
-			for (int i = 0; i < bizhongList.length; i++) {
-				// LogUtil.e("sky----------bizhongList-----i = " + i + " bizhong = " +
-				// bizhongList[i]);
-				CurrencyInfo currencyInfo = new CurrencyInfo();
-				currencyInfo.MyReadString(bizhongList[i]);
-
-				if (currencyInfo.isBase == 1)
-					jibibizhong = currencyInfo;
-				// bizhongInfoMap.put(currencyInfo.currencyNo,currencyInfo);
 			}
+			// 撤单
+			else if (CommandCode.CANCELCAST.equals(netInfo.code)) {
 
-			//
-			// this.notifyObservers(new TraderTag(TraderTag.TRADER_TYPE_ACCOUNT));
-		}
+				// 撤单成功
+				if (netInfo.errorCode.equals(ErrorCode.SUCCESS)) {
+					CancelResponseInfo cancelResponseInfo = new CancelResponseInfo();
+					cancelResponseInfo.MyReadString(netInfo.infoT);
 
-		// add by xiang 2015-11-30 start
+					updateGuadanWeituoByCancelInfo(cancelResponseInfo);
 
-		// 止损止盈设置 数据列表数据返回
-		else if (CommandCode.GETYINGSUNLIST.equals(netInfo.code)) {
-
-			String[] yingsunList = infoTSplit(netInfo.infoT);
-
-			// 止损止盈设置列表为空时,分割出来的list长度为1,且为空
-			if (StringUtils.isNotBlank(yingsunList[0])) {
-
-				for (int i = 0; i < yingsunList.length; i++) {
-					YingSunListResponseInfo yingSunListResponseInfo = new YingSunListResponseInfo();
-					yingSunListResponseInfo.MyReadString(yingsunList[i]);
-
-					yingsunListMap.put(yingSunListResponseInfo.yingsunNo, yingSunListResponseInfo);
+				}
+				// 撤单失败
+				else {
 				}
 
+				return;
 			}
+			// 改单
+			else if (CommandCode.MODIFY.equals(netInfo.code)) {
 
-			return;
-		}
+				// 改单成功
+				if (netInfo.errorCode.equals(ErrorCode.SUCCESS)) {
 
-		// 当服务器断开，此时赢损触发会收到此指令，再次重新获取赢损list，刷新
-		else if (CommandCode.ORDER004.equals(netInfo.code)) {
+					OrderResponseInfo responseInfo = new OrderResponseInfo();
+					responseInfo.MyReadString(netInfo.infoT);
 
-			// 服务器断开会返回这个error，接收它处理
-			if (netInfo.errorCode.equals(ErrorCode.ERR_COMMON_0001)) {
-				refreshYingSunList();
-			}
+					if (weituoInfoMap.containsKey(responseInfo.systemNo)) {
 
-			return;
-		}
+						OrderResponseInfo orderInfo = weituoInfoMap.get(responseInfo.systemNo);
 
-		// add by xiang 2015-11-30 end
+						orderInfo.filledNumber = responseInfo.filledNumber;
+						orderInfo.orderNumber = responseInfo.orderNumber;
+						orderInfo.orderPrice = responseInfo.orderPrice;
+						orderInfo.triggerPrice = responseInfo.triggerPrice;
+					}
 
-		// 修改密码
-		else if (CommandCode.MODIFYPW.equals(netInfo.code)) {
-			// MODIFYPW@@@1@00000@@@@&000003@888888@1
-			// MODIFYPW@@@1@修改密码出错@@@@&000003@12@7
+					if (guadanInfoMap.containsKey(responseInfo.systemNo)) {
 
-			ModifyClientPWS info = new ModifyClientPWS();
-			info.MyReadString(netInfo.infoT);
+						OrderResponseInfo orderInfo = guadanInfoMap.get(responseInfo.systemNo);
 
-			// 修改成功
-			if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
-				userPassWd = info.newPws;
-
-			}
-			// 修改失败
-			else {
-			}
-
-		}
-		// 登陆IP返回
-		else if (CommandCode.GetLoginHistoryList.equals(netInfo.code)) {
-			// LogHisLs@@@@00000@@@@@&192.168.1.140:5443@192.168.1.140:5443@2016-08-18
-			// 13:51:58@1
-
-			String[] ipList = infoTSplit(netInfo.infoT);
-
-			// 当登陆ip列表为空时,分割出来的list长度为1,且为空
-			if (StringUtils.isNotBlank(ipList[0])) {
-
-				loginSameIpList.clear();
-
-				for (int i = 0; i < ipList.length; i++) {
-					LoginHistoryIpInfo ipInfo = new LoginHistoryIpInfo();
-					ipInfo.MyReadString(ipList[i]);
-
-					if (ipInfo.LoginType.equals("1")) {
-						return;
-					} else {
-						loginSameIpList.add(ipInfo);
+						orderInfo.filledNumber = responseInfo.filledNumber;
+						orderInfo.orderNumber = responseInfo.orderNumber;
+						orderInfo.orderPrice = responseInfo.orderPrice;
+						orderInfo.triggerPrice = responseInfo.triggerPrice;
 					}
 				}
-			}
-			return;
-		}
-		// 安全认证添加-----20180306-----begin
-		// 获取密保问题返回
-		else if (CommandCode.GetVerifyQuestionList.equals(netInfo.code)) {
-
-			// 获取成功
-			if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
-				if (questionList == null)
-					questionList = new ArrayList<QuestionInfo>();
-				else
-					questionList.clear();
-
-				String[] list = infoTSplit(netInfo.infoT);
-				if (StringUtils.isNotBlank(list[0])) {
-					for (int i = 0; i < list.length; i++) {
-						QuestionInfo info = new QuestionInfo();
-						info.MyReadString(list[i]);
-
-						questionList.add(info);
-					}
+				// 改单失败
+				else {
 				}
 
-				if (isFirstLogin) {
-				} else {
-				}
+				return;
 			}
-			// 获取失败
-			else {
-				// 错误消息
-			}
+			// 委托
+			else if (CommandCode.ORDERSEARCH.equals(netInfo.code)) {
 
-		}
-		// 发送手机验证码返回
-		else if (CommandCode.ReqVerifyCode.equals(netInfo.code)) {
+				String[] weituoList = infoTSplit(netInfo.infoT);
 
-			// 获取成功
-			if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
-			}
-			// 获取失败
-			else {
-				// 错误消息
-			}
+				// 当委托列表为空时,分割出来的list长度为1,且为空
+				if (StringUtils.isNotBlank(weituoList[0])) {
 
-		}
-		// 安全认证返回
-		else if (CommandCode.SafeVerify.equals(netInfo.code)) {
+					for (int i = 0; i < weituoList.length; i++) {
+						OrderResponseInfo orderResponseInfo = new OrderResponseInfo();
+						orderResponseInfo.MyReadString(weituoList[i]);
 
-			// 获取成功
-			if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
-				// 安全认证成功直接登录
-				// this.sendLogin(userAccount, userPassWd, "123456");
-				// 接收接收到认证返回消息，因为会返回两次，需要根据返回的消息，做分别处理
-				String[] receiveInfo = infoTSplit(netInfo.infoT);
+						orderResponseInfo.orderState = Constants.tradeStatusByNum(orderResponseInfo.orderState);
 
-				if (receiveInfo.length > 0 && !receiveInfo[0].equals("")) {
-					String temp = receiveInfo[0];
-					String[] arrClass = temp.split("@");
+						weituoInfoMap.put(orderResponseInfo.systemNo, orderResponseInfo);
 
-					if (arrClass.length < 10) {
-						// 这个返回的是认证的确认
+						// 委托单中存在没有完全成交的挂单 放入挂单列表
+						if (Constants.TRADE_STATUS_BUFEN.equals(orderResponseInfo.orderState)
+								|| Constants.TRADE_STATUS_YIPAIDUI.equals(orderResponseInfo.orderState)
+								|| Constants.TRADE_STATUS_YIQINGQIU.equals(orderResponseInfo.orderState)) {
 
-					} else {
-						// 这个返回的是登陆账户信息
-						if (!isLogin) {
-							// 初始化数据list
-							initDateList();
-
-							loadTraderDate();
-
-							isLogin = true;
+							guadanInfoMap.put(orderResponseInfo.systemNo, orderResponseInfo);
 
 						}
 					}
-				} else {
+
+				}
+
+				return;
+			}
+			// 挂单查询
+			else if (CommandCode.SearchGuaDan.equals(netInfo.code)) {
+
+				String[] guadanList = infoTSplit(netInfo.infoT);
+
+				// 当挂单列表为空时,分割出来的list长度为1,且为空
+				if (StringUtils.isNotBlank(guadanList[0])) {
+
+					for (int i = 0; i < guadanList.length; i++) {
+						OrderResponseInfo orderResponseInfo = new OrderResponseInfo();
+						orderResponseInfo.MyReadString(guadanList[i]);
+
+						guadanInfoMap.put(orderResponseInfo.systemNo, orderResponseInfo);
+					}
+
+				}
+
+				return;
+			}
+			// 持仓合计
+			else if (CommandCode.SearchHoldTotal.equals(netInfo.code)) {
+
+				String[] chicangList = infoTSplit(netInfo.infoT);
+
+				// 当持仓列表为空时,分割出来的list长度为1,且为空
+				if (StringUtils.isNotBlank(chicangList[0])) {
+					synchronized (chicangInfoMap) {
+						chicangInfoMap.clear();
+						for (int i = 0; i < chicangList.length; i++) {
+							OrderStatusInfo statusInfo = new OrderStatusInfo();
+							statusInfo.MyReadString(chicangList[i]);
+
+							// synchronized (chicangInfoMap) {
+							updateChicangTotalByOrderStatusInfo(statusInfo);
+							// }
+						}
+					}
+				}
+
+				return;
+			}
+			// 成交查询
+			else if (CommandCode.FILLEDSEARCH.equals(netInfo.code)) {
+
+				String[] chengjiaoList = infoTSplit(netInfo.infoT);
+
+				// 当持仓列表为空时,分割出来的list长度为1,且为空
+				if (StringUtils.isNotBlank(chengjiaoList[0])) {
+
+					for (int i = 0; i < chengjiaoList.length; i++) {
+						FilledResponseInfo filledResponseInfo = new FilledResponseInfo();
+						filledResponseInfo.MyReadString(chengjiaoList[i]);
+
+						// 将成交数据插入成交列表(明细)
+						chengjiaoInfoMap.put(filledResponseInfo.filledNo, filledResponseInfo);
+
+						// 更新成交合计
+						FilledResponseInfo filledTotalInfo = new FilledResponseInfo();
+						filledTotalInfo.MyReadString(chengjiaoList[i]);
+						updateChengjiaoTotalInfo(filledTotalInfo);
+					}
+
+				}
+
+				return;
+			}
+			// 资金查询
+			else if (CommandCode.ACCOUNTSEARCH.equals(netInfo.code)) {
+
+				String[] zijinList = infoTSplit(netInfo.infoT);
+
+				// 当持仓列表为空时,分割出来的list长度为1,且为空
+				if (StringUtils.isNotBlank(zijinList[0])) {
+					// 对资金map加线程同步
+					synchronized (zijinInfoMap) {
+						zijinInfoMap.clear();
+						for (int i = 0; i < zijinList.length; i++) {
+							AccountResponseInfo info = new AccountResponseInfo();
+							info.MyReadString(zijinList[i]);
+
+							zijinInfoMap.put(info.accountNo, info);
+						}
+
+						updateBaseCurrenyByRate();
+					}
+				}
+
+				return;
+			}
+			// 币种对应汇率
+			else if (CommandCode.CURRENCYLIST.equals(netInfo.code)) {
+
+				String[] bizhongList = infoTSplit(netInfo.infoT);
+
+				// 每次登陆时清空一下币种信息
+				// bizhongInfoMap.clear();
+
+				// 当持仓列表为空时,分割出来的list长度为1,且为空
+				if (bizhongList.length == 1 && bizhongList[0].isEmpty())
+					return;
+
+				for (int i = 0; i < bizhongList.length; i++) {
+					// LogUtil.e("sky----------bizhongList-----i = " + i + " bizhong = " +
+					// bizhongList[i]);
+					CurrencyInfo currencyInfo = new CurrencyInfo();
+					currencyInfo.MyReadString(bizhongList[i]);
+
+					if (currencyInfo.isBase == 1)
+						jibibizhong = currencyInfo;
+					// bizhongInfoMap.put(currencyInfo.currencyNo,currencyInfo);
+				}
+
+				//
+				// this.notifyObservers(new TraderTag(TraderTag.TRADER_TYPE_ACCOUNT));
+			}
+
+			// add by xiang 2015-11-30 start
+
+			// 止损止盈设置 数据列表数据返回
+			else if (CommandCode.GETYINGSUNLIST.equals(netInfo.code)) {
+
+				String[] yingsunList = infoTSplit(netInfo.infoT);
+
+				// 止损止盈设置列表为空时,分割出来的list长度为1,且为空
+				if (StringUtils.isNotBlank(yingsunList[0])) {
+
+					for (int i = 0; i < yingsunList.length; i++) {
+						YingSunListResponseInfo yingSunListResponseInfo = new YingSunListResponseInfo();
+						yingSunListResponseInfo.MyReadString(yingsunList[i]);
+
+						yingsunListMap.put(yingSunListResponseInfo.yingsunNo, yingSunListResponseInfo);
+					}
+
+				}
+
+				return;
+			}
+
+			// 当服务器断开，此时赢损触发会收到此指令，再次重新获取赢损list，刷新
+			else if (CommandCode.ORDER004.equals(netInfo.code)) {
+
+				// 服务器断开会返回这个error，接收它处理
+				if (netInfo.errorCode.equals(ErrorCode.ERR_COMMON_0001)) {
+					refreshYingSunList();
+				}
+
+				return;
+			}
+
+			// add by xiang 2015-11-30 end
+
+			// 修改密码
+			else if (CommandCode.MODIFYPW.equals(netInfo.code)) {
+				// MODIFYPW@@@1@00000@@@@&000003@888888@1
+				// MODIFYPW@@@1@修改密码出错@@@@&000003@12@7
+
+				ModifyClientPWS info = new ModifyClientPWS();
+				info.MyReadString(netInfo.infoT);
+
+				// 修改成功
+				if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
+					userPassWd = info.newPws;
+
+				}
+				// 修改失败
+				else {
+				}
+
+			}
+			// 登陆IP返回
+			else if (CommandCode.GetLoginHistoryList.equals(netInfo.code)) {
+				// LogHisLs@@@@00000@@@@@&192.168.1.140:5443@192.168.1.140:5443@2016-08-18
+				// 13:51:58@1
+
+				String[] ipList = infoTSplit(netInfo.infoT);
+
+				// 当登陆ip列表为空时,分割出来的list长度为1,且为空
+				if (StringUtils.isNotBlank(ipList[0])) {
+
+					loginSameIpList.clear();
+
+					for (int i = 0; i < ipList.length; i++) {
+						LoginHistoryIpInfo ipInfo = new LoginHistoryIpInfo();
+						ipInfo.MyReadString(ipList[i]);
+
+						if (ipInfo.LoginType.equals("1")) {
+							return;
+						} else {
+							loginSameIpList.add(ipInfo);
+						}
+					}
+				}
+				return;
+			}
+			// 安全认证添加-----20180306-----begin
+			// 获取密保问题返回
+			else if (CommandCode.GetVerifyQuestionList.equals(netInfo.code)) {
+
+				// 获取成功
+				if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
+					if (questionList == null)
+						questionList = new ArrayList<QuestionInfo>();
+					else
+						questionList.clear();
+
+					String[] list = infoTSplit(netInfo.infoT);
+					if (StringUtils.isNotBlank(list[0])) {
+						for (int i = 0; i < list.length; i++) {
+							QuestionInfo info = new QuestionInfo();
+							info.MyReadString(list[i]);
+
+							questionList.add(info);
+						}
+					}
+
+					if (isFirstLogin) {
+					} else {
+					}
+				}
+				// 获取失败
+				else {
+					// 错误消息
+				}
+
+			}
+			// 发送手机验证码返回
+			else if (CommandCode.ReqVerifyCode.equals(netInfo.code)) {
+
+				// 获取成功
+				if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
+				}
+				// 获取失败
+				else {
+					// 错误消息
+				}
+
+			}
+			// 安全认证返回
+			else if (CommandCode.SafeVerify.equals(netInfo.code)) {
+
+				// 获取成功
+				if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
+					// 安全认证成功直接登录
+					// this.sendLogin(userAccount, userPassWd, "123456");
+					// 接收接收到认证返回消息，因为会返回两次，需要根据返回的消息，做分别处理
+					String[] receiveInfo = infoTSplit(netInfo.infoT);
+
+					if (receiveInfo.length > 0 && !receiveInfo[0].equals("")) {
+						String temp = receiveInfo[0];
+						String[] arrClass = temp.split("@");
+
+						if (arrClass.length < 10) {
+							// 这个返回的是认证的确认
+
+						} else {
+							// 这个返回的是登陆账户信息
+							if (!isLogin) {
+								// 初始化数据list
+								initDateList();
+
+								loadTraderDate();
+
+								isLogin = true;
+
+							}
+						}
+					} else {
+
+					}
+				}
+				// 获取失败
+				else {
+					// 错误消息
 
 				}
 			}
-			// 获取失败
+			// 密保问题答案设置返回
+			else if (CommandCode.SetVerifyQA.equals(netInfo.code)) {
+
+				// 获取成功
+				if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
+				}
+				// 获取失败
+				else {
+				}
+
+			}
+			// 安全认证添加-----20180306-----end
+			// 其他错误消息
 			else {
+				if (netInfo.errorCode.equals(ErrorCode.SUCCESS)) {
+					return;
+				}
 				// 错误消息
+				String failMsg = ErrorCode.getErrorMsgByCode(netInfo.errorCode);
+				// System.out.println(failMsg);
+				logger.error("TraderDataFeed traderInfoHandler failMsg = " + failMsg);
 
 			}
-		}
-		// 密保问题答案设置返回
-		else if (CommandCode.SetVerifyQA.equals(netInfo.code)) {
-
-			// 获取成功
-			if (ErrorCode.SUCCESS.equals(netInfo.errorCode)) {
-			}
-			// 获取失败
-			else {
-			}
-
-		}
-		// 安全认证添加-----20180306-----end
-		// 其他错误消息
-		else {
-			if (netInfo.errorCode.equals(ErrorCode.SUCCESS)) {
-				return;
-			}
-			// 错误消息
-			String failMsg = ErrorCode.getErrorMsgByCode(netInfo.errorCode);
-			// System.out.println(failMsg);
-			logger.error("TraderDataFeed traderInfoHandler failMsg = " + failMsg);
-
 		}
 	}
 

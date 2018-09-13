@@ -14,7 +14,7 @@ import com.zd.config.NettyGlobal;
 import com.zd.netty.server.NettyServer;
 
 import io.netty.channel.ChannelFuture;
-import xyz.redtorch.web.service.TradingService;
+import xyz.redtorch.web.service.impl.TradingServiceImpl;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.zd", "xyz.redtorch" })
@@ -27,8 +27,8 @@ public class ZdHftOrderApplication implements CommandLineRunner {
 	private NettyServer nettyServer;
 
 	@Autowired
-	private TradingService tradingService;
-
+	private TradingServiceImpl tradingService;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(ZdHftOrderApplication.class, args);
 	}
@@ -36,8 +36,8 @@ public class ZdHftOrderApplication implements CommandLineRunner {
 	@Override
 	public void run(String... arg0) throws Exception {
 
-		Global.tradingService = tradingService;
-
+		Global.tradingService=tradingService;
+		
 		// 开启Disruptor队列
 		OrderEventEngine.addHandler();
 		OrderEventProducer mep = new OrderEventProducer(OrderEventEngine.getRingBuffer());

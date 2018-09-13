@@ -17,6 +17,8 @@ public class CancelOrderReq implements Serializable {
 
 	private String orderID; // 报单号
 
+	private String orderSysId;//系统编号
+	
 	// CTP LTS接口相关
 	private int frontID; // 前置机号
 	private int sessionID; // 回话号
@@ -75,6 +77,14 @@ public class CancelOrderReq implements Serializable {
 
 	public void setSessionID(int sessionID) {
 		this.sessionID = sessionID;
+	}
+
+	public String getOrderSysId() {
+		return orderSysId;
+	}
+
+	public void setOrderSysId(String orderSysId) {
+		this.orderSysId = orderSysId;
 	}
 
 }

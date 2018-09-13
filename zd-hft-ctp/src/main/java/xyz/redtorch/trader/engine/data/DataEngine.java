@@ -22,7 +22,7 @@ public interface DataEngine {
 	List<Bar> loadBarDataList(DateTime startDateTime, DateTime endDateTime, String rtSymbol);
 
 	List<Tick> loadTickDataList(DateTime startDateTime, DateTime endDateTime, String rtSymbol);
-
+	
 	MongoDBClient getMdDBClient();
 
 	MongoDBClient getDefaultDBClient();

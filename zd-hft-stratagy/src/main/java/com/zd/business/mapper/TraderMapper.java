@@ -37,7 +37,7 @@ public class TraderMapper {
 	// 可用消费者，key为Disruptor消费者ID
 	public static ConcurrentHashMap<String, MarketEventHandler> availableEventConcurrentHashMap = new ConcurrentHashMap<>();
 	
-	// 处理策略计算的线程，key为Disruptor消费者ID
+	// 处理策略计算的线程，key为HandlerStratagyThread的ID
 	public static ConcurrentHashMap<String, HandlerStratagyThread> handlerStratagyThreadMap = new ConcurrentHashMap<String, HandlerStratagyThread>();
 
 	// 策略消费者的订阅行情队列，key为Disruptor消费者ID

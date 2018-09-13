@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zd.dao.foreign.FutureTExchangeDao">
+
+	<select id="get" resultType="com.zd.domain.TExchangeDo">
+		select `exchange_no`,`exchange_name`,`commodity_no`,`commodity_name`,`code`,`contract_no`,`contract_name`,`futures_type`,`product_dot`,`upper_tick`,`reg_date`,`expiry_date`,`dot_num`,`currency_no`,`currency_name`,`lower_tick`,`exchange_no2`,`deposit`,`deposit_percent`,`first_notice_day`,`create_by`,`create_date`,`update_by`,`update_date`,`commodity_type`,`py_name`,`del_flag`,`last_trade_day` from sc_futures where exchange_no = #{value}
+	</select>
+
+	<select id="list" resultType="com.zd.domain.TExchangeDo">
+	select t.FExchangeID,t.FName,t.FExchangeNo,t.FEnabled from TExchange t
+        where t.FExchangeNo = 'CZCE' or t.FExchangeNo = 'DCE' OR t.FExchangeNo = 'DL-DCE'
+        or t.FExchangeNo ='SHFE' or t.FExchangeNo ='CFFEX'
+
+	</select>
+
+    <select id="listforeign" resultType="com.zd.domain.TExchangeDo">
+        select c.FExchangeID,c.FName,c.FExchangeNo,c.FEnabled from TExchange c  where
+        c.FExchangeID not IN(
+        select t.FExchangeID from TExchange t
+        where t.FExchangeNo = 'CZCE' or t.FExchangeNo = 'DCE' OR t.FExchangeNo = 'DL-DCE'
+        or t.FExchangeNo ='SHFE' or t.FExchangeNo ='CFFEX')
+    </select>
+
+</mapper>

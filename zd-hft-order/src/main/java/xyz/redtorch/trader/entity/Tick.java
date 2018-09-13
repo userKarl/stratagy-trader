@@ -3,10 +3,12 @@ package xyz.redtorch.trader.entity;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
 import org.joda.time.DateTime;
 
+import com.google.common.collect.Lists;
+
 import xyz.redtorch.trader.base.RtConstant;
+
 
 /**
  * @author sun0x00@gmail.com

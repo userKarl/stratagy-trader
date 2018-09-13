@@ -14,10 +14,20 @@ netty:
       port: 7002
   order:  
     server: 
-      host: 192.168.1.186
+      host: 192.168.1.209
       port: 6002
   market: 
     server: 
       host: 222.73.119.230
       port: 9011  
+  ctp:  
+    market:  
+      server: 
+        host: 192.168.1.209
+        port: 6098 
+  stock:  
+    market: 
+      server: 
+        host: 175.45.34.90
+        port: 9001
   

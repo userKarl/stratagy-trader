@@ -6,7 +6,7 @@ import com.shanghaizhida.beans.MarketInfo;
 import com.zd.business.engine.main.central.CentralEventProducer;
 import com.zd.business.engine.main.market.MarketEventProducer;
 import com.zd.business.engine.main.order.OrderEventProducer;
-import com.zd.business.entity.Tick;
+import com.zd.business.entity.ctp.Tick;
 
 public class Global {
 
@@ -38,4 +38,11 @@ public class Global {
 	//存放CTP行情数据
 	public static ConcurrentHashMap<String, Tick> ctpContractMap = new ConcurrentHashMap<String, Tick>();
 
+	//存放国际股票行情数据
+	public static ConcurrentHashMap<String, MarketInfo> stockMap = new ConcurrentHashMap<String, MarketInfo>();
+	
+	//报单引用
+	public static Integer orderRef=new Integer(25);
+	
+	public static Object object=new Object();
 }

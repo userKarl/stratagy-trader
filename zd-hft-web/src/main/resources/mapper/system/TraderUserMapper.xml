@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zd.dao.system.TraderUserDao">
+
+	<select id="get" resultType="com.zd.domain.TraderUserDO">
+		select `id`,`sys_user_id`,`account_no`,`account_pwd`,`trader_env`,`remark`,`del_flag`,`create_by`,`create_date`,`update_by`,`update_date` from zd_trader_user where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.zd.domain.TraderUserDO">
+		select `id`,`sys_user_id`,`account_no`,`account_pwd`,`trader_env`,`remark`,`del_flag`,`create_by`,`create_date`,`update_by`,`update_date` from zd_trader_user
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="sysUserId != null and sysUserId != ''"> and sys_user_id = #{sysUserId} </if>
+		  		  <if test="accountNo != null and accountNo != ''"> and account_no = #{accountNo} </if>
+		  		  <if test="accountPwd != null and accountPwd != ''"> and account_pwd = #{accountPwd} </if>
+		  		  <if test="traderEnv != null and traderEnv != ''"> and trader_env = #{traderEnv} </if>
+		  		  <if test="remark != null and remark != ''"> and remark = #{remark} </if>
+		  		  <if test="delFlag != null and delFlag != ''"> and del_flag = #{delFlag} </if>
+		  		  <if test="createBy != null and createBy != ''"> and create_by = #{createBy} </if>
+		  		  <if test="createDate != null and createDate != ''"> and create_date = #{createDate} </if>
+		  		  <if test="updateBy != null and updateBy != ''"> and update_by = #{updateBy} </if>
+		  		  <if test="updateDate != null and updateDate != ''"> and update_date = #{updateDate} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from zd_trader_user
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="sysUserId != null and sysUserId != ''"> and sys_user_id = #{sysUserId} </if>
+		  		  <if test="accountNo != null and accountNo != ''"> and account_no = #{accountNo} </if>
+		  		  <if test="accountPwd != null and accountPwd != ''"> and account_pwd = #{accountPwd} </if>
+		  		  <if test="traderEnv != null and traderEnv != ''"> and trader_env = #{traderEnv} </if>
+		  		  <if test="remark != null and remark != ''"> and remark = #{remark} </if>
+		  		  <if test="delFlag != null and delFlag != ''"> and del_flag = #{delFlag} </if>
+		  		  <if test="createBy != null and createBy != ''"> and create_by = #{createBy} </if>
+		  		  <if test="createDate != null and createDate != ''"> and create_date = #{createDate} </if>
+		  		  <if test="updateBy != null and updateBy != ''"> and update_by = #{updateBy} </if>
+		  		  <if test="updateDate != null and updateDate != ''"> and update_date = #{updateDate} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.zd.domain.TraderUserDO">
+		insert into zd_trader_user
+		(
+			`id`, 
+			`sys_user_id`, 
+			`account_no`, 
+			`account_pwd`, 
+			`trader_env`, 
+			`remark`, 
+			`del_flag`, 
+			`create_by`, 
+			`create_date`, 
+			`update_by`, 
+			`update_date`
+		)
+		values
+		(
+			#{id}, 
+			#{sysUserId}, 
+			#{accountNo}, 
+			#{accountPwd}, 
+			#{traderEnv}, 
+			#{remark}, 
+			#{delFlag}, 
+			#{createBy}, 
+			#{createDate}, 
+			#{updateBy}, 
+			#{updateDate}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.zd.domain.TraderUserDO">
+		update zd_trader_user 
+		<set>
+			<if test="sysUserId != null">`sys_user_id` = #{sysUserId}, </if>
+			<if test="accountNo != null">`account_no` = #{accountNo}, </if>
+			<if test="accountPwd != null">`account_pwd` = #{accountPwd}, </if>
+			<if test="traderEnv != null">`trader_env` = #{traderEnv}, </if>
+			<if test="remark != null">`remark` = #{remark}, </if>
+			<if test="delFlag != null">`del_flag` = #{delFlag}, </if>
+			<if test="createBy != null">`create_by` = #{createBy}, </if>
+			<if test="createDate != null">`create_date` = #{createDate}, </if>
+			<if test="updateBy != null">`update_by` = #{updateBy}, </if>
+			<if test="updateDate != null">`update_date` = #{updateDate}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from zd_trader_user where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from zd_trader_user where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="getAccountByuserId" resultType="com.zd.domain.TraderUserDO">
+		select z.account_no,z.account_pwd,z.trader_env from zd_trader_user z , zd_user u where z.sys_user_id = u.mobile
+		and z.account_no = #{accountNo} and u.mobile = #{mobile}
+	</select>
+
+</mapper>

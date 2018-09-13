@@ -1,9 +1,0 @@
-server:
-  port: 7001
-
-netty: 
-  central:  
-    server: 
-      host: 192.168.1.186
-      port: 7002
-  

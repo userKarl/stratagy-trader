@@ -32,6 +32,16 @@ public class OrderReq implements Serializable {
 	private String lastTradeDateOrContractMonth; // 合约月,IB专用
 	private String multiplier; // 乘数,IB专用
 
+	private String orderRef;//报单引用（下单时输入该值，目的是为了区分何处下单）
+	
+	public String getOrderRef() {
+		return orderRef;
+	}
+
+	public void setOrderRef(String orderRef) {
+		this.orderRef = orderRef;
+	}
+
 	public String getGatewayID() {
 		return gatewayID;
 	}

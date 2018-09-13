@@ -70,8 +70,10 @@ public class TestController {
 	@GetMapping("pub/{symbols}")
 	public void pub(@PathVariable String symbols) {
 		String[] split = symbols.split(",");
+		MarketInfo mi=new MarketInfo();
 		for (String s : split) {
-			Global.marketEventProducer.onData(s);
+			mi.code=s;
+			Global.marketEventProducer.onData(mi.MyToString());
 		}
 	}
 }

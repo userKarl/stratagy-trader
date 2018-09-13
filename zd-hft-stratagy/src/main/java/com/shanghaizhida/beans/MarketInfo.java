@@ -20,22 +20,22 @@ public class MarketInfo implements NetParent, Serializable {
 	public String code = "";
 
 	// 买价1
-	public String buyPrice = "";
+	public String buyPrice = "0";
 
 	// 买量1
-	public String buyNumber = "";
+	public String buyNumber = "0";
 
 	// 卖价1
-	public String salePrice = "";
+	public String salePrice = "0";
 
 	// 卖量1
-	public String saleNumber = "";
+	public String saleNumber = "0";
 
 	// 最新价
-	public String currPrice = "";
+	public String currPrice = "0";
 
 	// 现量
-	public String currNumber = "";
+	public String currNumber = "0";
 
 	// 当天最高价
 	public String high = "";
@@ -334,7 +334,7 @@ public class MarketInfo implements NetParent, Serializable {
 			this.limitDownPrice = strArr[3].trim();
 			this.type = strArr[4].trim();
 		} else {
-			String[] arrClass = temp.split("@");
+			String[] arrClass = temp.split("@",-1);
 			this.exchangeCode = arrClass[0];
 			this.code = arrClass[1].trim();
 			this.buyPrice = arrClass[2].trim();

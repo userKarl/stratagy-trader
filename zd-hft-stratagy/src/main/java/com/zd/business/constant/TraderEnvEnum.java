@@ -2,8 +2,9 @@ package com.zd.business.constant;
 
 public enum TraderEnvEnum {
 
-	ZD("1","直达交易"),
-	CTP("2","CTP交易");
+	ZD("1","直达期货交易"),
+	CTP("2","CTP交易"),
+	STOCK("3","国际股票交易");
 	
 	private String code;
 	private String desc;

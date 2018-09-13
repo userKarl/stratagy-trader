@@ -5,7 +5,8 @@ public enum PriceTypeEnum {
 	LIMIT("1","限价单"),
 	MARKET("2","市价单"),
 	STOP2LIMIT("3","限价止损"),
-	STOP2MARKET("4","止损");
+	STOP2MARKET("4","止损"),
+	CACL("5","推算价格");
 	
 	private String code;
 	private String desc;
